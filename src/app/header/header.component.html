@@ -1,0 +1,29 @@
+<mat-sidenav-container>
+    <mat-sidenav #sidenav>
+        <mat-nav-list>
+            <mat-list-item *ngIf="isAuth"><a routerLink="/home" routerLinkActive="active"
+                    (click)="sidenav.toggle()">Accueil</a></mat-list-item>
+            <mat-list-item *ngIf="isAuth"><a routerLink="/add-task" routerLinkActive="active"
+                    (click)="sidenav.toggle()">Ajouter une tâche</a></mat-list-item>
+            <mat-list-item *ngIf="isAuth"><a routerLink="/photo" routerLinkActive="active"
+                    (click)="sidenav.toggle()">Photos</a></mat-list-item>
+            <mat-list-item *ngIf="isAuth"><a (click)="onSignOut()" (click)="sidenav.toggle()">Déconnexion</a>
+            </mat-list-item>
+            <mat-list-item *ngIf="!isAuth"><a routerLink="/auth/signup" routerLinkActive="active"
+                    (click)="sidenav.toggle()">Créer un compte</a></mat-list-item>
+            <mat-list-item *ngIf="!isAuth"><a routerLink="/auth/signin" routerLinkActive="active"
+                    (click)="sidenav.toggle()">Connexion</a></mat-list-item>
+        </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <div style="height: 88vh;">
+            <mat-toolbar color="primary">
+                <button mat-icon-button aria-label="Menu" (click)="sidenav.open()">
+                    <mat-icon>menu</mat-icon>
+                </button>
+                <span>Family App</span>
+            </mat-toolbar>
+            <router-outlet></router-outlet>
+        </div>
+    </mat-sidenav-content>
+</mat-sidenav-container>

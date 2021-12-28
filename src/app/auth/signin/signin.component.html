@@ -1,0 +1,17 @@
+<div fxLayout="raw" fxLayoutAlign="center">
+    <mat-card>
+        <h3>Se connecter à un compte existant</h3>
+        <div fxLayout="raw" fxLayoutAlign="center">
+            <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" fxLayout="column">
+                
+                <label for="email">Adresse mail</label>
+                <input formControlName="email" type="text" id="email">
+                <label for="password">Mot de passe</label>
+                <input formControlName="password" type="password" id="passe">
+                <button type="submit" [disabled]="signInForm.invalid">Connexion</button>
+            </form>
+        </div>
+        <p>{{ errorMessage }}</p>
+
+    </mat-card>
+</div>

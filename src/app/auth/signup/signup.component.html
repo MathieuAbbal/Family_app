@@ -1,0 +1,15 @@
+<div fxLayout="raw" fxLayoutAlign="center">
+    <mat-card>
+        <h3>Créer un compte</h3>
+        <div fxLayout="raw" fxLayoutAlign="center">
+            <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" fxLayout="column">
+                <label for="email">Adresse mail</label>
+                <input formControlName="email" type="text" id="email">
+                <label for="password">Mot de passe</label>
+                <input formControlName="password" type="password" id="passe">
+                <button type="submit" [disabled]="signupForm.invalid">Créer mon compte</button>
+            </form>
+            </div>
+            <p color="warn">{{ errorMessage }}</p>
+    </mat-card>
+</div>
