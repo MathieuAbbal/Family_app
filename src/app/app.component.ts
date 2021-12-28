@@ -1,10 +1,25 @@
 import { Component } from '@angular/core';
-
+import { initializeApp } from "firebase";
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'applist';
+  title = 'FamilyApp';
+
+  constructor(){
+   
+const firebaseConfig = {
+  apiKey: "***FIREBASE_API_KEY***",
+  authDomain: "familyapp-e83b7.firebaseapp.com",
+  projectId: "familyapp-e83b7",
+  storageBucket: "familyapp-e83b7.appspot.com",
+  messagingSenderId: "728695329604",
+  appId: "***FIREBASE_WEB_APP_ID***"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+  }
 }
