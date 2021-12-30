@@ -1,14 +1,19 @@
 <div fxLayout="raw" fxLayoutAlign="center">
-    <mat-card>
-        <h3>Se connecter à un compte existant</h3>
+    <mat-card class="mat-elevation-z8">
+        <div fxLayout="raw" fxLayoutAlign="center">
+            <h3>Se connecter à un compte existant</h3>
+        </div>
         <div fxLayout="raw" fxLayoutAlign="center">
             <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" fxLayout="column">
-                
+                <mat-form-field apparance="fill">
                 <label for="email">Adresse mail</label>
-                <input formControlName="email" type="text" id="email">
-                <label for="password">Mot de passe</label>
-                <input formControlName="password" type="password" id="passe">
-                <button type="submit" [disabled]="signInForm.invalid">Connexion</button>
+                <input matInput formControlName="email" type="text" id="email">
+                </mat-form-field>
+                <mat-form-field>
+                    <label for="password">Mot de passe</label>
+                    <input  matInput formControlName="password" type="password" id="passe">
+                </mat-form-field>
+                <button mat-flat-button color="accent" type="submit" [disabled]="signInForm.invalid">Connexion</button>
             </form>
         </div>
         <p>{{ errorMessage }}</p>

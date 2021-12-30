@@ -1,42 +1,42 @@
 <div fxLayout="raw" fxLayoutAlign="center">
-    <mat-card>
+    <mat-card class="mat-elevation-z8">
         <div fxLayout="raw" fxLayoutAlign="center">
             <h3>Ajouter une Tâche</h3>
         </div>
-        <div fxLayout="raw" fxLayoutAlign="center">
-            <form #f="ngForm" (submit)="addtask(f)" fxLayout="column" fxLayoutAlign="center">
-                <mat-form-field apparance="fill">
-                    <mat-label for="selectUser">Tâche pour : </mat-label>
-                    <mat-select id="selectUser" [disabled]="disableSelect.value" ngModel name="selectUser">
-                        <mat-option value="everybody">Everybody</mat-option>
-                        <mat-option value="mathieu">Mathieu</mat-option>
-                        <mat-option value="sophie">Sophie</mat-option>
-                        <mat-option value="charly">Charly</mat-option>
-                        <mat-option value="lucie">Lucie</mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field apparance="fill">
-                    <mat-label for="urg">Priorité</mat-label>
-                    <mat-select id="urg" [disabled]="disableSelect.value" required ngModel name="urg">
-                        <mat-option value="aucune">Aucune</mat-option>
-                        <mat-option value="urgent">Urgent !</mat-option>
-                        <mat-option value="relative">Relative</mat-option>
-                        <mat-option value="pasUrgent">Pas Urgent</mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field appearance="fill">
-                    <mat-label for="title">Titre</mat-label>
-                    <input id="title" matInput placeholder="Ex. Mon titre..." required ngModel name="title">
-                </mat-form-field>
-                <mat-form-field appearance="fill">
-                    <mat-label for="descriptif">Descriptif</mat-label>
-                    <textarea id="descriptif" cols="30" rows="10" matInput placeholder="Ex. descriptif de la tâche..."
-                        ngModel name="descriptif"></textarea>
-                </mat-form-field>
-                <mat-card-actions>
-                    <button type="submit" mat-button color="primary">Ajouter</button>
-                </mat-card-actions>
-            </form>
-        </div>
+        <form [formGroup]="addTaskForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutAlign="center">
+            <mat-form-field apparance="fill">
+                <mat-label for="name">Tâche pour : </mat-label>
+                <mat-select formControlName="name" id="name">
+                    <mat-option value="everybody">Everybody</mat-option>
+                    <mat-option value="mathieu">Mathieu</mat-option>
+                    <mat-option value="sophie">Sophie</mat-option>
+                    <mat-option value="charly">Charly</mat-option>
+                    <mat-option value="lucie">Lucie</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field apparance="fill">
+                <mat-label for="urg">Priorité</mat-label>
+                <mat-select formControlName="urg" id="urg" required>
+                    <mat-option value="aucune">Aucune</mat-option>
+                    <mat-option value="urgent">Urgent !</mat-option>
+                    <mat-option value="relative">Relative</mat-option>
+                    <mat-option value="pasUrgent">Pas Urgent</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <label for="title">Titre</label>
+                <input matInput formControlName="title" id="title" placeholder="Ex. Mon titre..." required>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label for="descriptif">Descriptif</mat-label>
+                <textarea matInput formControlName="descriptif" id="descriptif" cols="30" rows="10"
+                    placeholder="Ex. descriptif de la tâche...">
+                    </textarea>
+            </mat-form-field>
+            <mat-card-actions>
+                <button mat-flat-button color="accent" type="submit" mat-button color="primary">Ajouter</button>
+            </mat-card-actions>
+        </form>
+
     </mat-card>
 </div>

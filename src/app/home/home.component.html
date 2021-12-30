@@ -1,2 +1,16 @@
 <h1>Bienvenue sur l'application Family!</h1>
 <h2>liste des tâches à faire:</h2>
+<div >
+    <mat-card *ngFor="let item of tasks" class="mat-elevation-z6 card"  fxLayoutGap="10px" >
+        <mat-card-title>
+            <h3>Titre: {{item.title}}</h3>
+        </mat-card-title>
+        <mat-card-subtitle>
+            <h4>Pour {{item.name}}</h4>
+        </mat-card-subtitle>
+        <mat-card-content>
+            <p>{{item.descriptif}}</p>
+        </mat-card-content>
+        <p>{{item.urg}}</p>
+    </mat-card>
+</div>

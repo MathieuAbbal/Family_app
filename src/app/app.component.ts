@@ -13,6 +13,7 @@ export class AppComponent {
 const firebaseConfig = {
   apiKey: "AIzaSyB4DkZu3SqYLJCrxFGS7DybGGKUBrlJqaI",
   authDomain: "familyapp-e83b7.firebaseapp.com",
+  databaseURL: "https://familyapp-e83b7-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "familyapp-e83b7",
   storageBucket: "familyapp-e83b7.appspot.com",
   messagingSenderId: "728695329604",

@@ -26,6 +26,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from './services/auth.service';
 import { AuthGuardService } from './services/auth-guard.service';
 import {MatCardModule} from '@angular/material/card';
+import { TasksService } from './services/tasks.service';
 @NgModule({
   declarations: [
     AppComponent,
@@ -56,7 +57,7 @@ import {MatCardModule} from '@angular/material/card';
     MatCardModule
   ],
 
-  providers: [AuthService, AuthGuardService],
+  providers: [AuthService, AuthGuardService,TasksService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
