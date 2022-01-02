@@ -26,7 +26,12 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from './services/auth.service';
 import { AuthGuardService } from './services/auth-guard.service';
 import {MatCardModule} from '@angular/material/card';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatDatepickerModule} from '@angular/material/datepicker';
 import { TasksService } from './services/tasks.service';
+import { MatNativeDateModule } from '@angular/material/core';
+import { DialogPhotoComponent } from './dialog-photo/dialog-photo.component';
+import {MatDialogModule} from '@angular/material/dialog'
 @NgModule({
   declarations: [
     AppComponent,
@@ -35,7 +40,8 @@ import { TasksService } from './services/tasks.service';
     HomeComponent,
     PhotoComponent,
     SignupComponent,
-    SigninComponent
+    SigninComponent,
+    DialogPhotoComponent
   ],
   imports: [
     BrowserModule,
@@ -54,7 +60,12 @@ import { TasksService } from './services/tasks.service';
     FlexLayoutModule,
     FormsModule,
     ReactiveFormsModule,
-    MatCardModule
+    MatCardModule,
+    MatChipsModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatDialogModule,
+    
   ],
 
   providers: [AuthService, AuthGuardService,TasksService],
