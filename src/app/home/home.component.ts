@@ -4,6 +4,7 @@ import { Task } from '../models/task.model';
 import { Subscription } from 'rxjs';
 import { TasksService } from '../services/tasks.service';
 
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -29,7 +30,9 @@ export class HomeComponent implements OnInit {
     this.ts.getTasks();
     this.ts.emitTasks();
   }
-
+  onDeleteTask(task:Task) {
+    this.ts.removeTask(task);
+  }
   ngOnDestroy(){
     this.tasksSubsription.unsubscribe();
   }

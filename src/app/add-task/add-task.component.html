@@ -29,13 +29,19 @@
             </mat-form-field>
             <mat-form-field appearance="fill">
                 <mat-label for="descriptif">Descriptif</mat-label>
-                <textarea matInput formControlName="descriptif" id="descriptif" cols="30" rows="10"
+                <textarea matInput formControlName="descriptif" id="descriptif" cols="20" rows="5"
                     placeholder="Ex. descriptif de la tâche...">
                     </textarea>
             </mat-form-field>
-            <mat-card-actions>
-                <button mat-flat-button color="accent" type="submit" mat-button color="primary">Ajouter</button>
-            </mat-card-actions>
+            <mat-form-field appearance="fill">
+                <mat-label>Date limite</mat-label>
+                <input matInput [matDatepicker]="picker">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+            <div fxLayout="row" fxLayoutAlign="end">
+                <button mat-flat-button color="primary" type="submit">Ajouter</button>
+            </div>
         </form>
 
     </mat-card>

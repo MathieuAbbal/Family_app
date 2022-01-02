@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import * as firebase from 'firebase';
 import { Subject } from 'rxjs';
-import { Task} from '../models/task.model'
+
+import { Task} from '../models/task.model';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -44,4 +46,5 @@ export class TasksService {
     this.saveTasks;
     this.emitTasks;
   }
+  
 }
