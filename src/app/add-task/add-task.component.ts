@@ -39,7 +39,7 @@ export class AddTaskComponent implements OnInit {
     const urg = this.addTaskForm.get('urg')?.value;
     const title = this.addTaskForm.get('title')?.value;
     const descriptif = this.addTaskForm.get('descriptif')?.value;
-
+   
     const newTask = new Task(name, urg,title,descriptif);
     this.ts.crateNewTask(newTask)
     console.log(newTask)

@@ -1,14 +1,14 @@
 <h2>Ajouter une photo</h2>
-    <form [formGroup]="photoForm">
+    <form [formGroup]="photoForm" (ngSubmit)="onSavePhoto()">
         <div >
             <label for="title">Titre</label>
-            <input type="text" id="title" class="form-control" formControlName="title">
+            <input type="text" id="title" formControlName="title">
         </div>
         <h4>Ajouter une photo</h4>
-                <input type="file" (change)="detectFiles($event)" class="form-control" accept="image/*">
-                <p class="text-success" *ngIf="fileUploaded">Fichier chargé !</p>
+                <input type="file" (change)="detectFiles($event)" accept="image/*">
+                <p *ngIf="fileUploaded">Fichier chargé !</p>
 
-                <button
-                    type="submit">Enregistrer
+                <button type="submit" [disabled]="photoForm.invalid || fileIsUploading"
+                    >Enregistrer
                 </button>
     </form>

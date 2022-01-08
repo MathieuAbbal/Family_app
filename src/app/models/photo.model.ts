@@ -1,7 +1,7 @@
 export class Photo {
-    photo: string  |undefined 
+    photo!: string 
     constructor(
         public title: string,
-         
+        
         ){}
 }

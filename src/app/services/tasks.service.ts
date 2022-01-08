@@ -36,7 +36,7 @@ export class TasksService {
   crateNewTask(newTask: Task) {
     this.tasks.push(newTask);
     this.saveTasks();
-    this.emitTasks();
+    
     console.log('Tâche créer', this.tasks);
   }
   removeTask(task:Task){

@@ -4,6 +4,6 @@ export class Task {
        public name: string,
        public urg: string,
        public title: string,
-       public descriptif: string     
+       public descriptif: string,
        ){}
 }
