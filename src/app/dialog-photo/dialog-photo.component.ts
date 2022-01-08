@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -27,30 +28,27 @@ export class DialogPhotoComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
+    
   }
   
   initForm(){
     this.photoForm=this.formBuilder.group({
-      title:['', Validators.required]
-      
+      title:['', Validators.required],
+    //  photo:['',Validators.required]
 
     });
   }
   onSavePhoto(){
-    const title = this.photoForm!.get('title')!.value;
+    const title = this.photoForm.get('title')!.value;
     
     const newPhoto = new Photo(title);
-    if (this.fileUrl && this.fileUrl !== '') {
-      newPhoto.photo = this.fileUrl;
-    }
+    newPhoto.photo = this.fileUrl
+    
     this.ps.createNewPhoto(newPhoto);
     console.log(newPhoto);
     this.router.navigate(['/photo']);
   }
     
-
-  
-
 
   onUploadFile(file: File) {
     this.fileIsUploading = true;

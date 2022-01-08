@@ -12,7 +12,14 @@ export class PhotosService {
   constructor() {
     this.getPhotos();
   }
-
+  emitPhotos() {
+    this.photosSubject.next(this.photos);
+    console.log(this.photos);
+  }
+  savePhotos() {
+    firebase.database().ref('/photos').set(this.photos);
+    console.log('Images sauvegarder', this.photos);
+  }
   getPhotos() {
     firebase
       .database()
@@ -23,18 +30,13 @@ export class PhotosService {
         console.log('photos récupérer', this.photos);
       });
   }
-  emitPhotos() {
-    this.photosSubject.next(this.photos);
-    console.log(this.photos);
-  }
-  savePhotos() {
-    firebase.database().ref('/photos').set(this.photos);
-    console.log('Images sauvegarder', this.photos);
-  }
+ 
+  
   createNewPhoto(newPhoto: Photo) {
     this.photos.push(newPhoto);
     this.savePhotos;
     this.emitPhotos;
+    console.log('image enregistrer', this.photos)
   }
   uploadFile(file: File) {
     return new Promise((resolve, reject) => {
@@ -42,7 +44,7 @@ export class PhotosService {
       const upload = firebase
         .storage()
         .ref()
-        .child('images/' + almostUniqueFileName + file.name)
+        .child('photo/' + almostUniqueFileName + file.name)
         .put(file);
       upload.on(
         firebase.storage.TaskEvent.STATE_CHANGED,
@@ -58,5 +60,8 @@ export class PhotosService {
         }
       );
     });
+  }
+  ngOnDestroy() {
+    this.photosSubject.unsubscribe();
   }
 }

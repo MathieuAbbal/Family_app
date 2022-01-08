@@ -32,6 +32,9 @@ import { TasksService } from './services/tasks.service';
 import { MatNativeDateModule } from '@angular/material/core';
 import { DialogPhotoComponent } from './dialog-photo/dialog-photo.component';
 import {MatDialogModule} from '@angular/material/dialog'
+import { PhotosService } from './services/photos.service';
+import { HttpClientModule } from '@angular/common/http';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -47,6 +50,7 @@ import {MatDialogModule} from '@angular/material/dialog'
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    HttpClientModule,
     MatSidenavModule,
     MatButtonModule,
     LayoutModule,
@@ -68,7 +72,7 @@ import {MatDialogModule} from '@angular/material/dialog'
     
   ],
 
-  providers: [AuthService, AuthGuardService,TasksService],
+  providers: [AuthService, AuthGuardService,TasksService,PhotosService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
