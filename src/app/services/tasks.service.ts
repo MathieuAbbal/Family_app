@@ -39,10 +39,13 @@ export class TasksService {
   }
   removeTask(task:Task){
     const taskIndexToRemove = this.tasks.findIndex(
-    (taskEl)=> taskEl === task);
+    (El)=> El === task);
+    console.log(taskIndexToRemove);
     this.tasks.splice(taskIndexToRemove, 1);
-    this.saveTasks;
-    this.emitTasks;
+    this.saveTasks();
+    this.emitTasks();
   }
-  
+  ngOnDestroy() {
+    this.tasksSubject.unsubscribe();
+  }
 }
