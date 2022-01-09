@@ -1,14 +1,15 @@
-<h2>Ajouter une photo</h2>
-    <form [formGroup]="photoForm" (ngSubmit)="onSavePhoto()">
-        <div >
-            <label for="title">Titre</label>
-            <input type="text" id="title" formControlName="title">
-        </div>
-        <h4>Ajouter une photo</h4>
-                <input type="file" (change)="detectFiles($event)" accept="image/*">
-                <p *ngIf="fileUploaded">Fichier chargé !</p>
-
-                <button [mat-dialog-close] type="submit" [disabled]="photoForm.invalid || fileIsUploading"
-                    >Enregistrer
-                </button>
-    </form>
+<h2>Ajouter une photo </h2>
+<form [formGroup]="photoForm" (ngSubmit)="onSavePhoto()" fxLayout="column" fxLayoutAlign="center">
+    <mat-form-field apparance="fill">
+        <mat-label for="title">Titre</mat-label>
+        <input matInput type="text" id="title" formControlName="title">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Choisir un fichier</mat-label>
+        <ngx-mat-file-input  type="file" (change)="detectFiles($event)" accept="image/*" placeholder="choisir une image" required></ngx-mat-file-input>
+        <mat-icon matSuffix>folder</mat-icon>
+        <p *ngIf="fileUploaded">Fichier chargé !</p>  
+    </mat-form-field>
+    <button mat-flat-button color="accent" [mat-dialog-close] type="submit" [disabled]="!fileUploaded">Enregistrer
+    </button>
+</form>

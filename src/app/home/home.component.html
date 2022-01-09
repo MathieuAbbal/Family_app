@@ -1,17 +1,22 @@
-<h1 style="text-align: center;">Bienvenue sur l'application Family!</h1>
+<h1 style="text-align: center;">Bienvenue sur l'application Family! 💕</h1>
 <h2 style="text-align: center;">liste des tâches à faire:</h2>
-<div fxLayout="row wrap" fxLayoutAlign="center" >
-    <mat-card *ngFor="let item of tasks" class="mat-elevation-z6 card" >
+<div fxLayout="row wrap" fxLayoutAlign="center">
+    <mat-card *ngFor="let item of tasks" class="mat-elevation-z6 card">
         <mat-card-title>
-            <h3 style="text-align: center;">{{item.title}}</h3>
+            <h3 style="text-align: center;color: crimson;">{{item.title}}</h3>
         </mat-card-title>
-        <mat-card-subtitle>
-            <p>Pour: {{item.name}}</p>
-        </mat-card-subtitle>
+        <p>Pour: {{item.name}}</p>
         <mat-card-content>
             <p *ngIf="item.descriptif">Descriptif: {{item.descriptif}}</p>
         </mat-card-content>
         <p>Priorité : {{item.urg}}</p>
-        <button mat-flat-button color="warn" (click)="onDeleteTask(item)" mat-button>Terminer</button>
+        <div fxLayout="row" fxLayoutAlign="end">
+            <button mat-mini-fab color="warn" (click)="onDeleteTask(item)">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </div>
     </mat-card>
 </div>
+<!--
+<app-photo></app-photo>
+-->

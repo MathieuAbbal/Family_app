@@ -22,8 +22,8 @@ export class DialogPhotoComponent implements OnInit {
 
   initForm() {
     this.photoForm = this.formBuilder.group({
-      title: ['', Validators.required],
-    
+      title: [''],
+      
     });
   }
   onSavePhoto() {
