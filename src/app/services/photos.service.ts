@@ -34,8 +34,8 @@ export class PhotosService {
   
   createNewPhoto(newPhoto: Photo) {
     this.photos.push(newPhoto);
-    this.savePhotos;
-    this.emitPhotos;
+    this.savePhotos();
+    
     console.log('image enregistrer', this.photos)
   }
   uploadFile(file: File) {
@@ -44,7 +44,7 @@ export class PhotosService {
       const upload = firebase
         .storage()
         .ref()
-        .child('photo/' + almostUniqueFileName + file.name)
+        .child('photos/' + almostUniqueFileName + file.name)
         .put(file);
       upload.on(
         firebase.storage.TaskEvent.STATE_CHANGED,
@@ -61,6 +61,29 @@ export class PhotosService {
       );
     });
   }
+  removePhoto(photo: Photo) {
+    if (photo.image) {
+      const storageRef = firebase.storage().refFromURL(photo.image);
+      storageRef.delete().then(
+        () => {
+          console.log('Photo supprimée !');
+        }
+      ).catch(
+        (error) => {
+          console.log('Fichier non trouvé : ' + error);
+        }
+      )
+    }
+    const photoIndexToRemove = this.photos.findIndex(
+      (El) => El === photo);
+      
+    console.log(photoIndexToRemove);
+    this.photos.splice(photoIndexToRemove, 1);
+    this.savePhotos();
+    this.emitPhotos();
+  }
+
+
   ngOnDestroy() {
     this.photosSubject.unsubscribe();
   }

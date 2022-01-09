@@ -1,7 +1,7 @@
 export class Photo {
-    photo!: string 
+    image!: string 
     constructor(
         public title: string,
-        
+        public createdDate:Date
         ){}
 }

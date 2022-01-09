@@ -28,7 +28,7 @@ export class AddTaskComponent implements OnInit {
       name: ['', [Validators.required]],
       urg: ['', [Validators.required]],
       title: ['', [Validators.required]],
-      descriptif: ['', [Validators.required]],
+      descriptif: [''],
     });
   }
   onSaveTask(){
