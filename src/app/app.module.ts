@@ -35,7 +35,7 @@ import { DialogPhotoComponent } from './dialog-photo/dialog-photo.component';
 import {MatDialogModule} from '@angular/material/dialog'
 import { PhotosService } from './services/photos.service';
 import { HttpClientModule } from '@angular/common/http';
-
+import { MaterialFileInputModule } from 'ngx-material-file-input';
 @NgModule({
   declarations: [
     AppComponent,
@@ -70,8 +70,8 @@ import { HttpClientModule } from '@angular/common/http';
     MatDatepickerModule,
     MatNativeDateModule,
     MatDialogModule,
-    MatTooltipModule
-    
+    MatTooltipModule,
+    MaterialFileInputModule
   ],
 
   providers: [AuthService, AuthGuardService,TasksService,PhotosService],
