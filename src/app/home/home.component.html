@@ -9,7 +9,7 @@
             <p>Pour: {{item.name}}</p>
         </mat-card-subtitle>
         <mat-card-content>
-            <p>Descriptif: {{item.descriptif}}</p>
+            <p *ngIf="item.descriptif">Descriptif: {{item.descriptif}}</p>
         </mat-card-content>
         <p>Priorité : {{item.urg}}</p>
         <button mat-flat-button color="warn" (click)="onDeleteTask(item)" mat-button>Terminer</button>

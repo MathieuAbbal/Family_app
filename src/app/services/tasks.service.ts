@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as firebase from 'firebase';
 import { Subject } from 'rxjs';
-
 import { Task} from '../models/task.model';
 
 @Injectable({
@@ -10,8 +9,7 @@ import { Task} from '../models/task.model';
 export class TasksService {
   tasks: Task [] = [];
   tasksSubject = new Subject<Task[]>();
-
-  constuctor() {
+  constructor() {
     this.getTasks();
   }
 

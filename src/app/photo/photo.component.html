@@ -1,2 +1,15 @@
+<!--<button mat-flat-button color="accent" (click)="openDialog()">Ajouter</button>-->
+<div class="container">
+    <h2 style="text-align: center;">Partage de Photo</h2>
+<mat-card *ngFor="let item of photos" class="card">
+    <h3>{{item.title}}</h3>
+    <img [src]="item.image">
+    <button matTooltip="supprimer la photo" (click)="deletePhoto(item)" mat-mini-fab color="warn" >
+        <mat-icon >delete</mat-icon>
+    </button>
+</mat-card>
 
-<button mat-flat-button color="accent" (click)="openDialog()">Ajouter</button>
+<button (click)="openDialog()" id="add-button" class="mat-fab-bottom-right" mat-fab>
+    <mat-icon class="icon">add</mat-icon>
+</button>
+</div>

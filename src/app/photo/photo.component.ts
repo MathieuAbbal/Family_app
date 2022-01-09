@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Subscription } from 'rxjs';
 import { DialogPhotoComponent } from '../dialog-photo/dialog-photo.component';
+import { Photo } from '../models/photo.model';
+import { PhotosService } from '../services/photos.service';
 @Component({
   selector: 'app-photo',
   templateUrl: './photo.component.html',
@@ -8,9 +11,19 @@ import { DialogPhotoComponent } from '../dialog-photo/dialog-photo.component';
 })
 export class PhotoComponent implements OnInit {
 
-  constructor(public dialog:MatDialog) { }
+  photos:Photo[]=[];
+  photosSubscription!:Subscription;
+
+  constructor(public dialog:MatDialog,
+    private ps : PhotosService) { }
 
   ngOnInit(): void {
+    this.photosSubscription = this.ps.photosSubject.subscribe(
+      (photos:Photo[]) =>{
+        this.photos = photos;
+      });
+      this.ps.emitPhotos();
+      this.ps.getPhotos();
   }
   openDialog(){
     const dialogRef = this.dialog.open(DialogPhotoComponent);
@@ -19,7 +32,7 @@ export class PhotoComponent implements OnInit {
       console.log({result})
     });
   } 
-
-
-
+  deletePhoto(photo:Photo){
+    this.ps.removePhoto(photo);
+  }
 }
