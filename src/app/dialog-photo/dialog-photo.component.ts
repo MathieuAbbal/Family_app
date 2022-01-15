@@ -13,6 +13,7 @@ export class DialogPhotoComponent implements OnInit {
   fileUrl!: string;
   fileIsUploading = false;
   fileUploaded = false;
+  createdDate!: Date;
 
   constructor(private ps: PhotosService, private formBuilder: FormBuilder) {}
 

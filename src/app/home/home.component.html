@@ -1,5 +1,5 @@
 <h1 style="text-align: center;">Bienvenue sur l'application Family! 💕</h1>
-<h2 style="text-align: center;">liste des tâches à faire:</h2>
+<h2 style="text-align: center;">Liste des tâches à faire:</h2>
 <div fxLayout="row wrap" fxLayoutAlign="center" >
     <mat-card *ngFor="let item of tasks" class="mat-elevation-z6 card" >
         <mat-card-title>
@@ -12,7 +12,7 @@
             <p *ngIf="item.descriptif">Descriptif: {{item.descriptif}}</p>
         </mat-card-content>
         <p>Priorité : {{item.urg}}</p>
-        <button mat-flat-button color="warn" (click)="onDeleteTask(item)" mat-button>Terminer</button>
+        <button mat-flat-button color="warn" (click)="openDialog()" mat-button>Terminer</button>
     </mat-card>
 </div>
-<app-photo></app-photo>
+<!--<app-photo></app-photo>-->

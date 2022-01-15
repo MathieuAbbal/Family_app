@@ -1,5 +1,5 @@
-<mat-sidenav-container>
-    <mat-sidenav #sidenav>
+<mat-sidenav-container style="height: -webkit-fill-available;">
+    <mat-sidenav #sidenav style="height: fit-content;">
         <mat-nav-list>
             <mat-list-item *ngIf="isAuth"><a routerLink="/home" routerLinkActive="active"
                     (click)="sidenav.toggle()">Accueil</a></mat-list-item>
@@ -21,7 +21,7 @@
                 <button mat-icon-button aria-label="Menu" (click)="sidenav.open()">
                     <mat-icon>menu</mat-icon>
                 </button>
-                <span>Family App</span>
+                <span style="margin: 10px;">Family App</span>
             </mat-toolbar>
             <router-outlet></router-outlet>
         </div>
