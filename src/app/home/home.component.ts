@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { Task } from '../models/task.model';
 import { Subscription } from 'rxjs';
 import { TasksService } from '../services/tasks.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogDeleteComponent } from '../dialog-delete/dialog-delete.component';
 
 
 @Component({
@@ -18,6 +20,7 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private ts :TasksService,
+    public dialog:MatDialog,
     private router: Router
   ) { }
 
@@ -30,6 +33,13 @@ export class HomeComponent implements OnInit {
     this.ts.getTasks();
     this.ts.emitTasks();
   }
+  openDialog(){
+    const dialogRef = this.dialog.open(DialogDeleteComponent);
+
+    dialogRef.afterClosed().subscribe( result =>{
+      console.log({result})
+    });
+  } 
   onDeleteTask(task:Task) {
     this.ts.removeTask(task);
   }

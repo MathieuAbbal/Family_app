@@ -36,6 +36,7 @@ import {MatDialogModule} from '@angular/material/dialog'
 import { PhotosService } from './services/photos.service';
 import { HttpClientModule } from '@angular/common/http';
 import { MaterialFileInputModule } from 'ngx-material-file-input';
+import { DialogDeleteComponent } from './dialog-delete/dialog-delete.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -45,7 +46,8 @@ import { MaterialFileInputModule } from 'ngx-material-file-input';
     PhotoComponent,
     SignupComponent,
     SigninComponent,
-    DialogPhotoComponent
+    DialogPhotoComponent,
+    DialogDeleteComponent
   ],
   imports: [
     BrowserModule,

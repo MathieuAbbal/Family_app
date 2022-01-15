@@ -3,3 +3,7 @@ a {
   text-decoration: none;
   padding: 2px 1px 0;
 }
+.mat-drawer-backdrop {
+  height: fit-content;
+}
+
