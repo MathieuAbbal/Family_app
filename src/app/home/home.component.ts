@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogDeleteComponent } from '../dialog-delete/dialog-delete.component';
 
 
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -34,7 +35,9 @@ export class HomeComponent implements OnInit {
     this.ts.emitTasks();
   }
   openDialog(){
-    const dialogRef = this.dialog.open(DialogDeleteComponent);
+    const dialogRef = this.dialog.open(DialogDeleteComponent,{
+      data: this.tasks
+    });
 
     dialogRef.afterClosed().subscribe( result =>{
       console.log({result})
