@@ -13,7 +13,7 @@ export class DialogPhotoComponent implements OnInit {
   fileUrl!: string;
   fileIsUploading = false;
   fileUploaded = false;
-  createdDate!: Date;
+  createdDate!: string;
 
   constructor(private ps: PhotosService, private formBuilder: FormBuilder) {}
 
@@ -28,8 +28,15 @@ export class DialogPhotoComponent implements OnInit {
     });
   }
   onSavePhoto() {
-    const title = this.photoForm.get('title')!.value;
-    const createdDate = new Date();
+   const title = this.photoForm.get('title')!.value;
+  //  const date = new Date();
+    var d = new Date();
+    var date =  d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();
+    var hours = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+    var fullDate = date+' à '+hours;
+    console.log(fullDate);
+    const createdDate = fullDate ;
+    
     const newPhoto = new Photo(title,createdDate);
     newPhoto.image = this.fileUrl;
 

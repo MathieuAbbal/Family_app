@@ -12,8 +12,6 @@ export class AddTaskComponent implements OnInit {
   
   addTaskForm!: FormGroup;
   
-  
-
   constructor(
     private formBuilder: FormBuilder,
     private ts: TasksService,
@@ -40,7 +38,7 @@ export class AddTaskComponent implements OnInit {
     const title = this.addTaskForm.get('title')?.value;
     const descriptif = this.addTaskForm.get('descriptif')?.value;
    
-    const newTask = new Task(name, urg,title,descriptif);
+    const newTask = new Task(name,urg,title,descriptif);
     this.ts.crateNewTask(newTask)
     console.log(newTask)
     this.router.navigate(['/home'])
