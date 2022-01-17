@@ -4,7 +4,7 @@
 <mat-card *ngFor="let item of photos" class="mat-elevation-z6 card">
     <h2>{{item.title}}</h2>
     <img [src]="item.image">
-    <p>Mis en ligne le : {{item.createdDate}}</p>
+    <p>Mis en ligne le : {{item.createdDate | date: ' le d MMMM yyyy à HH:mm'}}</p>
     <button matTooltip="supprimer la photo" (click)="deletePhoto(item)" mat-mini-fab color="warn" >
         <mat-icon >delete</mat-icon>
     </button>

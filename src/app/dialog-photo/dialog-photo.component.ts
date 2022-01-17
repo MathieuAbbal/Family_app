@@ -24,24 +24,17 @@ export class DialogPhotoComponent implements OnInit {
   initForm() {
     this.photoForm = this.formBuilder.group({
       title: [''],
-      
     });
   }
   onSavePhoto() {
-   const title = this.photoForm.get('title')!.value;
-  //  const date = new Date();
-    var d = new Date();
-    var date =  d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();
-    var hours = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
-    var fullDate = date+' à '+hours;
-    console.log(fullDate);
-    const createdDate = fullDate ;
-    
-    const newPhoto = new Photo(title,createdDate);
+    const title = this.photoForm.get('title')!.value;
+    const date = new Date();
+    const createdDate = date.toString();
+    const newPhoto = new Photo(title, createdDate);
     newPhoto.image = this.fileUrl;
 
     this.ps.createNewPhoto(newPhoto);
-    console.log('test', newPhoto);
+    console.log('Object', newPhoto);
   }
 
   onUploadFile(file: File) {
