@@ -25,6 +25,14 @@ export class HomeComponent implements OnInit {
     private router: Router
   ) { }
 
+  // urgence
+ listeUrgence = ['aucune', 'urgent', 'relative', 'pasUrgent']
+ getCouleurUrgence(item:string) {
+   return item === "aucune" ? "grey" :
+     item === "urgent" ? "red" :
+       item === "relative" ? "orange" :
+         "green"
+ }
   ngOnInit(): void {
     this.tasksSubsription = this.ts.tasksSubject.subscribe(
       (tasks:Task[]) =>{
