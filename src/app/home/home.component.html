@@ -11,7 +11,7 @@
         <mat-card-content>
             <p *ngIf="item.descriptif">Descriptif: {{item.descriptif}}</p>
         </mat-card-content>
-        <p>Priorité : {{item.urg}}</p>
+        <p>Priorité : <span [ngStyle]="{'color': getCouleurUrgence(item.urg)}" style="font-weight: bold;">{{item.urg}}</span></p>
         <button mat-flat-button color="warn" (click)="openDialog()" mat-button>Terminer</button>
     </mat-card>
 </div>
