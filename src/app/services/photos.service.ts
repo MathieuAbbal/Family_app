@@ -62,8 +62,8 @@ export class PhotosService {
     });
   }
   removePhoto(photo: Photo) {
-    if (photo.image) {
-      const storageRef = firebase.storage().refFromURL(photo.image);
+    if (photo?.image) {
+      const storageRef = firebase.storage().refFromURL(photo?.image);
       storageRef.delete().then(
         () => {
           console.log('Photo supprimée !');

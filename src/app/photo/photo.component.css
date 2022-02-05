@@ -1,23 +1,30 @@
 .card {
-  box-sizing: border-box;
-  width: 80%;
   margin: 20px auto;
   padding: 10px 30px;
-  
+  width: 80%;
 }
+@media only screen and (min-width: 860px) {
+  .card {
+    box-sizing: border-box;
+    width: 50%;
+    margin: 20px auto;
+    padding: 10px 30px;
+  }
+}
+
 img {
   width: 100%;
 }
-#add-button{
-
+#add-button {
   right: 20px;
   bottom: 10px;
   left: auto;
   position: absolute;
 }
-.container{
+.container {
   position: relative;
   padding-bottom: 40px;
+  max-width: fit-content;
 }
 h2 {
   margin: 10px;

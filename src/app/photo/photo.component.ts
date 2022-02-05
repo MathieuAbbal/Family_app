@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
+import { DialogDeletePhotoComponent } from '../dialog-delete-photo/dialog-delete-photo.component';
 import { DialogPhotoComponent } from '../dialog-photo/dialog-photo.component';
 import { Photo } from '../models/photo.model';
 import { PhotosService } from '../services/photos.service';
@@ -32,6 +33,15 @@ export class PhotoComponent implements OnInit {
       console.log({result})
     });
   } 
+  openDialogDelete(){
+    const dialogRef = this.dialog.open(DialogDeletePhotoComponent,{
+      data: this.photos
+    });
+
+    dialogRef.afterClosed().subscribe( result =>{
+      console.log({result})
+    });
+  }
   deletePhoto(photo:Photo){
     this.ps.removePhoto(photo);
   }
