@@ -1,7 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { TasksService } from '../services/tasks.service';
 import { Task } from '../models/task.model';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+
 
 @Component({
   selector: 'app-dialog-delete',
@@ -11,9 +13,11 @@ import { Task } from '../models/task.model';
 
 export class DialogDeleteComponent implements OnInit {
   @Input()item:any
-  constructor(private ts :TasksService,
+  constructor(
+    private ts :TasksService,
+    @Inject(MAT_DIALOG_DATA) public data: any,
     
-    ) { }
+    ) {console.log("DATA",data) }
   tasks: Task[] = [];
   tasksSubsription!: Subscription;
 
@@ -22,7 +26,7 @@ export class DialogDeleteComponent implements OnInit {
   }
  
   ngOnDestroy(){
-    this.tasksSubsription.unsubscribe();
+    if(this.tasksSubsription){this.tasksSubsription.unsubscribe()};
     
   }
   ngOnInit(): void {

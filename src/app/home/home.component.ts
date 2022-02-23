@@ -55,7 +55,7 @@ export class HomeComponent implements OnInit {
     this.ts.removeTask(task);
   }
   ngOnDestroy(){
-    this.tasksSubsription.unsubscribe();
+    if(this.tasksSubsription){this.tasksSubsription.unsubscribe()};
   }
 
 }
