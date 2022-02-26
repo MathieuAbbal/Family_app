@@ -42,20 +42,22 @@ export class HomeComponent implements OnInit {
     this.ts.getTasks();
     this.ts.emitTasks();
   }
-  openDialog(){
-    const dialogRef = this.dialog.open(DialogDeleteComponent,{
-      data: this.tasks
-    });
-
-    dialogRef.afterClosed().subscribe( result =>{
-      console.log({result})
-    });
-  } 
-  onDeleteTask(task:Task) {
-    this.ts.removeTask(task);
-  }
+  
   ngOnDestroy(){
     if(this.tasksSubsription){this.tasksSubsription.unsubscribe()};
   }
-
+  onDelete(task:Task) {
+    let dialogRef = this.dialog.open(DialogDeleteComponent, {
+      autoFocus:false,
+      width:'30em'
+    });
+    dialogRef.afterClosed().subscribe(
+      result => {
+        if (result === true) {
+          this.ts.removeTask(task)
+        }
+        else { return; }
+      }
+    )
+  }
 }

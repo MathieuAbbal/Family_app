@@ -33,16 +33,18 @@ export class PhotoComponent implements OnInit {
       console.log({result})
     });
   } 
-  openDialogDelete(){
-    const dialogRef = this.dialog.open(DialogDeletePhotoComponent,{
-      data: this.photos
+  onDelete(photo:Photo) {
+    let dialogRef = this.dialog.open(DialogDeletePhotoComponent, {
+      autoFocus:false,
+      width:'30em'
     });
-
-    dialogRef.afterClosed().subscribe( result =>{
-      console.log({result})
-    });
-  }
-  deletePhoto(photo:Photo){
-    this.ps.removePhoto(photo);
+    dialogRef.afterClosed().subscribe(
+      result => {
+        if (result === true) {
+          this.ps.removePhoto(photo);
+        }
+        else { return; }
+      }
+    )
   }
 }

@@ -1,7 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { Photo } from '../models/photo.model';
-import { PhotosService } from '../services/photos.service';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-dialog-delete-photo',
@@ -9,17 +7,12 @@ import { PhotosService } from '../services/photos.service';
   styleUrls: ['./dialog-delete-photo.component.css'],
 })
 export class DialogDeletePhotoComponent implements OnInit {
-  @Input() item: any;
-  constructor(private ps: PhotosService) {}
+ 
+  constructor(public dialogRef: MatDialogRef<DialogDeletePhotoComponent>) {}
 
-  photos: Photo[] = [];
-  photosSubsription!: Subscription;
-
-  onDeletePhoto(photo: Photo) {
-    this.ps.removePhoto(photo);
-  }
+  
   ngOnInit(): void {}
   ngOnDestroy() {
-    if(this.photosSubsription){this.photosSubsription.unsubscribe()};
+    
   }
 }
