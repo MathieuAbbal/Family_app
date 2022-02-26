@@ -20,6 +20,6 @@ export class DialogDeletePhotoComponent implements OnInit {
   }
   ngOnInit(): void {}
   ngOnDestroy() {
-    this.photosSubsription.unsubscribe();
+    if(this.photosSubsription){this.photosSubsription.unsubscribe()};
   }
 }
