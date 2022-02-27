@@ -7,6 +7,8 @@
                     (click)="sidenav.toggle()">Ajouter une tâche</a></mat-list-item>
             <mat-list-item *ngIf="isAuth"><a routerLink="/photo" routerLinkActive="active"
                     (click)="sidenav.toggle()">Photos</a></mat-list-item>
+                    <mat-list-item *ngIf="isAuth"><a routerLink="/shopping" routerLinkActive="active"
+                        (click)="sidenav.toggle()">Shopping</a></mat-list-item>
             <mat-list-item *ngIf="isAuth"><a (click)="onSignOut()" (click)="sidenav.toggle()">Déconnexion</a>
             </mat-list-item>
             <mat-list-item *ngIf="!isAuth"><a routerLink="/auth/signup" routerLinkActive="active"

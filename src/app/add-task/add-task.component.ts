@@ -29,9 +29,7 @@ export class AddTaskComponent implements OnInit {
       descriptif: [''],
     });
   }
-  onSaveTask(){
-    
-  }
+ 
   onSubmit() {
     const name = this.addTaskForm.get('name')?.value;
     const urg = this.addTaskForm.get('urg')?.value;

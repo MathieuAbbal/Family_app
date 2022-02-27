@@ -40,6 +40,8 @@ import { DialogDeleteComponent } from './dialog-delete/dialog-delete.component';
 import { DialogDeletePhotoComponent } from './dialog-delete-photo/dialog-delete-photo.component';
 import { registerLocaleData } from '@angular/common';
 import * as fr from '@angular/common/locales/fr';
+import { ShoppingComponent } from './shopping/shopping.component';
+import { DragDropModule} from '@angular/cdk/drag-drop';
 @NgModule({
   declarations: [
     AppComponent,
@@ -52,6 +54,7 @@ import * as fr from '@angular/common/locales/fr';
     DialogPhotoComponent,
     DialogDeleteComponent,
     DialogDeletePhotoComponent,
+    ShoppingComponent,
   ],
   imports: [
     BrowserModule,
@@ -78,6 +81,7 @@ import * as fr from '@angular/common/locales/fr';
     MatDialogModule,
     MatTooltipModule,
     MaterialFileInputModule,
+    DragDropModule
   ],
 
   providers: [

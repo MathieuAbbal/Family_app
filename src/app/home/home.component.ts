@@ -26,7 +26,7 @@ export class HomeComponent implements OnInit {
   ) { }
 
   // urgence
- listeUrgence = ['aucune', 'urgent', 'relative', 'pasUrgent']
+ listeUrgence = ['aucune', 'urgent', 'relative', 'pas Urgent']
  getCouleurUrgence(item:string) {
    return item === "aucune" ? "grey" :
      item === "urgent" ? "red" :
@@ -49,7 +49,6 @@ export class HomeComponent implements OnInit {
   onDelete(task:Task) {
     let dialogRef = this.dialog.open(DialogDeleteComponent, {
       autoFocus:false,
-      width:'30em'
     });
     dialogRef.afterClosed().subscribe(
       result => {
