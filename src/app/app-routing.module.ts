@@ -6,6 +6,7 @@ import { SignupComponent } from './auth/signup/signup.component';
 import { HomeComponent } from './home/home.component';
 import { PhotoComponent } from './photo/photo.component';
 import { AuthGuardService } from './services/auth-guard.service';
+import { ShoppingComponent } from './shopping/shopping.component';
 
 const routes: Routes = [
   { path: 'auth/signup', component: SignupComponent },
@@ -14,7 +15,7 @@ const routes: Routes = [
   { path: 'home', canActivate: [AuthGuardService],  component:HomeComponent},
   { path: 'add-task', canActivate: [AuthGuardService],   component: AddTaskComponent },
   { path: 'photo', canActivate: [AuthGuardService],  component: PhotoComponent },
- 
+  { path: 'shopping', canActivate: [AuthGuardService],  component: ShoppingComponent },
 ];
 
 @NgModule({

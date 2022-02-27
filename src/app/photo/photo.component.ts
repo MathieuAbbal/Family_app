@@ -36,7 +36,6 @@ export class PhotoComponent implements OnInit {
   onDelete(photo:Photo) {
     let dialogRef = this.dialog.open(DialogDeletePhotoComponent, {
       autoFocus:false,
-      width:'30em'
     });
     dialogRef.afterClosed().subscribe(
       result => {

@@ -1,0 +1,27 @@
+<div class="card">
+  <mat-card>
+    <h4 style="text-align: center;">Ajouter un Produits</h4>
+    <form [formGroup]="addItemForm" (ngSubmit)="onSubmit()">
+      <mat-form-field apparance="fill">
+        <label for="item"></label>
+        <input matInput formControlName="item" id="item" placeholder="Ex. Mon produit..." required>
+      </mat-form-field>
+    </form>
+  </mat-card>
+</div>
+
+<div cdkDropListGroup class="card">
+  <div class="example-container">
+    <h2>Produits</h2>
+    <div cdkDropList [cdkDropListData]="items" class="example-list" cdkDropListSortingDisabled
+      (cdkDropListDropped)="drop($event)">
+      <div class="example-box" *ngFor="let item of items" cdkDrag>{{item}}</div>
+    </div>
+  </div>
+  <div class="example-container">
+    <h2>Liste :</h2>
+    <div cdkDropList [cdkDropListData]="basket" class="example-list" (cdkDropListDropped)="drop($event)">
+      <div class="example-box" *ngFor="let item of basket" cdkDrag>{{item}}</div>
+    </div>
+  </div>
+</div>
