@@ -1,7 +1,10 @@
 <h1 style="text-align: center;">Bienvenue sur l'application Family! 💕</h1>
 <h2 style="text-align: center;">Liste des tâches à faire:</h2>
-<div fxLayout="row wrap" fxLayoutAlign="center" >
-    <mat-card *ngFor="let item of tasks" class="mat-elevation-z6 card" >
+<div fxLayout="row" fxLayoutAlign="center center">
+    <img src="../../assets/Brazuca - Planning.png" alt="" style="width: 150px;">
+</div>
+<div fxLayout="row wrap" fxLayoutAlign="center">
+    <mat-card *ngFor="let item of tasks" class="mat-elevation-z6 card">
         <mat-card-title>
             <h3 style="text-align: center;">{{item.title}}</h3>
         </mat-card-title>
@@ -11,7 +14,8 @@
         <mat-card-content>
             <p *ngIf="item.descriptif">Descriptif: {{item.descriptif}}</p>
         </mat-card-content>
-        <p>Priorité : <span [ngStyle]="{'color': getCouleurUrgence(item.urg)}" style="font-weight: bold;">{{item.urg}}</span></p>
+        <p>Priorité : <span [ngStyle]="{'color': getCouleurUrgence(item.urg)}"
+                style="font-weight: bold;">{{item.urg}}</span></p>
         <button mat-flat-button color="warn" (click)="onDelete(item)" mat-button>Terminer</button>
     </mat-card>
 </div>

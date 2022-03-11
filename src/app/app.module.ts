@@ -42,6 +42,7 @@ import { registerLocaleData } from '@angular/common';
 import * as fr from '@angular/common/locales/fr';
 import { ShoppingComponent } from './shopping/shopping.component';
 import { DragDropModule} from '@angular/cdk/drag-drop';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 @NgModule({
   declarations: [
     AppComponent,
@@ -81,7 +82,8 @@ import { DragDropModule} from '@angular/cdk/drag-drop';
     MatDialogModule,
     MatTooltipModule,
     MaterialFileInputModule,
-    DragDropModule
+    DragDropModule,
+    MatSnackBarModule
   ],
 
   providers: [

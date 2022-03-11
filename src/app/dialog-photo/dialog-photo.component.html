@@ -10,6 +10,6 @@
         <mat-icon matSuffix>folder</mat-icon>
         <p *ngIf="fileUploaded">Fichier chargé !</p>  
     </mat-form-field>
-    <button mat-flat-button color="accent" [mat-dialog-close] type="submit" [disabled]="!fileUploaded">Enregistrer
+    <button (click)="openSnackBar()" mat-flat-button color="accent" [mat-dialog-close] type="submit" [disabled]="!fileUploaded">Enregistrer
     </button>
 </form>
