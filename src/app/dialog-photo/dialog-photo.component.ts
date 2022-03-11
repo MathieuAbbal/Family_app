@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Photo } from '../models/photo.model';
 import { PhotosService } from '../services/photos.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-dialog-photo',
@@ -14,9 +15,19 @@ export class DialogPhotoComponent implements OnInit {
   fileIsUploading = false;
   fileUploaded = false;
   createdDate!: string;
+  durationInSeconds = 5;
 
-  constructor(private ps: PhotosService, private formBuilder: FormBuilder) {}
+  constructor(
+    private ps: PhotosService,
+    private formBuilder: FormBuilder,
+    private _snackBar: MatSnackBar
+  ) {}
 
+  openSnackBar() {
+    this._snackBar.open('Photo ajoutée', 'avec succès !!', {
+      duration: this.durationInSeconds * 1000,
+    });
+  }
   ngOnInit(): void {
     this.initForm();
   }

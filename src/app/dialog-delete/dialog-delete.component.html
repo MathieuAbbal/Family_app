@@ -1,3 +1,3 @@
 <h3>êtes vous sûr(e)?</h3>
 <button mat-button (click)="dialogRef.close()">annuler</button>
-<button mat-button (click)="dialogRef.close(true)" mat-dialog-close>Confirmer</button>
+<button (click)="openSnackBar()" mat-button (click)="dialogRef.close(true)" mat-dialog-close>Confirmer</button>
