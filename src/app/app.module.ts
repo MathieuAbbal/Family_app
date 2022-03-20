@@ -43,6 +43,7 @@ import * as fr from '@angular/common/locales/fr';
 import { ShoppingComponent } from './shopping/shopping.component';
 import { DragDropModule} from '@angular/cdk/drag-drop';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { MapComponent } from './map/map.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -56,6 +57,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
     DialogDeleteComponent,
     DialogDeletePhotoComponent,
     ShoppingComponent,
+    MapComponent,
   ],
   imports: [
     BrowserModule,
