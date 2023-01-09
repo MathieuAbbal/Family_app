@@ -1,5 +1,6 @@
 <div class="card">
   <mat-card>
+    <mat-card-content>
     <h4 style="text-align: center;">Ajouter un Produits</h4>
     <form [formGroup]="addItemForm" (ngSubmit)="onSubmit()">
       <mat-form-field apparance="fill">
@@ -7,6 +8,10 @@
         <input matInput formControlName="item" id="item" placeholder="Ex. Mon produit..." required>
       </mat-form-field>
     </form>
+  </mat-card-content>
+  <button matTooltip="ajouter une un article" id="add-button" class="mat-fab-bottom-right" mat-fab>
+    <mat-icon class="icon">add</mat-icon>
+</button>
   </mat-card>
 </div>
 
