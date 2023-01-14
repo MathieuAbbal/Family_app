@@ -7,6 +7,7 @@ import {
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Item } from '../models/item.model';
 import { ItemService } from '../services/item.service';
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-shopping',
   templateUrl: './shopping.component.html',
@@ -17,9 +18,12 @@ export class ShoppingComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
     private is: ItemService) {}
-  items = ['Carottes', 'Tomates', 'Oignons', 'Pommes', 'Avocats'];
+  items:any[] = [];
 
   basket = ['Oranges', 'Bananes', 'Concombres'];
+
+  itemsSubsciption!:Subscription
+
 
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
@@ -39,11 +43,28 @@ export class ShoppingComponent implements OnInit {
   }
   ngOnInit(): void {
     this.initForm();
+    this.getItem()
+  }
+  getItem(){
+    this.itemsSubsciption = this.is.itemSubject.subscribe(
+      (item:any[])=>{
+        this.items = item
+      }
+    ) 
   }
   initForm() {
     this.addItemForm = this.formBuilder.group({
       item: ['', [Validators.required]],
-    });
+    })
+    this.itemsSubsciption = this.is.itemSubject.subscribe(
+      (item:any[])=>{
+        this.items = item
+        console.log('item', this.items)
+      }
+      
+    )
+    this.is.getItems()
+    this.is.emitItems()
   }
   onSubmit() {
     const item = this.addItemForm.get('item')?.value;
