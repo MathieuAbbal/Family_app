@@ -9,7 +9,7 @@ import { Item } from '../models/item.model';
 export class ItemService {
   items: Item[] = [];
   itemSubject = new Subject<Item[]>();
-  constructor() {}
+  constructor() { }
   emitItems() {
     this.itemSubject.next(this.items);
     console.log(this.items);
@@ -31,19 +31,19 @@ export class ItemService {
   crateNewItem(newItem: Item) {
     this.items.push(newItem);
     this.saveItems();
-    
+
     console.log('Item créer', this.items);
   }
-  removeTask(items:Item){
+  removeItem(items: Item) {
     const itemIndexToRemove = this.items.findIndex(
-    (El)=> El === items);
+      (El) => El === items);
     console.log(itemIndexToRemove);
     this.items.splice(itemIndexToRemove, 1);
     this.saveItems();
     this.emitItems();
   }
   ngOnDestroy() {
-    if(this.itemSubject){this.itemSubject.unsubscribe()};
+    if (this.itemSubject) { this.itemSubject.unsubscribe() };
   }
 
 
