@@ -43,12 +43,13 @@ export class ShoppingComponent implements OnInit {
   }
   ngOnInit(): void {
     this.initForm();
-    this.getItem()
+  //  this.getItem()
   }
   getItem(){
     this.itemsSubsciption = this.is.itemSubject.subscribe(
       (item:any[])=>{
         this.items = item
+        console.log('itemGet', this.items)
       }
     ) 
   }

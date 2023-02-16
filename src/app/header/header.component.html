@@ -11,7 +11,7 @@
                         (click)="sidenav.toggle()">Shopping</a></mat-list-item>
                         <mat-list-item *ngIf="isAuth"><a routerLink="/map" routerLinkActive="active"
                             (click)="sidenav.toggle()">Carte</a></mat-list-item>
-            <mat-list-item *ngIf="isAuth"><a (click)="onSignOut()" (click)="sidenav.toggle()">Déconnexion</a>
+            <mat-list-item *ngIf="isAuth"><a (click)="onSignOut()" (click)="sidenav.toggle()">Se déconnecter</a>
             </mat-list-item>
             <mat-list-item *ngIf="!isAuth"><a routerLink="/auth/signup" routerLinkActive="active"
                     (click)="sidenav.toggle()">Créer un compte</a></mat-list-item>
