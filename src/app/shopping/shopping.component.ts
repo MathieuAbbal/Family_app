@@ -17,12 +17,12 @@ export class ShoppingComponent implements OnInit {
   addItemForm!: FormGroup;
 
   constructor(private formBuilder: FormBuilder,
-    private is: ItemService) {}
-  items:any[] = [];
+    private is: ItemService) { }
+  items: any[] = [];
 
   basket = ['Oranges', 'Bananes', 'Concombres'];
 
-  itemsSubsciption!:Subscription
+  itemsSubsciption!: Subscription
 
 
   drop(event: CdkDragDrop<string[]>) {
@@ -43,26 +43,26 @@ export class ShoppingComponent implements OnInit {
   }
   ngOnInit(): void {
     this.initForm();
-  //  this.getItem()
+    //  this.getItem()
   }
-  getItem(){
+  getItem() {
     this.itemsSubsciption = this.is.itemSubject.subscribe(
-      (item:any[])=>{
+      (item: any[]) => {
         this.items = item
         console.log('itemGet', this.items)
       }
-    ) 
+    )
   }
   initForm() {
     this.addItemForm = this.formBuilder.group({
       item: ['', [Validators.required]],
     })
     this.itemsSubsciption = this.is.itemSubject.subscribe(
-      (item:any[])=>{
+      (item: any[]) => {
         this.items = item
         console.log('item', this.items)
       }
-      
+
     )
     this.is.getItems()
     this.is.emitItems()
@@ -73,5 +73,8 @@ export class ShoppingComponent implements OnInit {
     const newItem = new Item(item);
     this.is.crateNewItem(newItem);
     console.log(newItem);
+  }
+  OnDelete(item: Item) {
+    this.is.removeItem(item)
   }
 }

@@ -20,7 +20,11 @@
     <h2>Produits</h2>
     <div cdkDropList [cdkDropListData]="items" class="example-list" cdkDropListSortingDisabled
       (cdkDropListDropped)="drop($event)">
-      <div class="example-box" *ngFor="let item of items" cdkDrag>{{item.nom}}</div>
+      <div class="example-box" *ngFor="let item of items" cdkDrag>{{item.nom}}
+        <button matTooltip="supprimer la photo" (click)="OnDelete(item)"  mat-mini-fab color="warn" >
+          <mat-icon >delete</mat-icon>
+      </button>
+      </div>
     </div>
   </div>
   <div class="example-container">
