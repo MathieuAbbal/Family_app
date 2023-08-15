@@ -16,16 +16,20 @@ img {
   width: 100%;
 }
 #add-button {
+  position: fixed;
+  bottom: 20px;
   right: 20px;
-  bottom: 10px;
-  left: auto;
-  position: absolute;
+  z-index: 1000; 
 }
 .container {
   position: relative;
-  padding-bottom: 40px;
+  overflow: hidden;
 
 }
 h2 {
   margin: 10px;
+}
+.photo-list-container {
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
 }
