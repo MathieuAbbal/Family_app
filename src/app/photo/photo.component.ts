@@ -12,30 +12,35 @@ import { PhotosService } from '../services/photos.service';
 })
 export class PhotoComponent implements OnInit {
 
-  photos:Photo[]=[];
-  photosSubscription!:Subscription;
+  photos: Photo[] = [];
+  photosSubscription!: Subscription;
 
-  constructor(public dialog:MatDialog,
-    private ps : PhotosService) { }
+  constructor(public dialog: MatDialog,
+    private ps: PhotosService) { }
 
-  ngOnInit(): void {
-    this.photosSubscription = this.ps.photosSubject.subscribe(
-      (photos:Photo[]) =>{
-        this.photos = photos;
-      });
+    ngOnInit(): void {
+      this.photosSubscription = this.ps.photosSubject.subscribe(
+        (photos: Photo[]) => {
+          this.photos = photos.sort((a, b) => {
+            const dateA = new Date(a.createdDate);
+            const dateB = new Date(b.createdDate);
+            return dateB.getTime() - dateA.getTime();  // Tri décroissant par createdDate
+          });
+        });
       this.ps.emitPhotos();
       this.ps.getPhotos();
-  }
-  openDialog(){
+    }
+    
+  openDialog() {
     const dialogRef = this.dialog.open(DialogPhotoComponent);
 
-    dialogRef.afterClosed().subscribe( result =>{
-      console.log({result})
+    dialogRef.afterClosed().subscribe(result => {
+      console.log({ result })
     });
-  } 
-  onDelete(photo:Photo) {
+  }
+  onDelete(photo: Photo) {
     let dialogRef = this.dialog.open(DialogDeletePhotoComponent, {
-      autoFocus:false,
+      autoFocus: false,
     });
     dialogRef.afterClosed().subscribe(
       result => {
@@ -45,5 +50,8 @@ export class PhotoComponent implements OnInit {
         else { return; }
       }
     )
+  }
+  ngOnDestroy() {
+    if (this.photosSubscription) { this.photosSubscription.unsubscribe() }
   }
 }

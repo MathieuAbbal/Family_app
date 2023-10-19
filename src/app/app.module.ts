@@ -44,6 +44,7 @@ import { ShoppingComponent } from './shopping/shopping.component';
 import { DragDropModule} from '@angular/cdk/drag-drop';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { MapComponent } from './map/map.component';
+import { NgScrollbarModule } from 'ngx-scrollbar';
 @NgModule({
   declarations: [
     AppComponent,
@@ -85,7 +86,8 @@ import { MapComponent } from './map/map.component';
     MatTooltipModule,
     MaterialFileInputModule,
     DragDropModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    NgScrollbarModule
   ],
 
   providers: [
