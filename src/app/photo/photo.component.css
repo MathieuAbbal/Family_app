@@ -21,6 +21,12 @@ img {
   right: 20px;
   z-index: 1000; 
 }
+#scroll-button {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;  
+}
 .container {
   position: relative;
   overflow: hidden;

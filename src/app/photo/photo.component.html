@@ -1,5 +1,5 @@
 <!--<button mat-flat-button color="accent" (click)="openDialog()">Ajouter</button>-->
-<ng-scrollbar style="height: 100vh;">
+<ng-scrollbar (scroll)="onScroll($event)" style="height: 100vh;" #scrollbar>
     <div class="container">
 
         <h2 style="text-align: center;">Partage de Photos</h2>
@@ -20,3 +20,7 @@
 <button (click)="openDialog()" matTooltip="ajouter une photo" id="add-button" class="mat-fab-bottom-right" mat-fab>
     <mat-icon class="icon">add</mat-icon>
 </button>
+<button [ngStyle]="{'display': hideButton ? 'block' : 'none'}" (click)="scrollbar.scrollTo({ top: 0 })" matTooltip="" id="scroll-button" class="mat-fab-bottom-right"
+        mat-fab>
+        <mat-icon class="icon">arrow_upward</mat-icon>
+    </button>
