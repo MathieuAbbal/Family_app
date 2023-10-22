@@ -1,36 +1,40 @@
 <div class="card">
   <mat-card>
     <mat-card-content>
-    <h4 style="text-align: center;">Ajouter un Produits</h4>
-    <form [formGroup]="addItemForm" (ngSubmit)="onSubmit()">
-      <mat-form-field apparance="fill">
-        <label for="item"></label>
-        <input matInput formControlName="item" id="item" placeholder="Ex. Mon produit..." required>
-      </mat-form-field>
-    </form>
-  </mat-card-content>
-  <button (click)="onSubmit()" matTooltip="ajouter une un article" id="add-button" class="mat-fab-bottom-right" mat-fab>
-    <mat-icon class="icon">add</mat-icon>
-</button>
+      <h4 style="text-align: center;">Ajouter un Produits</h4>
+      <form [formGroup]="addItemForm" (ngSubmit)="onSubmit()">
+        <mat-form-field apparance="fill">
+          <label for="item"></label>
+          <input matInput formControlName="item" id="item" placeholder="Ex. Mon produit..." required>
+        </mat-form-field>
+      </form>
+    </mat-card-content>
+    <mat-card-actions>
+      <button [disabled]="!addItemForm.get('item')?.valid" (click)="onSubmit()" matTooltip="ajouter un article"
+        id="add-button" class="mat-fab-bottom-right" mat-fab>
+        <mat-icon class="icon">add</mat-icon>
+      </button>
+    </mat-card-actions>
+
   </mat-card>
 </div>
 
 <div cdkDropListGroup class="card">
-  <div class="example-container">
+  <div class="container">
     <h2>Produits</h2>
-    <div cdkDropList [cdkDropListData]="items" class="example-list" cdkDropListSortingDisabled
+    <div cdkDropList [cdkDropListData]="items" class="list" cdkDropListSortingDisabled
       (cdkDropListDropped)="drop($event)">
-      <div class="example-box" *ngFor="let item of items" cdkDrag>{{item.nom}}
-        <button matTooltip="supprimer la photo" (click)="OnDelete(item)"  mat-mini-fab color="warn" >
-          <mat-icon >delete</mat-icon>
-      </button>
+      <div class="box" *ngFor="let item of items" cdkDrag>{{item.nom}}
+        <button matTooltip="supprimer" (click)="OnDelete(item)" mat-mini-fab color="warn">
+          <mat-icon>delete</mat-icon>
+        </button>
       </div>
     </div>
   </div>
-  <div class="example-container">
+  <div class="container">
     <h2>Liste :</h2>
-    <div cdkDropList [cdkDropListData]="basket" class="example-list" (cdkDropListDropped)="drop($event)">
-      <div class="example-box" *ngFor="let item of basket" cdkDrag>{{item}}</div>
+    <div cdkDropList [cdkDropListData]="basket" class="list" (cdkDropListDropped)="drop($event)">
+      <div class="box" *ngFor="let item of basket" cdkDrag>{{item.nom}}</div>
     </div>
   </div>
 </div>

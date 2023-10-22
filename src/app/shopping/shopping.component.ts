@@ -20,9 +20,10 @@ export class ShoppingComponent implements OnInit {
     private is: ItemService) { }
   items: any[] = [];
 
-  basket = ['Oranges', 'Bananes', 'Concombres'];
+  basket: any[] = [];
 
   itemsSubsciption!: Subscription
+  basketSub!: Subscription
 
 
   drop(event: CdkDragDrop<string[]>) {
@@ -33,17 +34,28 @@ export class ShoppingComponent implements OnInit {
         event.currentIndex
       );
     } else {
-      transferArrayItem(
+      const movedItem = event.previousContainer.data[event.previousIndex];
+      this.is.transferItem(
         event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex
+        movedItem,
+        event.container.data
       );
     }
   }
   ngOnInit(): void {
     this.initForm();
-    //  this.getItem()
+    this.getItem()
+    this.getBasket()
+  }
+
+  getBasket() {
+    this.basketSub = this.is.basketSubject.subscribe(
+      (basket: any[]) => {
+        this.basket = basket;
+        console.log('panier', this.basket);
+      }
+    )
+    this.is.getBasket();
   }
   getItem() {
     this.itemsSubsciption = this.is.itemSubject.subscribe(
@@ -69,10 +81,10 @@ export class ShoppingComponent implements OnInit {
   }
   onSubmit() {
     const item = this.addItemForm.get('item')?.value;
-
     const newItem = new Item(item);
     this.is.crateNewItem(newItem);
-    console.log(newItem);
+    // Réinitialiser le formulaire
+    this.addItemForm.reset();
   }
   OnDelete(item: Item) {
     this.is.removeItem(item)
