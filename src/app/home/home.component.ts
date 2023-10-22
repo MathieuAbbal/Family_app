@@ -20,35 +20,35 @@ export class HomeComponent implements OnInit {
 
 
   constructor(
-    private ts :TasksService,
-    public dialog:MatDialog,
+    private ts: TasksService,
+    public dialog: MatDialog,
     private router: Router
   ) { }
 
   // urgence
- listeUrgence = ['aucune', 'urgent', 'relative', 'pas Urgent']
- getCouleurUrgence(item:string) {
-   return item === "aucune" ? "grey" :
-     item === "urgent" ? "red" :
-       item === "relative" ? "orange" :
-         "green"
- }
+  listeUrgence = ['aucune', 'urgent', 'relative', 'pas Urgent']
+  getCouleurUrgence(item: string) {
+    return item === "aucune" ? "grey" :
+      item === "urgent" ? "red" :
+        item === "relative" || "Relativement Urgent" ? "orange" :
+          "green"
+  }
   ngOnInit(): void {
     this.tasksSubsription = this.ts.tasksSubject.subscribe(
-      (tasks:Task[]) =>{
+      (tasks: Task[]) => {
         this.tasks = tasks;
         console.log(tasks)
       });
     this.ts.getTasks();
     this.ts.emitTasks();
   }
-  
-  ngOnDestroy(){
-    if(this.tasksSubsription){this.tasksSubsription.unsubscribe()};
+
+  ngOnDestroy() {
+    if (this.tasksSubsription) { this.tasksSubsription.unsubscribe() };
   }
-  onDelete(task:Task) {
+  onDelete(task: Task) {
     let dialogRef = this.dialog.open(DialogDeleteComponent, {
-      autoFocus:false,
+      autoFocus: false,
     });
     dialogRef.afterClosed().subscribe(
       result => {

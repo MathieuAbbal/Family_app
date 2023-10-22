@@ -11,16 +11,19 @@
             <h2>{{item.title}}</h2>
             <img [src]="item.image">
             <p>Mis en ligne le : {{item.createdDate | date: ' le d MMMM yyyy à HH:mm'}}</p>
-            <button matTooltip="supprimer la photo" (click)="onDelete(item)" mat-mini-fab color="warn">
-                <mat-icon>delete</mat-icon>
-            </button>
+            <mat-card-actions style="padding: 1em;" fxLayoutAlign="end">
+                <button matTooltip="supprimer la photo" (click)="onDelete(item)" mat-mini-fab color="warn">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </mat-card-actions>
+
         </mat-card>
     </div>
 </ng-scrollbar>
 <button (click)="openDialog()" matTooltip="ajouter une photo" id="add-button" class="mat-fab-bottom-right" mat-fab>
     <mat-icon class="icon">add</mat-icon>
 </button>
-<button [ngStyle]="{'display': hideButton ? 'block' : 'none'}" (click)="scrollbar.scrollTo({ top: 0 })" matTooltip="" id="scroll-button" class="mat-fab-bottom-right"
-        mat-fab>
-        <mat-icon class="icon">arrow_upward</mat-icon>
-    </button>
+<button [ngStyle]="{'display': hideButton ? 'block' : 'none'}" (click)="scrollbar.scrollTo({ top: 0 })" matTooltip=""
+    id="scroll-button" class="mat-fab-bottom-right" mat-fab>
+    <mat-icon class="icon">arrow_upward</mat-icon>
+</button>
