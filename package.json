@@ -22,6 +22,7 @@
     "@angular/platform-browser": "~13.0.0",
     "@angular/platform-browser-dynamic": "~13.0.0",
     "@angular/router": "~13.0.0",
+    "@angular/service-worker": "~13.0.0",
     "firebase": "^7.24.0",
     "leaflet": "^1.7.1",
     "ngx-material-file-input": "^3.0.0",
