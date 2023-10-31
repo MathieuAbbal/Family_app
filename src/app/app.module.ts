@@ -41,10 +41,12 @@ import { DialogDeletePhotoComponent } from './dialog-delete-photo/dialog-delete-
 import { registerLocaleData } from '@angular/common';
 import * as fr from '@angular/common/locales/fr';
 import { ShoppingComponent } from './shopping/shopping.component';
-import { DragDropModule} from '@angular/cdk/drag-drop';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MapComponent } from './map/map.component';
 import { NgScrollbarModule } from 'ngx-scrollbar';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 @NgModule({
   declarations: [
     AppComponent,
@@ -87,7 +89,14 @@ import { NgScrollbarModule } from 'ngx-scrollbar';
     MaterialFileInputModule,
     DragDropModule,
     MatSnackBarModule,
-    NgScrollbarModule
+    NgScrollbarModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    })
+
   ],
 
   providers: [
