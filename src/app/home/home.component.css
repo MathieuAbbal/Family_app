@@ -8,3 +8,8 @@
 h1 {
   margin: 10px;
 }
+.close-button {
+  float: right;
+  top: -14px;
+  right:-30px;
+}
