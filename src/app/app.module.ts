@@ -47,6 +47,7 @@ import { MapComponent } from './map/map.component';
 import { NgScrollbarModule } from 'ngx-scrollbar';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { EditTaskComponent } from './edit-task/edit-task.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -61,6 +62,7 @@ import { environment } from '../environments/environment';
     DialogDeletePhotoComponent,
     ShoppingComponent,
     MapComponent,
+    EditTaskComponent,
   ],
   imports: [
     BrowserModule,

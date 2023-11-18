@@ -59,4 +59,10 @@ export class HomeComponent implements OnInit {
       }
     )
   }
+ 
+  onEdit(index: number) {
+    this.router.navigate(['/edit', index]);
+  }
+
+
 }

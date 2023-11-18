@@ -45,6 +45,29 @@ export class TasksService {
     this.saveTasks();
     this.emitTasks();
   }
+
+
+  getTaskByIndex(index: number): Task | null {
+    if (index >= 0 && index < this.tasks.length) {
+      return this.tasks[index];
+    } else {
+      // Gérer le cas où l'index est invalide
+      console.error('Index invalide:', index);
+      return null;
+    }
+  }
+  
+  updateTask(index: number, newTask: any) {
+    if (index >= 0 && index < this.tasks.length) {
+      this.tasks[index] = newTask;
+      this.saveTasks(); 
+      this.emitTasks();
+    } else {
+      console.error('Index invalide:', index);
+    }
+  }
+  
+
   ngOnDestroy() {
     this.tasksSubject.unsubscribe();
   }
