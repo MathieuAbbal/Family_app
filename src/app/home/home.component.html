@@ -5,7 +5,7 @@
     <img src="../../assets/Brazuca - Planning.png" alt="" style="width: 150px;">
 </div>
 <div fxLayout="row wrap" fxLayoutAlign="center">
-    <mat-card *ngFor="let item of tasks" class="mat-elevation-z6 card">
+    <mat-card *ngFor="let item of tasks; let i = index" class="mat-elevation-z6 card">
         <div fxLayoutAlign="end end">
             <button mat-icon-button class="close-button"  matTooltip="supprimer" (click)="onDelete(item)">
                 <mat-icon class="close-icon" color="warn">close</mat-icon>
@@ -25,6 +25,9 @@
             <p *ngIf="item.descriptif">Descriptif: {{item.descriptif}}</p>
         </mat-card-content>
         <mat-card-actions style="padding: 1em;" fxLayoutAlign="end">
+            <button color="accent" mat-icon-button matTooltip="modifier la tâches" (click)="onEdit(i)">
+            <mat-icon >settings</mat-icon>
+            </button>
         </mat-card-actions>
     </mat-card>
 </div>

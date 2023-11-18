@@ -9,6 +9,8 @@ import { PhotoComponent } from './photo/photo.component';
 import { AuthGuardService } from './services/auth-guard.service';
 import { ShoppingComponent } from './shopping/shopping.component';
 
+import { EditTaskComponent } from './edit-task/edit-task.component';
+
 const routes: Routes = [
   { path: 'auth/signup', component: SignupComponent },
   { path: 'auth/signin', component: SigninComponent },
@@ -18,6 +20,7 @@ const routes: Routes = [
   { path: 'photo', canActivate: [AuthGuardService],  component: PhotoComponent },
   { path: 'shopping', canActivate: [AuthGuardService],  component: ShoppingComponent },
   { path: 'map', canActivate: [AuthGuardService],  component: MapComponent },
+  { path: 'edit/:index', canActivate: [AuthGuardService], component: EditTaskComponent },
 ];
 
 @NgModule({
