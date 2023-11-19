@@ -25,6 +25,7 @@
     "@angular/service-worker": "~13.0.0",
     "firebase": "^7.24.0",
     "leaflet": "^1.7.1",
+    "maplibre-gl": "^3.6.1",
     "ngx-material-file-input": "^3.0.0",
     "ngx-scrollbar": "^9.0.2",
     "rxjs": "~7.4.0",

@@ -13,7 +13,7 @@
 
         <mat-chip-list cdkDropList [cdkDropListData]="items" class="list" cdkDropListSortingDisabled
           (cdkDropListDropped)="drop($event)">
-          <mat-chip class="box" *ngFor="let item of items" cdkDrag>{{item.nom}}
+          <mat-chip color="accent" class="box" *ngFor="let item of items" cdkDrag>{{item.nom}}
 
             <mat-icon matChipRemove matTooltip="supprimer" (click)="OnDelete(item)">cancel</mat-icon>
 
