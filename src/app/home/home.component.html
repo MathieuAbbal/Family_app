@@ -22,7 +22,7 @@
               </mat-chip-list>
         </mat-card-subtitle>
         <mat-card-content>
-            <p *ngIf="item.descriptif">Descriptif: {{item.descriptif}}</p>
+            <p *ngIf="item.descriptif">Descriptif:<br> {{item.descriptif}}</p>
         </mat-card-content>
         <mat-card-actions style="padding: 1em;" fxLayoutAlign="end">
             <button color="accent" mat-icon-button matTooltip="modifier la tâches" (click)="onEdit(i)">
