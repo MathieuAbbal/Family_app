@@ -2,8 +2,7 @@
   min-width: 200px;
   max-width: 100%;
   margin: 0 25px 25px 0;
-  display: inline-block;
-  vertical-align: top;
+  padding: 1em;
 }
 
 .list {
@@ -24,9 +23,26 @@
   justify-content: space-between;
   box-sizing: border-box;
   cursor: move;
-  background: white;
+
   font-size: 14px;
 }
+.accent {
+  background-color: #ffd740;
+}
+/* Style général pour les mat-chip */
+.mat-chip {
+  box-sizing: border-box;
+  display: flex;         /* Assure que le chip utilise flexbox */
+  justify-content: center; /* Centre le contenu horizontalement */
+  align-items: center;   /* Centre le contenu verticalement */
+  min-width: 100px;      /* Largeur minimale pour éviter la déformation */
+  padding: 8px 12px; 
+  transition: all 0.3s ease; /* Transition douce pour les interactions */
+}
+.mat-chip-list-wrapper{
+  padding: 1em;
+}
+
 
 .cdk-drag-preview {
   box-sizing: border-box;
