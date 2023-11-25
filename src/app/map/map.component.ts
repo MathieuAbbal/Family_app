@@ -46,7 +46,8 @@ export class MapComponent implements AfterViewInit {
       center: [initialState.lng, initialState.lat],
       zoom: initialState.zoom,
     });
-    map.addControl(new NavigationControl());
+    map.addControl(new maplibregl.NavigationControl({}));
+
   }
 
   ngAfterViewInit() {
