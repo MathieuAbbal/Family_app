@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TasksService } from '../services/tasks.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -14,13 +14,13 @@ export class EditTaskComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private tasksService: TasksService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private _snackBar: MatSnackBar,
     private router: Router,
   ) { }
 
   taskToEdit!:any;
-  editTaskForm!:FormGroup
+  editTaskForm!:UntypedFormGroup
   durationInSeconds = 5;
   initForm() {
     

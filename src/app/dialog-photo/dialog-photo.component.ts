@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { Photo } from '../models/photo.model';
 import { PhotosService } from '../services/photos.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -10,7 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./dialog-photo.component.css'],
 })
 export class DialogPhotoComponent implements OnInit {
-  photoForm!: FormGroup;
+  photoForm!: UntypedFormGroup;
   fileUrl!: string;
   fileIsUploading = false;
   fileUploaded = false;
@@ -19,7 +19,7 @@ export class DialogPhotoComponent implements OnInit {
 
   constructor(
     private ps: PhotosService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private _snackBar: MatSnackBar
   ) {}
 

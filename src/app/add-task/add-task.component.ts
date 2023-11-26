@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Task } from '../models/task.model';
 import { Router } from '@angular/router';
 import { TasksService } from '../services/tasks.service';
@@ -10,11 +10,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./add-task.component.css'],
 })
 export class AddTaskComponent implements OnInit {
-  addTaskForm!: FormGroup;
+  addTaskForm!: UntypedFormGroup;
   durationInSeconds = 5;
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private ts: TasksService,
     private router: Router,
     private _snackBar: MatSnackBar
