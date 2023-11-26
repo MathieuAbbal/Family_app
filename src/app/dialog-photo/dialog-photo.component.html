@@ -6,7 +6,7 @@
     </mat-form-field>
     <mat-form-field appearance="fill">
         <mat-label>Choisir un fichier</mat-label>
-        <ngx-mat-file-input  type="file" (change)="detectFiles($event)" accept="image/*" placeholder="choisir une image" required></ngx-mat-file-input>
+        <input  type="file" (change)="detectFiles($event)" accept="image/*" placeholder="choisir une image" required>
         <mat-icon matSuffix>folder</mat-icon>
         <p *ngIf="fileUploaded">Fichier chargé !</p>  
     </mat-form-field>

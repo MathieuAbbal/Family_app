@@ -35,7 +35,6 @@ import { DialogPhotoComponent } from './dialog-photo/dialog-photo.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { PhotosService } from './services/photos.service';
 import { HttpClientModule } from '@angular/common/http';
-import { MaterialFileInputModule } from 'ngx-material-file-input';
 import { DialogDeleteComponent } from './dialog-delete/dialog-delete.component';
 import { DialogDeletePhotoComponent } from './dialog-delete-photo/dialog-delete-photo.component';
 import { registerLocaleData } from '@angular/common';
@@ -88,7 +87,6 @@ import { EditTaskComponent } from './edit-task/edit-task.component';
     MatNativeDateModule,
     MatDialogModule,
     MatTooltipModule,
-    MaterialFileInputModule,
     DragDropModule,
     MatSnackBarModule,
     ServiceWorkerModule.register('ngsw-worker.js', {

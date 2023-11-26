@@ -25,7 +25,6 @@
     "@angular/service-worker": "^14.3.0",
     "firebase": "^7.24.0",
     "maplibre-gl": "^3.6.2",
-    "ngx-material-file-input": "^3.0.0",
     "rxjs": "~7.4.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
