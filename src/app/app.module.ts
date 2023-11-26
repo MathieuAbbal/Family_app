@@ -44,7 +44,7 @@ import { ShoppingComponent } from './shopping/shopping.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MapComponent } from './map/map.component';
-import { NgScrollbarModule } from 'ngx-scrollbar';
+
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { EditTaskComponent } from './edit-task/edit-task.component';
@@ -91,7 +91,6 @@ import { EditTaskComponent } from './edit-task/edit-task.component';
     MaterialFileInputModule,
     DragDropModule,
     MatSnackBarModule,
-    NgScrollbarModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the application is stable

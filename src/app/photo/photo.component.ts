@@ -5,7 +5,7 @@ import { DialogDeletePhotoComponent } from '../dialog-delete-photo/dialog-delete
 import { DialogPhotoComponent } from '../dialog-photo/dialog-photo.component';
 import { Photo } from '../models/photo.model';
 import { PhotosService } from '../services/photos.service';
-import { NgScrollbar } from 'ngx-scrollbar';
+
 @Component({
   selector: 'app-photo',
   templateUrl: './photo.component.html',
@@ -19,7 +19,6 @@ export class PhotoComponent implements OnInit {
     private ps: PhotosService) { }
 
   hideButton = false;
-  @ViewChild('scrollbar', { static: false }) scrollbar!: NgScrollbar;
 
   
 
@@ -40,16 +39,14 @@ export class PhotoComponent implements OnInit {
   openDialog() {
     const dialogRef = this.dialog.open(DialogPhotoComponent);
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log({ result })
-    });
+  
   }
   onDelete(photo: Photo) {
     let dialogRef = this.dialog.open(DialogDeletePhotoComponent, {
       autoFocus: false,
     });
     dialogRef.afterClosed().subscribe(
-      result => {
+      (result:Boolean) => {
         if (result === true) {
           this.ps.removePhoto(photo);
         }
@@ -66,11 +63,7 @@ export class PhotoComponent implements OnInit {
     }
   }
   ngAfterViewInit(): void {
-    if (this.scrollbar) {
-        this.scrollSubscription = this.scrollbar.scrolled.subscribe(event => {
-            this.onScroll(event);
-        });
-    }
+    
 }
   ngOnDestroy() {
     if (this.photosSubscription) { this.photosSubscription.unsubscribe() }

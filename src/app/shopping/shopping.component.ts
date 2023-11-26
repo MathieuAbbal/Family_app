@@ -4,7 +4,7 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Item } from '../models/item.model';
 import { ItemService } from '../services/item.service';
 import { Subscription } from 'rxjs';
@@ -14,9 +14,9 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./shopping.component.css'],
 })
 export class ShoppingComponent implements OnInit {
-  addItemForm!: FormGroup;
+  addItemForm!: UntypedFormGroup;
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(private formBuilder: UntypedFormBuilder,
     private is: ItemService) { }
   items: any[] = [];
 
