@@ -20,7 +20,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { SignupComponent } from './auth/signup/signup.component';
 import { SigninComponent } from './auth/signin/signin.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -78,7 +77,6 @@ import { EditTaskComponent } from './edit-task/edit-task.component';
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
-    FlexLayoutModule,
     FormsModule,
     ReactiveFormsModule,
     MatCardModule,
