@@ -15,11 +15,11 @@
             <h3 style="text-align: center;font-weight: bold;">{{item.title}}</h3>
         </mat-card-title>
         <mat-card-subtitle>
-            <mat-chip-list aria-label="">
+            <mat-chip-option aria-label="">
                 <mat-chip>{{item.name}}</mat-chip>
                 <mat-chip [ngStyle]="{'background-color': getCouleurUrgence(item.urg)}">
                     <span style="font-weight: bold;">{{item.urg}}</span></mat-chip>
-              </mat-chip-list>
+            </mat-chip-option>
         </mat-card-subtitle>
         <mat-card-content>
             <p *ngIf="item.descriptif">Descriptif:<br> {{item.descriptif}}</p>
