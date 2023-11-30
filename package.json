@@ -23,7 +23,6 @@
     "@angular/router": "^15.2.10",
     "@angular/service-worker": "^15.2.10",
     "firebase": "^7.24.0",
-    "maplibre-gl": "^4.0.0-pre.1",
     "rxjs": "~7.4.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
@@ -33,7 +32,6 @@
     "@angular/cli": "^15.2.10",
     "@angular/compiler-cli": "^15.2.10",
     "@types/jasmine": "~3.10.0",
-    "@types/maplibre-gl": "^1.14.0",
     "@types/node": "^12.11.1",
     "autoprefixer": "^10.4.16",
     "jasmine-core": "~3.10.0",

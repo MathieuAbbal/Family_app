@@ -1,10 +1,9 @@
-<div fxLayout="raw" fxLayoutAlign="center">
-    <mat-card class="mat-elevation-z8">
-        <div fxLayout="raw" fxLayoutAlign="center">
+<div  class="flex flex-col justify-center">
+        <div >
             <h3>Se connecter à un compte existant</h3>
         </div>
-        <div fxLayout="raw" fxLayoutAlign="center">
-            <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" fxLayout="column">
+        <div class="flex flex-col">
+            <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="flex flex-col justify-center">
                 <mat-form-field apparance="fill">
                 <label for="email">Adresse mail</label>
                 <input matInput formControlName="email" type="text" id="email">
@@ -17,6 +16,4 @@
             </form>
         </div>
         <p>{{ errorMessage }}</p>
-
-    </mat-card>
 </div>
