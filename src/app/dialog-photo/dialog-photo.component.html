@@ -1,15 +1,27 @@
-<h2>Ajouter une photo </h2>
-<form [formGroup]="photoForm" (ngSubmit)="onSavePhoto()" fxLayout="column" fxLayoutAlign="center">
-    <mat-form-field apparance="fill">
-        <mat-label for="title">Titre</mat-label>
-        <input matInput type="text" id="title" formControlName="title">
-    </mat-form-field>
-    <mat-form-field appearance="fill">
-        <mat-label>Choisir un fichier</mat-label>
-        <input  type="file" (change)="detectFiles($event)" accept="image/*" placeholder="choisir une image" required>
-        <mat-icon matSuffix>folder</mat-icon>
-        <p *ngIf="fileUploaded">Fichier chargé !</p>  
-    </mat-form-field>
-    <button (click)="openSnackBar()" mat-flat-button color="accent" [mat-dialog-close] type="submit" [disabled]="!fileUploaded">Enregistrer
-    </button>
-</form>
+<div class="flex flex-col p-4 m-4">
+    <h2 class="text-center">Ajouter une photo </h2>
+    <form [formGroup]="photoForm" (ngSubmit)="onSavePhoto()">
+        <mat-form-field apparance="fill" class="w-full">
+            <mat-label for="title">Titre</mat-label>
+            <input matInput type="text" id="title" formControlName="title">
+        </mat-form-field>
+        <div>  
+            <label>
+                <span class="sr-only py-4">Choisir un fichier</span>
+                <input type="file" class="p-4 block w-full text-sm text-slate-500
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-full file:border-0
+                file:text-sm file:font-semibold
+                file:bg-violet-50 file:text-violet-700
+                hover:file:bg-violet-100" (change)="detectFiles($event)" accept="image/*"
+                    placeholder="choisir une image" required />
+            </label>
+            <p *ngIf="fileUploaded">Fichier chargé !</p>
+        </div>
+        <div>
+            <button (click)="openSnackBar()" mat-flat-button color="accent" [mat-dialog-close] type="submit"
+            [disabled]="!fileUploaded">Enregistrer
+        </button>
+        </div>
+    </form>
+</div>
