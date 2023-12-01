@@ -1,10 +1,11 @@
-<div  class="flex flex-col justify-center">
-        <div >
-            <h3>Se connecter à un compte existant</h3>
-        </div>
+<mat-card  class="flex flex-col justify-center max-w-lg mx-auto">
+      <mat-card-content>
         <div class="flex flex-col">
+            <div class="text-center" >
+                <h3>Se connecter à un compte existant</h3>
+            </div>
             <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="flex flex-col justify-center">
-                <mat-form-field apparance="fill">
+                <mat-form-field apparance="outline">
                 <label for="email">Adresse mail</label>
                 <input matInput formControlName="email" type="text" id="email">
                 </mat-form-field>
@@ -16,4 +17,6 @@
             </form>
         </div>
         <p>{{ errorMessage }}</p>
-</div>
+      </mat-card-content>
+        
+</mat-card>
