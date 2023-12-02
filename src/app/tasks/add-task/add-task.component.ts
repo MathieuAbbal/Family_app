@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { Task } from '../models/task.model';
+import { Task } from '../../models/task.model';
 import { Router } from '@angular/router';
-import { TasksService } from '../services/tasks.service';
+import { TasksService } from '../../services/tasks.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-add-task',

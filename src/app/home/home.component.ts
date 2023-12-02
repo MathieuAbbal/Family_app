@@ -4,7 +4,7 @@ import { Task } from '../models/task.model';
 import { Subscription } from 'rxjs';
 import { TasksService } from '../services/tasks.service';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogDeleteComponent } from '../dialog-delete/dialog-delete.component';
+import { DialogDeleteComponent } from '../dialogs/dialog-delete/dialog-delete.component';
 
 
 

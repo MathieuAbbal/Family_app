@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder,UntypedFormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 
 
@@ -27,8 +27,16 @@ export class SignupComponent implements OnInit {
   initForm() {
     this.signupForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.pattern(/[0-9a-zA-Z]{6,}/)]]
-    });
+      password: ['', [Validators.required, Validators.pattern(/[0-9a-zA-Z]{6,}/)]],
+      confirmPassword: ['', Validators.required],
+    }, { validator: this.checkPasswords });
+  }
+
+  checkPasswords(group: UntypedFormGroup) { // Validation personnalisée pour la correspondance des mots de passe
+    const password = group.get('password')!.value;
+    const confirmPassword = group.get('confirmPassword')!.value;
+
+    return password === confirmPassword ? null : { notSame: true };
   }
   onSubmit() {
     const email = this.signupForm.get('email')!.value;

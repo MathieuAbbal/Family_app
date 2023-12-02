@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
-import { Photo } from '../models/photo.model';
-import { PhotosService } from '../services/photos.service';
+import { Photo } from '../../models/photo.model';
+import { PhotosService } from '../../services/photos.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({

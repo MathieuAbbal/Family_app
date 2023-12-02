@@ -1,0 +1,41 @@
+<form *ngIf="profileForm" [formGroup]="profileForm" (ngSubmit)="onSubmitProfileForm()" class="max-w-sm mx-auto p-10">
+    <div class="flex items-start mb-5">
+        <div class="flex items-center space-x-6">
+            <div class="shrink-0">
+                <img id='preview_img' alt="Photo de profil" class="h-16 w-16 object-cover rounded-full"
+                    src="https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg"
+                    alt="Current profile photo" />
+            </div>
+            <label class="block">
+                <span class="sr-only">Choisir une photo</span>
+                <input formControlName="photoURLControl" type="file" (change)="loadFile($event)" accept="image/*" class="block w-full text-sm text-slate-500
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-full file:border-0
+                file:text-sm file:font-semibold
+                file:bg-violet-50 file:text-violet-700
+                hover:file:bg-violet-100
+              " />
+            </label>
+        </div>
+    </div>
+    <div class="mb-5">
+        <label for="prenom" class="block mb-2 text-sm font-medium ">Prénom</label>
+        <input type="text" id="prenom" formControlName="displayNameControl"
+            class="border border-gray-300  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+            placeholder="prénom" required>
+    </div>
+    <div class="mb-5">
+        <label for="phone" class="block mb-2 text-sm font-medium ">Téléphone</label>
+        <input type="phone" id="phone" formControlName="phoneNumberControl"
+            class="border border-gray-300  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+            placeholder="Votre numéro">
+    </div>
+    <div class="mb-5">
+        <label for="email" class="block mb-2 text-sm font-medium ">Email</label>
+        <input type="email" id="email" formControlName="emailControl"
+            class="border border-gray-300  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+            placeholder="Votre email">
+    </div>
+    <button type="submit"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Enregistrer</button>
+</form>

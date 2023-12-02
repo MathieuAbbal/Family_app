@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HeaderComponent } from './header/header.component';
-import { AddTaskComponent } from './add-task/add-task.component';
+import { AddTaskComponent } from './tasks/add-task/add-task.component';
 import { HomeComponent } from './home/home.component';
 
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -20,8 +20,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { SignupComponent } from './auth/signup/signup.component';
-import { SigninComponent } from './auth/signin/signin.component';
+import { SignupComponent } from './user/auth/signup/signup.component';
+import { SigninComponent } from './user/auth/signin/signin.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from './services/auth.service';
 import { AuthGuardService } from './services/auth-guard.service';
@@ -30,12 +30,12 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { TasksService } from './services/tasks.service';
 import { MatNativeDateModule } from '@angular/material/core';
-import { DialogPhotoComponent } from './dialog-photo/dialog-photo.component';
+import { DialogPhotoComponent } from './dialogs/dialog-photo/dialog-photo.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { PhotosService } from './services/photos.service';
 import { HttpClientModule } from '@angular/common/http';
-import { DialogDeleteComponent } from './dialog-delete/dialog-delete.component';
-import { DialogDeletePhotoComponent } from './dialog-delete-photo/dialog-delete-photo.component';
+import { DialogDeleteComponent } from './dialogs/dialog-delete/dialog-delete.component';
+import { DialogDeletePhotoComponent } from './dialogs/dialog-delete-photo/dialog-delete-photo.component';
 import { registerLocaleData } from '@angular/common';
 import * as fr from '@angular/common/locales/fr';
 import { ShoppingComponent } from './shopping/shopping.component';
@@ -45,7 +45,9 @@ import { MapComponent } from './map/map.component';
 
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
-import { EditTaskComponent } from './edit-task/edit-task.component';
+import { EditTaskComponent } from './tasks/edit-task/edit-task.component';
+import { UserProfileComponent } from './user/user-profile/user-profile.component';
+import { EditProfileService } from './user/edit-profile.service';
 @NgModule({
   declarations: [
     AppComponent,
@@ -61,6 +63,7 @@ import { EditTaskComponent } from './edit-task/edit-task.component';
     ShoppingComponent,
     MapComponent,
     EditTaskComponent,
+    UserProfileComponent,
   ],
   imports: [
     BrowserModule,
@@ -101,6 +104,7 @@ import { EditTaskComponent } from './edit-task/edit-task.component';
     AuthGuardService,
     TasksService,
     PhotosService,
+    EditProfileService,
     { provide: LOCALE_ID, useValue: 'fr-FR' },
   ],
   bootstrap: [AppComponent],

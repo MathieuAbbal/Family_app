@@ -12,6 +12,10 @@
                 <label for="password">Mot de passe</label>
                 <input matInput formControlName="password" type="password" id="passe">
             </mat-form-field>
+            <mat-form-field>
+                <label for="password">Confirmer le mot de passe</label>
+                <input  matInput formControlName="confirmPassword" type="password" >
+            </mat-form-field>
             <button mat-flat-button color="accent" type="submit" [disabled]="signupForm.invalid">Créer mon compte</button>
         </form>
     </div>
