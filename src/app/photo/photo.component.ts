@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
-import { DialogDeletePhotoComponent } from '../dialog-delete-photo/dialog-delete-photo.component';
-import { DialogPhotoComponent } from '../dialog-photo/dialog-photo.component';
+import { DialogDeletePhotoComponent } from '../dialogs/dialog-delete-photo/dialog-delete-photo.component';
+import { DialogPhotoComponent } from '../dialogs/dialog-photo/dialog-photo.component';
 import { Photo } from '../models/photo.model';
 import { PhotosService } from '../services/photos.service';
 
