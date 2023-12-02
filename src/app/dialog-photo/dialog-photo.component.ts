@@ -59,4 +59,8 @@ export class DialogPhotoComponent implements OnInit {
   detectFiles(event: any) {
     this.onUploadFile(event.target.files[0]);
   }
+  onTouchEnd(event: TouchEvent) {
+    console.log('Touch event detected', event);
+    this.onSavePhoto();
+  }
 }
