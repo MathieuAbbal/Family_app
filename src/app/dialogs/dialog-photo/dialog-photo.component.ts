@@ -46,6 +46,7 @@ export class DialogPhotoComponent implements OnInit {
 
     this.ps.createNewPhoto(newPhoto);
     console.log('Object', newPhoto);
+    this.openSnackBar()
   }
 
   onUploadFile(file: File) {

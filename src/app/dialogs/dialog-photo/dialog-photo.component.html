@@ -19,7 +19,7 @@
             <p *ngIf="fileUploaded">Fichier chargé !</p>
         </div>
         <div>
-            <button (touchend)="onTouchEnd($event)" (click)="openSnackBar()" mat-flat-button color="accent" [mat-dialog-close] type="submit"
+            <button (touchend)="onTouchEnd($event)" (click)="onSavePhoto()" mat-flat-button color="accent" [mat-dialog-close] type="submit"
             [disabled]="!fileUploaded">Enregistrer
         </button>
         </div>
