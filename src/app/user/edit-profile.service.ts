@@ -49,7 +49,7 @@ export class EditProfileService {
       const upload = firebase
         .storage()
         .ref()
-        .child('photos/user/' + almostUniqueFileName + file.name)
+        .child('/avatars/' + almostUniqueFileName + file.name)
         .put(file);
       upload.on(
         firebase.storage.TaskEvent.STATE_CHANGED,
