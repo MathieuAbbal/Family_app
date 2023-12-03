@@ -41,4 +41,29 @@ export class EditProfileService {
   updateUserData(uid: string, data: any): Promise<void> {
     return firebase.database().ref(`/users/${uid}`).update(data);
   }
+
+
+  uploadFile(file: File) {
+    return new Promise((resolve, reject) => {
+      const almostUniqueFileName = Date.now().toString();
+      const upload = firebase
+        .storage()
+        .ref()
+        .child('photos/user/' + almostUniqueFileName + file.name)
+        .put(file);
+      upload.on(
+        firebase.storage.TaskEvent.STATE_CHANGED,
+        () => {
+          console.log('Chargement…');
+        },
+        (error) => {
+          console.log('Erreur de chargement ! : ' + error);
+          reject();
+        },
+        () => {
+          resolve(upload.snapshot.ref.getDownloadURL());
+        }
+      );
+    });
+  }
 }

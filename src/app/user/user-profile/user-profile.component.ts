@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { EditProfileService } from '../edit-profile.service';
 import { User } from '../../models/user.model';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
@@ -12,6 +12,12 @@ export class UserProfileComponent {
   user: User | null = null;
   profileForm!: UntypedFormGroup;
   formBuilder = new UntypedFormBuilder();
+  fileUrl!: string;
+  fileIsUploading = false;
+  fileUploaded = false;
+
+  @ViewChild('previewImg') previewImg: ElementRef<HTMLImageElement>;
+
   constructor(private editProfileService: EditProfileService) { } // Injection correcte du service
 
   ngOnInit(): void {
@@ -27,29 +33,29 @@ export class UserProfileComponent {
     );
   }
   initForm(user: User) {
+    console.log('init form', user);
     this.profileForm = this.formBuilder.group({
       emailControl: [{ value: user?.email || '', disabled: true }, [Validators.required, Validators.email]],
       displayNameControl: [user?.displayName || ''],
       phoneNumberControl: [user?.phoneNumber || ''],
-      photoURLControl: [user?.photoURL || ''],
+      photoURLControl: [''],
       dateBirthControl: [user?.dateBirth || ''],
     });
-    // Mettez à jour l'image de profil si elle existe
-    if (this.user?.photoURL) {
-      const output = document.getElementById('preview_img') as HTMLImageElement;
-      output.src = this.user.photoURL;
-    }
+    this.fileUrl = this.user?.photoURL || '';
+  
   }
-  loadFile(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files[0];
-    const output = document.getElementById('preview_img') as HTMLImageElement; // Cast en HTMLImageElement
-    output.src = URL.createObjectURL(file);
-    output.onload = function () {
-      URL.revokeObjectURL(output.src); // Libération de la mémoire
-    }
+  loadFile(file: File): void {
+    this.fileIsUploading = true;
+    this.editProfileService.uploadFile(file).then((url: any) => {
+      this.fileUrl = url;
+      this.profileForm.get('photoURLControl').setValue('');
+      this.fileIsUploading = false;
+      this.fileUploaded = true;
+    })
   }
-
+  detectFiles(event: any) {
+    this.loadFile(event.target.files[0]);
+  }
   onSubmitProfileForm() {
     console.log('submit profile form', this.profileForm.value);
     if (this.profileForm.valid) {
@@ -59,7 +65,7 @@ export class UserProfileComponent {
       const userData = {
         displayName: formData.displayNameControl,
         phoneNumber: formData.phoneNumberControl,
-        photoURL: formData.photoURLControl,
+        photoURL: this.fileUrl,
         dateBirth: formData.dateBirthControl
       };
 
@@ -71,6 +77,9 @@ export class UserProfileComponent {
           console.error('Erreur lors de la mise à jour des données utilisateur', error);
         });
     }
+  }
+  ngAfterViewInit() {
+    
   }
 }
 

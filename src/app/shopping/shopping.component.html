@@ -1,7 +1,6 @@
-<div cdkDropListGroup class="card" fxLayout="column" fxLayout.gt-xs="row">
-  <mat-card style="margin: 1em;">
-    <mat-card-content>
-      <h4  style="text-align: center;color: #673ab7;">Ajouter un Produits</h4>
+<div cdkDropListGroup class="flex flex-col ">
+  <div class="flex flex-col justify-center">
+      <h4  class="">Ajouter un Produits</h4>
       <form [formGroup]="addItemForm" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="outline">
           <label for="item"></label>
@@ -10,34 +9,25 @@
       </form>
 
       <div class="container">
-
         <mat-chip-list cdkDropList [cdkDropListData]="items" class="list" cdkDropListSortingDisabled
           (cdkDropListDropped)="drop($event)">
           <mat-chip class="box" *ngFor="let item of items" cdkDrag>{{item.nom}}
-
             <mat-icon matChipRemove matTooltip="supprimer" (click)="OnDelete(item)">cancel</mat-icon>
-
           </mat-chip>
         </mat-chip-list>
       </div>
-    </mat-card-content>
-    <mat-card-actions>
      <!--<button [disabled]="!addItemForm.get('item')?.valid" (click)="onSubmit()" matTooltip="ajouter un article"
         id="add-button" class="mat-fab-bottom-right" mat-fab>
         <mat-icon class="icon">add</mat-icon>
       </button>-->
-    </mat-card-actions>
 
-  </mat-card>
-  <mat-card style="margin: 1em;">
-    <mat-card-content>
+  </div>
+  <div class="flex justify-center items-center">
       <div class="container">
-       <h4 style="text-align: center;color: #673ab7">Panier</h4>
+       <h4 class="">Panier</h4>
         <mat-chip-list cdkDropList [cdkDropListData]="basket" class="list" (cdkDropListDropped)="drop($event)">
           <mat-chip class="box accent" *ngFor="let item of basket" cdkDrag>{{item.nom}}</mat-chip>
         </mat-chip-list>
       </div>
-    </mat-card-content>
-  </mat-card>
-
+  </div>
 </div>
