@@ -26,6 +26,11 @@ export class UserProfileComponent {
         this.user = userData;
         console.log('user', this.user);
         this.initForm(this.user)
+        if (this.user?.photoURL) {
+          this.fileUrl = this.user.photoURL;
+        } else {
+          this.fileUrl = 'https://static.vecteezy.com/system/resources/previews/026/966/960/non_2x/default-avatar-profile-icon-of-social-media-user-vector.jpg';
+        }
       },
       (error) => {
         console.error(error);
@@ -42,7 +47,7 @@ export class UserProfileComponent {
       dateBirthControl: [user?.dateBirth || ''],
     });
     this.fileUrl = this.user?.photoURL || '';
-  
+
   }
   loadFile(file: File): void {
     this.fileIsUploading = true;
@@ -79,7 +84,7 @@ export class UserProfileComponent {
     }
   }
   ngAfterViewInit() {
-    
+
   }
 }
 
