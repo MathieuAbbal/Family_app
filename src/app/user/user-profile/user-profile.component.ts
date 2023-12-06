@@ -58,7 +58,7 @@ export class UserProfileComponent {
   }
   onSubmitProfileForm() {
     console.log('submit profile form', this.profileForm.value);
-    if (this.profileForm.valid) {
+    
       const uid = this.user.uid; // Assurez-vous d'avoir l'UID de l'utilisateur
       const formData = this.profileForm.value;
 
@@ -76,7 +76,7 @@ export class UserProfileComponent {
         .catch(error => {
           console.error('Erreur lors de la mise à jour des données utilisateur', error);
         });
-    }
+    
   }
   ngAfterViewInit() {
     

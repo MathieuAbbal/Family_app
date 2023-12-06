@@ -1,6 +1,6 @@
 <div cdkDropListGroup class="flex flex-col ">
   <div class="flex flex-col justify-center">
-      <h4  class="">Ajouter un Produits</h4>
+      <h4  class="text-center">Ajouter un Produits</h4>
       <form [formGroup]="addItemForm" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="outline">
           <label for="item"></label>
@@ -8,10 +8,10 @@
         </mat-form-field>
       </form>
 
-      <div class="container">
+      <div class="flex flex-col justify-center p-2">
         <mat-chip-list cdkDropList [cdkDropListData]="items" class="list" cdkDropListSortingDisabled
           (cdkDropListDropped)="drop($event)">
-          <mat-chip class="box" *ngFor="let item of items" cdkDrag>{{item.nom}}
+          <mat-chip class="p-2" *ngFor="let item of items" cdkDrag>{{item.nom}}
             <mat-icon matChipRemove matTooltip="supprimer" (click)="OnDelete(item)">cancel</mat-icon>
           </mat-chip>
         </mat-chip-list>
