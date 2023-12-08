@@ -31,7 +31,7 @@ export class TasksService {
         console.log('Tâches récupérer', this.tasks);
       });
   }
-  crateNewTask(newTask: Task) {
+  createNewTask(newTask: Task) {
     this.tasks.push(newTask);
     this.saveTasks();
     

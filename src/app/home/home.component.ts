@@ -26,9 +26,9 @@ export class HomeComponent implements OnInit {
   ) { }
 
   // urgence
-  listeUrgence = ['aucune', 'urgent', 'relative', 'pas Urgent']
+  listeUrgence = ['aucune', 'urgent', 'relative', 'pas urgent']
   getCouleurUrgence(item: string) {
-    return item === "aucune" ? "grey" :
+    return item === "aucune" ? "white" :
       item === "urgent" ? "red" :
         item === "relative" || "Relativement Urgent" ? "orange" :
           "green"

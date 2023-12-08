@@ -4,5 +4,7 @@ export class Task {
         public urg: string,
         public title: string,
         public descriptif: string,
+        public statut:string,
+        public createdDate: string
     ) { }
 }

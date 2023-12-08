@@ -33,6 +33,7 @@ export class AddTaskComponent implements OnInit {
       urg: ['', [Validators.required]],
       title: ['', [Validators.required]],
       descriptif: [''],
+      
     });
   }
 
@@ -41,9 +42,10 @@ export class AddTaskComponent implements OnInit {
     const urg = this.addTaskForm.get('urg')?.value;
     const title = this.addTaskForm.get('title')?.value;
     const descriptif = this.addTaskForm.get('descriptif')?.value;
-
-    const newTask = new Task(name, urg, title, descriptif);
-    this.ts.crateNewTask(newTask);
+    const statut = 'New';
+    const date = new Date().toISOString();
+    const newTask = new Task(name, urg, title, descriptif,statut,date);
+    this.ts.createNewTask(newTask);
     console.log(newTask);
     this.router.navigate(['/home']);
   }
