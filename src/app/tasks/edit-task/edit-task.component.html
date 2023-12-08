@@ -1,43 +1,46 @@
-<div class="flex flex-col p-4 m-4" >
-    <mat-card >
-        <div >
-            <h3>Editer la Tâche</h3>
-        </div>
-        <form [formGroup]="editTaskForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutAlign="center">
-            <mat-form-field apparance="fill">
-                <mat-label for="name">Tâche pour : </mat-label>
-                <mat-select formControlName="name" id="name">
-                    <mat-option value="everybody">Everybody</mat-option>
-                    <mat-option value="mathieu">Mathieu</mat-option>
-                    <mat-option value="sophie">Sophie</mat-option>
-                    <mat-option value="charly">Charly</mat-option>
-                    <mat-option value="lucie">Lucie</mat-option>
-                </mat-select>
-            </mat-form-field>
-            <mat-form-field apparance="fill">
-                <mat-label for="urg">Priorité</mat-label>
-                <mat-select formControlName="urg" id="urg" required>
-                    <mat-option value="aucune">Aucune</mat-option>
-                    <mat-option value="urgent">Urgent !</mat-option>
-                    <mat-option value="Relativement Urgent">Relativement Urgent</mat-option>
-                    <mat-option value="pas Urgent">Pas Urgent</mat-option>
-                </mat-select>
-            </mat-form-field>
-            <mat-form-field appearance="fill">
-                <label for="title">Titre</label>
-                <input matInput formControlName="title" id="title" placeholder="Ex. Mon titre..." required>
-            </mat-form-field>
-            <mat-form-field appearance="fill">
-                <mat-label for="descriptif">Descriptif</mat-label>
-                <textarea matInput formControlName="descriptif" id="descriptif" cols="20" rows="5"
-                    placeholder="Ex. descriptif de la tâche...">
-                    </textarea>
-            </mat-form-field>
-            
-            <div fxLayout="row" fxLayoutAlign="end">
-                <button (click)="openSnackBar()"  mat-flat-button color="primary" type="submit">Modifier</button>
+<div class="flex flex-col mx-6">
+    <div class="flex justify-center" >
+        <div class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow ">
+            <div >
+                <h3>Editer la Tâche</h3>
             </div>
-        </form>
-
-    </mat-card>
+            <form [formGroup]="editTaskForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutAlign="center">
+                <mat-form-field apparance="fill">
+                    <mat-label for="name">Tâche pour : </mat-label>
+                    <mat-select formControlName="name" id="name">
+                        <mat-option value="everybody">Everybody</mat-option>
+                        <mat-option value="mathieu">Mathieu</mat-option>
+                        <mat-option value="sophie">Sophie</mat-option>
+                        <mat-option value="charly">Charly</mat-option>
+                        <mat-option value="lucie">Lucie</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field apparance="fill">
+                    <mat-label for="urg">Priorité</mat-label>
+                    <mat-select formControlName="urg" id="urg" required>
+                        <mat-option value="aucune">Aucune</mat-option>
+                        <mat-option value="urgent">Urgent !</mat-option>
+                        <mat-option value="Relativement Urgent">Relativement Urgent</mat-option>
+                        <mat-option value="pas Urgent">Pas Urgent</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <label for="title">Titre</label>
+                    <input matInput formControlName="title" id="title" placeholder="Ex. Mon titre..." required>
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label for="descriptif">Descriptif</mat-label>
+                    <textarea matInput formControlName="descriptif" id="descriptif" cols="20" rows="5"
+                        placeholder="Ex. descriptif de la tâche...">
+                        </textarea>
+                </mat-form-field>
+                
+                <div fxLayout="row" fxLayoutAlign="end">
+                    <button (click)="openSnackBar()"  mat-flat-button color="primary" type="submit">Modifier</button>
+                </div>
+            </form>
+    
+        </div>
+       
+    </div>
 </div>
