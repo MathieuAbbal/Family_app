@@ -48,6 +48,7 @@ import { environment } from '../environments/environment';
 import { EditTaskComponent } from './tasks/edit-task/edit-task.component';
 import { UserProfileComponent } from './user/user-profile/user-profile.component';
 import { EditProfileService } from './user/edit-profile.service';
+import { ConfirmDialogComponent } from './dialogs/confirm-dialog/confirm-dialog.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -64,6 +65,7 @@ import { EditProfileService } from './user/edit-profile.service';
     MapComponent,
     EditTaskComponent,
     UserProfileComponent,
+    ConfirmDialogComponent,
   ],
   imports: [
     BrowserModule,
