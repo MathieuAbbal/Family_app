@@ -1,0 +1,10 @@
+<div style="max-width: 25em;padding:0.5em">
+    <mat-dialog-content class="center">
+      <h2 >{{customMessage}}</h2>
+    </mat-dialog-content>
+    <br>
+    <mat-dialog-actions>
+      <button mat-raised-button (click)="dialogRef.close()">non</button>
+      <button mat-raised-button (click)="dialogRef.close(true)">oui</button>
+    </mat-dialog-actions>
+  </div>

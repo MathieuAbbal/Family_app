@@ -1,11 +1,13 @@
 .container {
-  min-width: 200px;
+  width: 400px;
   max-width: 100%;
   margin: 0 25px 25px 0;
-  padding: 1em;
+  display: inline-block;
+  vertical-align: top;
 }
 
 .list {
+  border: solid 1px #ccc;
   min-height: 60px;
   background: white;
   border-radius: 4px;
@@ -23,26 +25,9 @@
   justify-content: space-between;
   box-sizing: border-box;
   cursor: move;
-
+  background: white;
   font-size: 14px;
 }
-.accent {
-  background-color: #ffd740;
-}
-/* Style général pour les mat-chip */
-.mat-chip {
-  box-sizing: border-box;
-  display: flex;         /* Assure que le chip utilise flexbox */
-  justify-content: center; /* Centre le contenu horizontalement */
-  align-items: center;   /* Centre le contenu verticalement */
-  min-width: 100px;      /* Largeur minimale pour éviter la déformation */
-  padding: 8px 12px; 
-  transition: all 0.3s ease; /* Transition douce pour les interactions */
-}
-.mat-chip-list-wrapper{
-  padding: 1em;
-}
-
 
 .cdk-drag-preview {
   box-sizing: border-box;
@@ -59,32 +44,39 @@
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.example-box:last-child {
+.box:last-child {
   border: none;
 }
 
-.list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+.list.cdk-drop-list-dragging .box:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
-.card {
-  box-sizing: border-box;
-  margin: 20px auto;
-  padding: 10px 30px;
+.cdk-drop-list {
   display: flex;
-  justify-content: space-around;
+  padding-right: 10px;
+  padding-bottom: 10px;
 }
-@media only screen and (max-width: 400px) {
-  .card {
-    display: block;
-  }
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
+
+.cdk-drag-placeholder {
+  opacity: 0.3;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.accent {
+  background-color: #ffd740;
+}
+
 form {
   display: flex;
   justify-content: space-around;
-}
-.card {
-  box-sizing: border-box;
-  width: 80%;
-  margin: 20px auto;
-  padding: 10px 30px;
 }

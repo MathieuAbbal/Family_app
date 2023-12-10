@@ -1,7 +1,6 @@
 .card {
   box-sizing: border-box;
-  max-width: 400px;
-  min-width: 300px;
+  width: 300px;
   margin: 20px auto;
   padding: 10px 30px;
 }
@@ -9,6 +8,11 @@ h1 {
   margin: 10px;
 }
 .close-button {
+  float: right;
+  top: -14px;
+  right:-30px;
+}
+.edit-button {
   float: right;
   top: -14px;
   right:-30px;

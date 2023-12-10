@@ -1,11 +1,11 @@
 <div class="flex flex-col mx-6">
     <div class="flex justify-center" >
-        <div class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow ">
+        <div class=" w-96 flex flex-col m-6 p-6 bg-white border border-gray-200 rounded-lg shadow ">
             <div >
                 <h3>Editer la Tâche</h3>
             </div>
-            <form [formGroup]="editTaskForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutAlign="center">
-                <mat-form-field apparance="fill">
+            <form [formGroup]="editTaskForm" class="flex flex-col">
+                <mat-form-field apparance="outline">
                     <mat-label for="name">Tâche pour : </mat-label>
                     <mat-select formControlName="name" id="name">
                         <mat-option value="everybody">Everybody</mat-option>
@@ -15,7 +15,16 @@
                         <mat-option value="lucie">Lucie</mat-option>
                     </mat-select>
                 </mat-form-field>
-                <mat-form-field apparance="fill">
+                <mat-form-field apparance="outline">
+                    <mat-label for="statut">Statut</mat-label>
+                    <mat-select formControlName="statut" id="statut" required>
+                        <mat-option value="New">New</mat-option>
+                        <mat-option value="En cours">En cours</mat-option>
+                        <mat-option value="Fait">Fait</mat-option>
+                        <mat-option value="Repousser">Repousser</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field apparance="outline">
                     <mat-label for="urg">Priorité</mat-label>
                     <mat-select formControlName="urg" id="urg" required>
                         <mat-option value="aucune">Aucune</mat-option>
@@ -24,19 +33,20 @@
                         <mat-option value="pas Urgent">Pas Urgent</mat-option>
                     </mat-select>
                 </mat-form-field>
-                <mat-form-field appearance="fill">
-                    <label for="title">Titre</label>
+                <mat-form-field appearance="outline">
+                    <mat-label for="title">Titre</mat-label>
                     <input matInput formControlName="title" id="title" placeholder="Ex. Mon titre..." required>
                 </mat-form-field>
-                <mat-form-field appearance="fill">
+                <mat-form-field appearance="outline">
                     <mat-label for="descriptif">Descriptif</mat-label>
                     <textarea matInput formControlName="descriptif" id="descriptif" cols="20" rows="5"
                         placeholder="Ex. descriptif de la tâche...">
                         </textarea>
                 </mat-form-field>
                 
-                <div fxLayout="row" fxLayoutAlign="end">
-                    <button (click)="openSnackBar()"  mat-flat-button color="primary" type="submit">Modifier</button>
+                <div>
+                    <button  (click)="onDelete(taskToEdit)" mat-stroked-button color="warn">Supprimer</button>
+                    <button (click)="editTask()"  mat-stroked-button color="primary" type="submit">Modifier</button>
                 </div>
             </form>
     
