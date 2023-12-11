@@ -49,6 +49,10 @@ import { EditTaskComponent } from './tasks/edit-task/edit-task.component';
 import { UserProfileComponent } from './user/user-profile/user-profile.component';
 import { EditProfileService } from './user/edit-profile.service';
 import { ConfirmDialogComponent } from './dialogs/confirm-dialog/confirm-dialog.component';
+
+
+import { EditorModule } from '@tinymce/tinymce-angular';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -68,6 +72,7 @@ import { ConfirmDialogComponent } from './dialogs/confirm-dialog/confirm-dialog.
     ConfirmDialogComponent,
   ],
   imports: [
+    EditorModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,

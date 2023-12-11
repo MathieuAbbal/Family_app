@@ -1,7 +1,7 @@
 <div class="flex flex-col mx-6">
-    <div class="flex justify-center" >
+    <div class="flex justify-center">
         <div class=" w-96 flex flex-col m-6 p-6 bg-white border border-gray-200 rounded-lg shadow ">
-            <div >
+            <div>
                 <h3>Editer la Tâche</h3>
             </div>
             <form [formGroup]="editTaskForm" class="flex flex-col">
@@ -27,10 +27,9 @@
                 <mat-form-field apparance="outline">
                     <mat-label for="urg">Priorité</mat-label>
                     <mat-select formControlName="urg" id="urg" required>
-                        <mat-option value="aucune">Aucune</mat-option>
-                        <mat-option value="urgent">Urgent !</mat-option>
-                        <mat-option value="Relativement Urgent">Relativement Urgent</mat-option>
-                        <mat-option value="pas Urgent">Pas Urgent</mat-option>
+                        <mat-option value="Urgent">Urgent !</mat-option>
+                        <mat-option value="Relativement urgent">Relativement Urgent</mat-option>
+                        <mat-option value="Pas urgent">Pas Urgent</mat-option>
                     </mat-select>
                 </mat-form-field>
                 <mat-form-field appearance="outline">
@@ -39,18 +38,31 @@
                 </mat-form-field>
                 <mat-form-field appearance="outline">
                     <mat-label for="descriptif">Descriptif</mat-label>
-                    <textarea matInput formControlName="descriptif" id="descriptif" cols="20" rows="5"
-                        placeholder="Ex. descriptif de la tâche...">
+                    <textarea matInput formControlName="descriptif">
                         </textarea>
+                        <div>
+                            <editor formControlName="descriptif" [init]="tinymceInitParams" apiKey="etj7r4fmm6rkitgaelt4dgjx428mep5837b745zgcik1mxth"  style="z-index:1000">
+                            </editor>
+                        </div>
                 </mat-form-field>
-                
-                <div>
-                    <button  (click)="onDelete(taskToEdit)" mat-stroked-button color="warn">Supprimer</button>
-                    <button (click)="editTask()"  mat-stroked-button color="primary" type="submit">Modifier</button>
+
+                <div class="flex flex-row justify-end">
+
+                    <button class="m-2 p-2" (click)="goBack()" mat-stroked-button>Retour</button>
+                    <button class="m-2 p-2" (click)="onDelete(taskToEdit)" mat-stroked-button
+                        color="warn">Supprimer</button>
+                    <button class="m-2 p-2" (click)="editTask()" mat-stroked-button color="primary"
+                        type="submit">Modifier</button>
                 </div>
             </form>
-    
+
         </div>
-       
+
     </div>
-</div>
+    <!--
+    <editor formControlName="descriptif" apiKey="etj7r4fmm6rkitgaelt4dgjx428mep5837b745zgcik1mxth" [init]="{
+    plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+    language: 'fr_FR',
+    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+  }"></editor>
+</div>-->

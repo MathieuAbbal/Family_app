@@ -28,7 +28,6 @@ export class EditTaskComponent implements OnInit {
     
   }
   onDelete(task: any) {
-    console.log('delete', task)
     let dialogRef = this.dialog.open(ConfirmDialogComponent,  { 
       data: { customMessage: "Etes-vous sûr(e) de vouloir supprimer la tâche" } ,
       
@@ -60,23 +59,45 @@ export class EditTaskComponent implements OnInit {
           createdDate: [this.taskToEdit.createdDate || ''],
           statut: [this.taskToEdit.statut || ''],
         });
+        
       } else {
         console.log('Index invalide:', index);
       }
     });
+
   }
   editTask(){
-    const updatedTask = this.editTaskForm.value as Task;
-  const index = parseInt(this.route.snapshot.params['index'], 10);
-  console.log('Tâche modifiée', updatedTask,'avec index', index);
-  this.tasksService.updateTask(index, updatedTask);
-  this.router.navigate(['/home']);
+    let dialogRef = this.dialog.open(ConfirmDialogComponent,  { 
+      data: { customMessage: "Etes-vous sûr(e) de vouloir modifier la tâche" } ,
+      
+    })
+    dialogRef.afterClosed().subscribe(
+      result => {
+        if (result === true) {
+          const updatedTask = this.editTaskForm.value as Task;
+          const index = parseInt(this.route.snapshot.params['index'], 10);
+          console.log('Tâche modifiée', updatedTask,'avec index', index);
+          this.tasksService.updateTask(index, updatedTask);
+          this.router.navigate(['/home']);
+          this.openSnackBar();
+        }
+        else { return }
+      }
+    )
+   
   }
   openSnackBar(){
     this._snackBar.open('Tâche modifiée', 'avec succès !!', {
       duration: this.durationInSeconds * 1000,
     });
-   
+  
   }
-
+  tinymceInitParams = {
+    selector: "div#textareaId",
+    height: 250,
+    language: 'fr_FR'
+  };
+goBack(){
+  this.router.navigate(['/home']);
+}
 }
