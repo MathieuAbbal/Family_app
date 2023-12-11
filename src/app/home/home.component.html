@@ -7,12 +7,13 @@
     <div class="flex flex-col md:flex-row md:flex-wrap mx-10">
         <mat-card *ngFor="let item of tasks; let i = index" class="mat-elevation-z6 card">
             <div fxLayoutAlign="end end">
-             <!--   <button mat-icon-button class="close-button"  matTooltip="supprimer" (click)="onDelete(item)">
+                <!--   <button mat-icon-button class="close-button"  matTooltip="supprimer" (click)="onDelete(item)">
                     <mat-icon class="close-icon" color="warn">close</mat-icon>
                   </button>-->
-                  <button color="accent" class="edit-button" mat-icon-button matTooltip="modifier la tâches" (click)="onEdit(i)">
-                    <mat-icon >settings</mat-icon>
-                    </button>
+                <button color="accent" class="edit-button" mat-icon-button matTooltip="modifier la tâches"
+                    (click)="onEdit(i)">
+                    <mat-icon>settings</mat-icon>
+                </button>
             </div>
             <mat-card-title>
                 <h3 style="text-align: center;font-weight: bold;">{{item.title}}</h3>
@@ -21,11 +22,12 @@
                 <div class="flex flex-row">
                     <mat-chip class="m-1">{{item.name}}</mat-chip>
                     <mat-chip class="m-1" [ngStyle]="{'background-color': getCouleurUrgence(item.urg)}">
-                        {{item.urg}}</mat-chip> 
-                </div>   
+                        {{item.urg}}</mat-chip>
+                    <mat-chip *ngIf="item?.statut" class="m-1 bg-indigo-700">{{item.statut}}</mat-chip>
+                </div>
             </mat-card-subtitle>
             <mat-card-content>
-                <p *ngIf="item.descriptif">Descriptif:<br> {{item.descriptif}}</p>
+                <p *ngIf="item.descriptif">Descriptif:<br><div [innerHtml]="item.descriptif"></div> </p>
             </mat-card-content>
         </mat-card>
     </div>

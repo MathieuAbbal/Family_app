@@ -3,8 +3,8 @@
       <h2 >{{customMessage}}</h2>
     </mat-dialog-content>
     <br>
-    <mat-dialog-actions>
-      <button mat-raised-button (click)="dialogRef.close()">non</button>
-      <button mat-raised-button (click)="dialogRef.close(true)">oui</button>
-    </mat-dialog-actions>
+    <div class="flex flex-row justify-end">
+      <button class="p-2 m-2" mat-raised-button (click)="dialogRef.close()">non</button>
+      <button class="p-2 m-2" mat-raised-button (click)="dialogRef.close(true)">oui</button>
+    </div>
   </div>
