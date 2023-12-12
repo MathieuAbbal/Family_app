@@ -18,8 +18,8 @@
             </label>
             <p *ngIf="fileUploaded">Fichier chargé !</p>
         </div>
-        <div>
-            <button (touchend)="onTouchEnd($event)" (click)="onSavePhoto()" mat-flat-button color="accent" [mat-dialog-close] type="submit"
+        <div class="flex justify-end">
+            <button (click)="onSavePhoto()" mat-flat-button color="accent" [mat-dialog-close]
             [disabled]="!fileUploaded">Enregistrer
         </button>
         </div>

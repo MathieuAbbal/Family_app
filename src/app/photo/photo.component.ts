@@ -1,10 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
-import { DialogDeletePhotoComponent } from '../dialogs/dialog-delete-photo/dialog-delete-photo.component';
 import { DialogPhotoComponent } from '../dialogs/dialog-photo/dialog-photo.component';
 import { Photo } from '../models/photo.model';
 import { PhotosService } from '../services/photos.service';
+import { ConfirmDialogComponent } from '../dialogs/confirm-dialog/confirm-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-photo',
@@ -14,6 +15,7 @@ import { PhotosService } from '../services/photos.service';
 export class PhotoComponent implements OnInit {
   photos: Photo[] = [];
   photosSubscription!: Subscription;
+  private _snackBar: MatSnackBar
 
   constructor(public dialog: MatDialog,
     private ps: PhotosService) { }
@@ -42,17 +44,25 @@ export class PhotoComponent implements OnInit {
   
   }
   onDelete(photo: Photo) {
-    let dialogRef = this.dialog.open(DialogDeletePhotoComponent, {
-      autoFocus: false,
-    });
+    let dialogRef = this.dialog.open(ConfirmDialogComponent,  { 
+      data: { customMessage: "Etes-vous sûr(e) de vouloir supprimer la photo ?" } ,
+      
+    })
     dialogRef.afterClosed().subscribe(
-      (result:Boolean) => {
+      result => {
         if (result === true) {
-          this.ps.removePhoto(photo);
+          this.openSnackBar()
+          this.ps.removePhoto(photo)
         }
-        else { return; }
+        else { return }
       }
     )
+  }
+  durationInSeconds = 5;
+  openSnackBar() {
+    this._snackBar.open('Photo supprimée', 'avec succès !!', {
+      duration: this.durationInSeconds * 1000,
+    });
   }
   onScroll(event: any): void {
     if(event){
