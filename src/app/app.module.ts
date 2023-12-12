@@ -34,8 +34,6 @@ import { DialogPhotoComponent } from './dialogs/dialog-photo/dialog-photo.compon
 import { MatDialogModule } from '@angular/material/dialog';
 import { PhotosService } from './services/photos.service';
 import { HttpClientModule } from '@angular/common/http';
-import { DialogDeleteComponent } from './dialogs/dialog-delete/dialog-delete.component';
-import { DialogDeletePhotoComponent } from './dialogs/dialog-delete-photo/dialog-delete-photo.component';
 import { registerLocaleData } from '@angular/common';
 import * as fr from '@angular/common/locales/fr';
 import { ShoppingComponent } from './shopping/shopping.component';
@@ -63,8 +61,6 @@ import { EditorModule } from '@tinymce/tinymce-angular';
     SignupComponent,
     SigninComponent,
     DialogPhotoComponent,
-    DialogDeleteComponent,
-    DialogDeletePhotoComponent,
     ShoppingComponent,
     MapComponent,
     EditTaskComponent,
