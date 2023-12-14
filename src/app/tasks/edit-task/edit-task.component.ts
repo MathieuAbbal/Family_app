@@ -21,21 +21,22 @@ export class EditTaskComponent implements OnInit {
     public dialog: MatDialog
   ) { }
 
-  taskToEdit!:any;
-  editTaskForm!:UntypedFormGroup
+  taskToEdit!: any;
+  editTaskForm!: UntypedFormGroup
   durationInSeconds = 5;
   initForm() {
-    
+
   }
   onDelete(task: any) {
-    let dialogRef = this.dialog.open(ConfirmDialogComponent,  { 
-      data: { customMessage: "Etes-vous sûr(e) de vouloir supprimer la tâche" } ,
-      
+    let dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: { customMessage: "Etes-vous sûr(e) de vouloir supprimer la tâche" },
+
     })
     dialogRef.afterClosed().subscribe(
       result => {
         if (result === true) {
           this.tasksService.removeTask(task)
+          this.router.navigate(['/home'])
         }
         else { return }
       }
@@ -59,24 +60,24 @@ export class EditTaskComponent implements OnInit {
           createdDate: [this.taskToEdit.createdDate || ''],
           statut: [this.taskToEdit.statut || ''],
         });
-        
+
       } else {
         console.log('Index invalide:', index);
       }
     });
 
   }
-  editTask(){
-    let dialogRef = this.dialog.open(ConfirmDialogComponent,  { 
-      data: { customMessage: "Etes-vous sûr(e) de vouloir modifier la tâche" } ,
-      
+  editTask() {
+    let dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: { customMessage: "Etes-vous sûr(e) de vouloir modifier la tâche" },
+
     })
     dialogRef.afterClosed().subscribe(
       result => {
         if (result === true) {
           const updatedTask = this.editTaskForm.value as Task;
           const index = parseInt(this.route.snapshot.params['index'], 10);
-          console.log('Tâche modifiée', updatedTask,'avec index', index);
+          console.log('Tâche modifiée', updatedTask, 'avec index', index);
           this.tasksService.updateTask(index, updatedTask);
           this.router.navigate(['/home']);
           this.openSnackBar();
@@ -84,20 +85,25 @@ export class EditTaskComponent implements OnInit {
         else { return }
       }
     )
-   
+
   }
-  openSnackBar(){
+  openSnackBar() {
     this._snackBar.open('Tâche modifiée', 'avec succès !!', {
       duration: this.durationInSeconds * 1000,
     });
-  
+
   }
   tinymceInitParams = {
-    selector: "div#textareaId",
-    height: 250,
-    language: 'fr_FR'
+    selector: "textarea",
+    browser_spellcheck: true,
+    height: 300,
+    plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+    language: 'fr_FR',
+    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+
   };
-goBack(){
-  this.router.navigate(['/home']);
-}
+
+  goBack() {
+    this.router.navigate(['/home']);
+  }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Photo } from '../models/photo.model';
 import * as firebase from 'firebase';
 import { Subject } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root',
@@ -9,9 +10,14 @@ import { Subject } from 'rxjs';
 export class PhotosService {
   photos: Photo[] = [];
   photosSubject = new Subject<Photo[]>();
-  constructor() {
+  constructor(
+    private _snackBar: MatSnackBar
+
+  ) {
     this.getPhotos();
   }
+
+  durationInSeconds = 5;
   emitPhotos() {
     this.photosSubject.next(this.photos);
     console.log(this.photos);
@@ -37,6 +43,9 @@ export class PhotosService {
     this.savePhotos();
     
     console.log('image enregistrer', this.photos)
+    this._snackBar.open('Photo ajoutée', 'avec succès !!', {
+      duration: this.durationInSeconds * 1000,
+    });
   }
   uploadFile(file: File) {
     return new Promise((resolve, reject) => {
@@ -75,12 +84,14 @@ export class PhotosService {
       )
     }
     const photoIndexToRemove = this.photos.findIndex(
-      (El) => El === photo);
-      
+      (El) => El === photo); 
     console.log(photoIndexToRemove);
     this.photos.splice(photoIndexToRemove, 1);
     this.savePhotos();
     this.emitPhotos();
+    this._snackBar.open('Photo supprimée', 'avec succès !!', {
+      duration: this.durationInSeconds * 1000,
+    }); 
   }
 
 
