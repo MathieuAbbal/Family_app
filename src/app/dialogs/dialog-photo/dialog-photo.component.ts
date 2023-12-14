@@ -20,14 +20,8 @@ export class DialogPhotoComponent implements OnInit {
   constructor(
     private ps: PhotosService,
     private formBuilder: UntypedFormBuilder,
-    private _snackBar: MatSnackBar
   ) {}
 
-  openSnackBar() {
-    this._snackBar.open('Photo ajoutée', 'avec succès !!', {
-      duration: this.durationInSeconds * 1000,
-    });
-  }
   ngOnInit(): void {
     this.initForm();
   }
@@ -46,7 +40,6 @@ export class DialogPhotoComponent implements OnInit {
 
     this.ps.createNewPhoto(newPhoto);
     console.log('Object', newPhoto);
-    this.openSnackBar()
   }
 
   onUploadFile(file: File) {

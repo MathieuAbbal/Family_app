@@ -17,8 +17,10 @@ export class PhotoComponent implements OnInit {
   photosSubscription!: Subscription;
   private _snackBar: MatSnackBar
 
-  constructor(public dialog: MatDialog,
-    private ps: PhotosService) { }
+  constructor(
+    public dialog: MatDialog,
+    private ps: PhotosService
+    ) { }
 
   hideButton = false;
 
@@ -51,18 +53,11 @@ export class PhotoComponent implements OnInit {
     dialogRef.afterClosed().subscribe(
       result => {
         if (result === true) {
-          this.openSnackBar()
           this.ps.removePhoto(photo)
         }
         else { return }
       }
     )
-  }
-  durationInSeconds = 5;
-  openSnackBar() {
-    this._snackBar.open('Photo supprimée', 'avec succès !!', {
-      duration: this.durationInSeconds * 1000,
-    });
   }
   onScroll(event: any): void {
     if(event){
