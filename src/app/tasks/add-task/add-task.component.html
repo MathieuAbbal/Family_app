@@ -27,12 +27,13 @@
                     <label for="title">Titre</label>
                     <input matInput formControlName="title" id="title" placeholder="Ex. Mon titre..." required>
                 </mat-form-field>
-                <mat-form-field appearance="fill">
+               
                     <mat-label for="descriptif">Descriptif</mat-label>
-                    <textarea matInput formControlName="descriptif" id="descriptif" cols="20" rows="5"
-                        placeholder="Ex. descriptif de la tâche...">
-                        </textarea>
-                </mat-form-field>
+                        <div>
+                            <editor formControlName="descriptif" [init]="tinymceInitParams" apiKey="etj7r4fmm6rkitgaelt4dgjx428mep5837b745zgcik1mxth"  style="z-index:1000">
+                            </editor>
+                        </div>
+                
                 
                 <div fxLayout="row" fxLayoutAlign="end">
                     <button (click)="openSnackBar()" [disabled]="addTaskForm.invalid" mat-flat-button color="primary" type="submit">Ajouter</button>
