@@ -49,4 +49,14 @@ export class AddTaskComponent implements OnInit {
     console.log(newTask);
     this.router.navigate(['/home']);
   }
+
+  tinymceInitParams = {
+    selector: "textarea",
+    browser_spellcheck: true,
+    height: 300,
+    plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+    language: 'fr_FR',
+    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+
+  };
 }

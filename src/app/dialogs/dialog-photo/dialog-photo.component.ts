@@ -3,6 +3,7 @@ import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms
 import { Photo } from '../../models/photo.model';
 import { PhotosService } from '../../services/photos.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-dialog-photo',
@@ -20,6 +21,7 @@ export class DialogPhotoComponent implements OnInit {
   constructor(
     private ps: PhotosService,
     private formBuilder: UntypedFormBuilder,
+    public dialogRef: MatDialogRef<DialogPhotoComponent>
   ) {}
 
   ngOnInit(): void {
@@ -40,6 +42,7 @@ export class DialogPhotoComponent implements OnInit {
 
     this.ps.createNewPhoto(newPhoto);
     console.log('Object', newPhoto);
+    this.dialogRef.close();
   }
 
   onUploadFile(file: File) {
@@ -53,8 +56,5 @@ export class DialogPhotoComponent implements OnInit {
   detectFiles(event: any) {
     this.onUploadFile(event.target.files[0]);
   }
-  onTouchEnd(event: TouchEvent) {
-    console.log('Touch event detected', event);
-    this.onSavePhoto();
-  }
+
 }
