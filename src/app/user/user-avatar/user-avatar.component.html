@@ -1,0 +1,6 @@
+<div *ngIf="user" class="flex items-center gap-4">
+    <img class="w-10 h-10 rounded-full" [src]="user.photoURL" alt="">
+    <div class="font-medium dark:text-white">
+        <div>{{user.displayName}}</div>
+    </div>
+</div>

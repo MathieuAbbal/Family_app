@@ -50,6 +50,7 @@ import { ConfirmDialogComponent } from './dialogs/confirm-dialog/confirm-dialog.
 
 
 import { EditorModule } from '@tinymce/tinymce-angular';
+import { UserAvatarComponent } from './user/user-avatar/user-avatar.component';
 
 @NgModule({
   declarations: [
@@ -66,6 +67,7 @@ import { EditorModule } from '@tinymce/tinymce-angular';
     EditTaskComponent,
     UserProfileComponent,
     ConfirmDialogComponent,
+    UserAvatarComponent,
   ],
   imports: [
     EditorModule,
