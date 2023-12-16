@@ -41,7 +41,9 @@ export class PhotoComponent implements OnInit {
   }
 
   openDialog() {
-    const dialogRef = this.dialog.open(DialogPhotoComponent);
+    const dialogRef = this.dialog.open(DialogPhotoComponent, {
+      disableClose: true
+    });
 
   
   }
