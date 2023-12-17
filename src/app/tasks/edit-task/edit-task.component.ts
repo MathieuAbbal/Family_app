@@ -5,6 +5,7 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'src/app/dialogs/confirm-dialog/confirm-dialog.component';
+import { Task } from '../../models/task.model';
 @Component({
   selector: 'app-edit-task',
   templateUrl: './edit-task.component.html',
@@ -47,12 +48,13 @@ export class EditTaskComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
-      const index = parseInt(params['index'], 10);
-      const task = this.tasksService.getTaskByIndex(index);
+      const taskId = params['id'];
+      const task = this.tasksService.getTaskById(taskId);
       if (task) {
         this.taskToEdit = task;
         console.log(this.taskToEdit);
         this.editTaskForm = this.formBuilder.group({
+          id: [this.taskToEdit.id, [Validators.required]],
           name: [this.taskToEdit.name, [Validators.required]],
           urg: [this.taskToEdit.urg, [Validators.required]],
           title: [this.taskToEdit.title, [Validators.required]],
@@ -62,7 +64,7 @@ export class EditTaskComponent implements OnInit {
         });
 
       } else {
-        console.log('Index invalide:', index);
+        console.log('Id inconnu:', taskId)
       }
     });
 
@@ -75,10 +77,10 @@ export class EditTaskComponent implements OnInit {
     dialogRef.afterClosed().subscribe(
       result => {
         if (result === true) {
-          const updatedTask = this.editTaskForm.value as Task;
-          const index = parseInt(this.route.snapshot.params['index'], 10);
-          console.log('Tâche modifiée', updatedTask, 'avec index', index);
-          this.tasksService.updateTask(index, updatedTask);
+          const updatedTask: Task = this.editTaskForm.value as Task;
+          const taskId: string = this.route.snapshot.params['id'];
+          console.log('Tâche modifiée', updatedTask, 'avec ID', taskId);
+          this.tasksService.updateTaskById(taskId, updatedTask);
           this.router.navigate(['/home']);
           this.openSnackBar();
         }
@@ -97,7 +99,7 @@ export class EditTaskComponent implements OnInit {
     selector: "textarea",
     browser_spellcheck: true,
     height: 300,
-    plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+    plugins: 'lists anchor autolink charmap codesample emoticons image link  media searchreplace table visualblocks wordcount',
     language: 'fr_FR',
     toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
 

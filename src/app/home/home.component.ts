@@ -46,8 +46,8 @@ export class HomeComponent implements OnInit {
     if (this.tasksSubsription) { this.tasksSubsription.unsubscribe() };
   }
 
-  onEdit(index: number) {
-    this.router.navigate(['/task/edit', index]);
+  onEdit(id: string) {
+    this.router.navigate(['/task/edit', id]);
   }
 
 

@@ -18,7 +18,7 @@ export class AddTaskComponent implements OnInit {
     private ts: TasksService,
     private router: Router,
     private _snackBar: MatSnackBar
-  ) {}
+  ) { }
   openSnackBar() {
     this._snackBar.open('Tache ajoutée', 'avec succès !!', {
       duration: this.durationInSeconds * 1000,
@@ -33,7 +33,7 @@ export class AddTaskComponent implements OnInit {
       urg: ['', [Validators.required]],
       title: ['', [Validators.required]],
       descriptif: [''],
-      
+
     });
   }
 
@@ -42,9 +42,9 @@ export class AddTaskComponent implements OnInit {
     const urg = this.addTaskForm.get('urg')?.value;
     const title = this.addTaskForm.get('title')?.value;
     const descriptif = this.addTaskForm.get('descriptif')?.value;
-    const statut = 'New';
+    const statut = 'Nouveau';
     const date = new Date().toISOString();
-    const newTask = new Task(name, urg, title, descriptif,statut,date);
+    const newTask = new Task('',name, urg, title, descriptif, statut, date);
     this.ts.createNewTask(newTask);
     console.log(newTask);
     this.router.navigate(['/home']);

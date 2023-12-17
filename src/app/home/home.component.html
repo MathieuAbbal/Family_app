@@ -11,7 +11,7 @@
                     <mat-icon class="close-icon" color="warn">close</mat-icon>
                   </button>-->
                 <button color="accent" class="edit-button" mat-icon-button matTooltip="modifier la tâches"
-                    (click)="onEdit(i)">
+                    (click)="onEdit(item.id)">
                     <mat-icon>settings</mat-icon>
                 </button>
             </div>
@@ -34,5 +34,5 @@
 
 
 </div>
-
+<app-kanban></app-kanban>
 <!--<app-photo></app-photo>-->
