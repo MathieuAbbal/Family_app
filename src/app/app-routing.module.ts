@@ -22,7 +22,7 @@ const routes: Routes = [
   { path: 'photo', canActivate: [AuthGuardService],  component: PhotoComponent },
   { path: 'shopping', canActivate: [AuthGuardService],  component: ShoppingComponent },
   { path: 'map', canActivate: [AuthGuardService],  component: MapComponent },
-  { path: 'task/edit/:index', canActivate: [AuthGuardService], component: EditTaskComponent },
+  { path: 'task/edit/:id', canActivate: [AuthGuardService], component: EditTaskComponent },
 ];
 
 @NgModule({

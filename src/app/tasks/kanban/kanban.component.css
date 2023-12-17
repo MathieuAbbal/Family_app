@@ -1,0 +1,5 @@
+.drop-container {
+    min-height: 100vh; /* Hauteur minimale */
+    border: 1px dashed #ccc; /* Bordure en pointillés pour la visibilité */
+   
+  }

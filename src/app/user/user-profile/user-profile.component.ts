@@ -41,7 +41,7 @@ export class UserProfileComponent {
       photoURLControl: [''],
       dateBirthControl: [user?.dateBirth || ''],
     });
-    this.fileUrl = this.user?.photoURL || '';
+    this.fileUrl = this.user?.photoURL || 'https://i.pinimg.com/originals/2f/15/f2/2f15f2e8c688b3120d3d26467b06330c.jpg';
   
   }
   loadFile(file: File): void {

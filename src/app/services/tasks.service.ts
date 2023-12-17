@@ -31,39 +31,53 @@ export class TasksService {
         console.log('Tâches récupérer', this.tasks);
       });
   }
+  generateUniqueId(): string {
+    const timestamp = new Date().getTime(); // Obtient le timestamp actuel
+    const randomPart = Math.random().toString(36).substring(2, 15); // Génère une partie aléatoire
+    const uniqueId = `${timestamp}-${randomPart}`;
+    return uniqueId;
+  }
   createNewTask(newTask: Task) {
+    newTask.id = this.generateUniqueId();
     this.tasks.push(newTask);
     this.saveTasks();
     
     console.log('Tâche créer', this.tasks);
   }
-  removeTask(task:Task){
-    const taskIndexToRemove = this.tasks.findIndex(
-    (El)=> El === task);
-    console.log(taskIndexToRemove);
-    this.tasks.splice(taskIndexToRemove, 1);
-    this.saveTasks();
-    this.emitTasks();
-  }
-
-
-  getTaskByIndex(index: number): Task | null {
-    if (index >= 0 && index < this.tasks.length) {
-      return this.tasks[index];
+  removeTask(taskId: string) {
+    const taskIndexToRemove = this.tasks.findIndex(task => task.id === taskId);
+    if (taskIndexToRemove !== -1) {
+      this.tasks.splice(taskIndexToRemove, 1);
+      this.saveTasks();
+      this.emitTasks();
+      console.log('Tâche supprimée avec l\'ID:', taskId);
     } else {
-      // Gérer le cas où l'index est invalide
-      console.error('Index invalide:', index);
-      return null;
+      console.error('Tâche non trouvée avec l\'ID:', taskId);
     }
   }
   
-  updateTask(index: number, newTask: any) {
-    if (index >= 0 && index < this.tasks.length) {
-      this.tasks[index] = newTask;
-      this.saveTasks(); 
+
+  getTaskById(id: string): Task | null {
+    const task = this.tasks.find((t) => t.id === id);
+    return task || null;
+  }
+  
+  updateTaskById(id: string, updatedTask: Task) {
+    const taskIndex = this.tasks.findIndex((t) => t.id === id);
+    if (taskIndex !== -1) {
+      this.tasks[taskIndex] = updatedTask;
+      this.saveTasks();
       this.emitTasks();
     } else {
-      console.error('Index invalide:', index);
+      console.error('ID de tâche invalide:', id);
+    }
+  }
+  updateTaskStatus(updatedTask: Task) {
+    const taskIndex = this.tasks.findIndex((t) => t.id === updatedTask.id);
+    if (taskIndex !== -1) {
+      this.tasks[taskIndex] = updatedTask;
+      this.saveTasks(); 
+      this.emitTasks();
     }
   }
   
