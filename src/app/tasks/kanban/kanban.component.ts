@@ -34,8 +34,8 @@ export class KanbanComponent implements OnInit {
         this.new = tasks.filter(task => task.statut === 'Nouveau');
         this.en_cours = tasks.filter(task => task.statut === 'En cours');
         this.fait = tasks.filter(task => task.statut === 'Fait');
-        this.bloquer = tasks.filter(task => task.statut === 'Bloquer');
-        this.archiver = tasks.filter(task => task.statut === 'Archiver');
+        this.bloquer = tasks.filter(task => task.statut === 'Bloque');
+        this.archiver = tasks.filter(task => task.statut === 'Archive');
       });
     this.ts.getTasks();
     this.ts.emitTasks();
@@ -58,8 +58,8 @@ export class KanbanComponent implements OnInit {
       case 'newContainer': return 'Nouveau';
       case 'inProgressContainer': return 'En cours';
       case 'doneContainer': return 'Fait';
-      case 'bloqueContainer': return 'Bloqué';
-      case 'archiveContainer': return 'Archivé';
+      case 'bloqueContainer': return 'Bloque';
+      case 'archiveContainer': return 'Archive';
       default: return 'Nouveau';
     }
   }
