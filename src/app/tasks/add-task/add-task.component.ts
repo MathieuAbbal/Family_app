@@ -46,7 +46,9 @@ export class AddTaskComponent implements OnInit {
 
     });
   }
-
+  goBack() {
+    this.router.navigate(['/home']);
+  }
   onSubmit() {
     const name = this.addTaskForm.get('name')?.value;
     const urg = this.addTaskForm.get('urg')?.value;

@@ -35,8 +35,9 @@
                         </div>
                 
                 
-                <div fxLayout="row" fxLayoutAlign="end">
-                    <button (click)="openSnackBar()" [disabled]="addTaskForm.invalid" mat-flat-button color="primary" type="submit">Ajouter</button>
+                <div class="flex flex-row justify-end" >
+                    <button class="m-2 p-2" (click)="goBack()" mat-stroked-button>Retour</button>
+                    <button class="m-2 p-2" (click)="openSnackBar()" [disabled]="addTaskForm.invalid" mat-stroked-button color="primary" type="submit">Ajouter</button>
                 </div>
             </form>
     
