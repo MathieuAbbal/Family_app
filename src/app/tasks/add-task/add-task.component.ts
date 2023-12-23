@@ -4,6 +4,7 @@ import { Task } from '../../models/task.model';
 import { Router } from '@angular/router';
 import { TasksService } from '../../services/tasks.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from 'src/app/services/auth.service';
 @Component({
   selector: 'app-add-task',
   templateUrl: './add-task.component.html',
@@ -17,14 +18,23 @@ export class AddTaskComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private ts: TasksService,
     private router: Router,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private userService: AuthService
   ) { }
   openSnackBar() {
     this._snackBar.open('Tache ajoutée', 'avec succès !!', {
       duration: this.durationInSeconds * 1000,
     });
   }
+  allUsers: any
   ngOnInit(): void {
+    this.userService.getAllUsers()
+    .then(users => {
+      this.allUsers = users;
+    })
+    .catch(error => {
+      console.error("Erreur lors de la récupération des utilisateurs :", error);
+    });
     this.initForm();
   }
   initForm() {
@@ -59,4 +69,7 @@ export class AddTaskComponent implements OnInit {
     toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
 
   };
+  getUserInfo() {
+    
+  }
 }

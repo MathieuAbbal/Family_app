@@ -97,6 +97,9 @@ export class EditTaskComponent implements OnInit {
   }
   tinymceInitParams = {
     selector: "textarea",
+    mobile: {
+      theme: 'mobile'
+    },
     browser_spellcheck: true,
     height: 300,
     plugins: 'lists anchor autolink charmap codesample emoticons image link  media searchreplace table visualblocks wordcount',
