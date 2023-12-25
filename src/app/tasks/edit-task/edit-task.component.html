@@ -1,11 +1,11 @@
-<div class="flex flex-col mx-6 p-2">
+<div class="flex flex-col bg-gradient-to-tr from-blue-200 via-indigo-200 to-pink-200 text-gray-700">
     <div class="flex justify-center">
         <div class=" w-full md:mx-48 flex flex-col m-6 p-6 bg-white border border-gray-200 rounded-lg shadow ">
             <div>
                 <h3>Editer la Tâche</h3>
             </div>
             <form [formGroup]="editTaskForm" class="flex flex-col">
-                <mat-form-field apparance="outline">
+                <mat-form-field apparance="fill">
                     <mat-label for="name">Tâche pour : </mat-label>
                     <mat-select formControlName="name" id="name">
                         <mat-option value="everybody">Everybody</mat-option>
@@ -15,7 +15,7 @@
                         <mat-option value="lucie">Lucie</mat-option>
                     </mat-select>
                 </mat-form-field>
-                <mat-form-field apparance="outline">
+                <mat-form-field apparance="fill">
                     <mat-label for="statut">Statut</mat-label>
                     <mat-select formControlName="statut" id="statut" required>
                         <mat-option value="Nouveau">Nouveau</mat-option>
@@ -25,7 +25,7 @@
                         <mat-option value="Archive">Archivé</mat-option>
                     </mat-select>
                 </mat-form-field>
-                <mat-form-field apparance="outline">
+                <mat-form-field apparance="fill">
                     <mat-label for="urg">Priorité</mat-label>
                     <mat-select formControlName="urg" id="urg" required>
                         <mat-option value="Urgent">Urgent !</mat-option>
@@ -33,7 +33,7 @@
                         <mat-option value="Pas urgent">Pas Urgent</mat-option>
                     </mat-select>
                 </mat-form-field>
-                <mat-form-field appearance="outline">
+                <mat-form-field appearance="fill">
                     <mat-label for="title">Titre</mat-label>
                     <input matInput formControlName="title" id="title" placeholder="Ex. Mon titre..." required>
                 </mat-form-field>

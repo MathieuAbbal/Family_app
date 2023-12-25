@@ -36,7 +36,7 @@ export class EditTaskComponent implements OnInit {
     dialogRef.afterClosed().subscribe(
       result => {
         if (result === true) {
-          this.tasksService.removeTask(task)
+          this.tasksService.removeTask(task.id)
           this.router.navigate(['/home'])
         }
         else { return }
@@ -97,12 +97,9 @@ export class EditTaskComponent implements OnInit {
   }
   tinymceInitParams = {
     selector: "textarea",
-    mobile: {
-      theme: 'mobile'
-    },
     browser_spellcheck: true,
     height: 300,
-    plugins: 'lists anchor autolink charmap codesample emoticons image link  media searchreplace table visualblocks wordcount',
+    plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
     language: 'fr_FR',
     toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
 
