@@ -1,47 +1,49 @@
-<div class="flex flex-col mx-6">
-    <div class="flex justify-center">
-        <div class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow ">
-            <div>
-                <h3>Ajouter une Tâche</h3>
-            </div>
-            <form [formGroup]="addTaskForm" (ngSubmit)="onSubmit()" class="flex flex-col justify-center">
-                <mat-form-field apparance="fill">
-                    <mat-label for="name">Tâche pour : </mat-label>
-                    <mat-select formControlName="name" id="name">
-                        <mat-option value="everybody">Everybody</mat-option>
-                        <mat-option value="mathieu">Mathieu</mat-option>
-                        <mat-option value="sophie">Sophie</mat-option>
-                        <mat-option value="charly">Charly</mat-option>
-                        <mat-option value="lucie">Lucie</mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field apparance="fill">
-                    <mat-label for="urg">Priorité</mat-label>
-                    <mat-select formControlName="urg" id="urg" required>
-                        <mat-option value="Urgent">Urgent !</mat-option>
-                        <mat-option value="Relativement urgent">Relativement urgent</mat-option>
-                        <mat-option value="Pas urgent">Pas Urgent</mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field appearance="fill">
-                    <label for="title">Titre</label>
-                    <input matInput formControlName="title" id="title" placeholder="Ex. Mon titre..." required>
-                </mat-form-field>
-               
-                    <mat-label for="descriptif">Descriptif</mat-label>
-                        <div>
-                            <editor formControlName="descriptif" [init]="tinymceInitParams" apiKey="etj7r4fmm6rkitgaelt4dgjx428mep5837b745zgcik1mxth"  style="z-index:1000">
-                            </editor>
-                        </div>
-                
-                
-                <div class="flex flex-row justify-end" >
-                    <button class="m-2 p-2" (click)="goBack()" mat-stroked-button>Retour</button>
-                    <button class="m-2 p-2" (click)="openSnackBar()" [disabled]="addTaskForm.invalid" mat-stroked-button color="primary" type="submit">Ajouter</button>
+<div class="bg-gradient-to-tr from-blue-200 via-indigo-200 to-pink-200 text-gray-700">
+    <div class="flex flex-col md:p-4 md:mx-6">
+        <div class="flex justify-center">
+            <div class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow ">
+                <div>
+                    <h3>Ajouter une Tâche</h3>
                 </div>
-            </form>
-    
+                <form [formGroup]="addTaskForm" (ngSubmit)="onSubmit()" class="flex flex-col justify-center">
+                    <mat-form-field apparance="fill">
+                        <mat-label for="name">Tâche pour : </mat-label>
+                        <mat-select formControlName="name" id="name">
+                            <mat-option value="everybody">Everybody</mat-option>
+                            <mat-option value="mathieu">Mathieu</mat-option>
+                            <mat-option value="sophie">Sophie</mat-option>
+                            <mat-option value="charly">Charly</mat-option>
+                            <mat-option value="lucie">Lucie</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field apparance="fill">
+                        <mat-label for="urg">Priorité</mat-label>
+                        <mat-select formControlName="urg" id="urg" required>
+                            <mat-option value="Urgent">Urgent !</mat-option>
+                            <mat-option value="Relativement urgent">Relativement urgent</mat-option>
+                            <mat-option value="Pas urgent">Pas Urgent</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <label for="title">Titre</label>
+                        <input matInput formControlName="title" id="title" placeholder="Ex. Mon titre..." required>
+                    </mat-form-field>
+                   
+                        <mat-label for="descriptif">Descriptif</mat-label>
+                            <div>
+                                <editor formControlName="descriptif" [init]="tinymceInitParams" apiKey="etj7r4fmm6rkitgaelt4dgjx428mep5837b745zgcik1mxth"  style="z-index:1000">
+                                </editor>
+                            </div>
+                    
+                    
+                    <div class="flex flex-row justify-end" >
+                        <button class="m-2 p-2" (click)="goBack()" mat-stroked-button>Retour</button>
+                        <button class="m-2 p-2" (click)="openSnackBar()" [disabled]="addTaskForm.invalid" mat-stroked-button color="primary" type="submit">Ajouter</button>
+                    </div>
+                </form>
+        
+            </div>
         </div>
+        
     </div>
-    
 </div>
