@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { DialogPhotoComponent } from '../dialogs/dialog-photo/dialog-photo.component';
@@ -16,6 +16,7 @@ export class PhotoComponent implements OnInit {
   photos: Photo[] = [];
   photosSubscription!: Subscription;
   private _snackBar: MatSnackBar
+  @ViewChild('photoContainer') photoContainer!: ElementRef;
 
   constructor(
     public dialog: MatDialog,
@@ -69,9 +70,16 @@ export class PhotoComponent implements OnInit {
       }
     }
   }
+
+  scrollToTop(): void {
+    if (this.photoContainer) {
+      this.photoContainer.nativeElement.scrollTop = 0;
+    }
+  }
+
   ngAfterViewInit(): void {
     
-}
+  }
   ngOnDestroy() {
     if (this.photosSubscription) { this.photosSubscription.unsubscribe() }
     if (this.scrollSubscription) { this.scrollSubscription.unsubscribe() }

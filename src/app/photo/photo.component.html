@@ -1,6 +1,6 @@
 <!--<button mat-flat-button color="accent" (click)="openDialog()">Ajouter</button>-->
 
-    <div class="bg-gradient-to-tr from-blue-200 via-indigo-200 to-pink-200 text-gray-700">
+    <div #photoContainer class="bg-gradient-to-tr from-blue-200 via-indigo-200 to-pink-200 text-gray-700" (scroll)="onScroll($event)">
 
         <div class="text-center text-xl font-bold">Partage de Photos</div>
         <div class="flex  justify-center">
@@ -23,7 +23,7 @@
 <button (click)="openDialog()" matTooltip="ajouter une photo" id="add-button" class="mat-fab-bottom-right" mat-fab>
     <mat-icon class="icon">add</mat-icon>
 </button>
-<button  matTooltip=""
-    id="scroll-button" class="mat-fab-bottom-right" mat-fab>
+<button (click)="scrollToTop()" matTooltip="Vers le haut"
+    id="scroll-button" class="mat-fab-bottom-right" mat-fab *ngIf="hideButton">
     <mat-icon class="icon">arrow_upward</mat-icon>
 </button>
