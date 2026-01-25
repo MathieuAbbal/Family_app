@@ -3,6 +3,12 @@
   padding: 10px 30px;
   width: 80%;
 }
+
+.bg-gradient-to-tr {
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+}
+
 @media only screen and (min-width: 860px) {
   .card {
     box-sizing: border-box;
