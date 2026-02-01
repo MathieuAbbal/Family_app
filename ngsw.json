@@ -1,0 +1,83 @@
+{
+  "configVersion": 1,
+  "timestamp": 1769957898189,
+  "index": "C:/Program Files/Git/Family_app/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "C:/Program Files/Git/Family_app/favicon.ico",
+        "C:/Program Files/Git/Family_app/index.html",
+        "C:/Program Files/Git/Family_app/main.fe0c9ccf0b6f9f0a.js",
+        "C:/Program Files/Git/Family_app/manifest.webmanifest",
+        "C:/Program Files/Git/Family_app/polyfills.3ff416977d150cb6.js",
+        "C:/Program Files/Git/Family_app/runtime.ac462ee0e5dfe49c.js",
+        "C:/Program Files/Git/Family_app/styles.e4ab78ef94a000cc.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "C:/Program Files/Git/Family_app/assets/Brazuca - Planning.png",
+        "C:/Program Files/Git/Family_app/assets/Family Values - Backyard Games.png",
+        "C:/Program Files/Git/Family_app/assets/Hands - Camera.png",
+        "C:/Program Files/Git/Family_app/assets/Hands - Picture.png",
+        "C:/Program Files/Git/Family_app/assets/Open Doodles - Stuff To Do.png",
+        "C:/Program Files/Git/Family_app/assets/icons/icon-128x128.png",
+        "C:/Program Files/Git/Family_app/assets/icons/icon-144x144.png",
+        "C:/Program Files/Git/Family_app/assets/icons/icon-152x152.png",
+        "C:/Program Files/Git/Family_app/assets/icons/icon-192x192.png",
+        "C:/Program Files/Git/Family_app/assets/icons/icon-384x384.png",
+        "C:/Program Files/Git/Family_app/assets/icons/icon-512x512.png",
+        "C:/Program Files/Git/Family_app/assets/icons/icon-72x72.png",
+        "C:/Program Files/Git/Family_app/assets/icons/icon-96x96.png"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [],
+  "hashTable": {
+    "C:/Program Files/Git/Family_app/assets/Brazuca - Planning.png": "f4d6321520e390680e878c9f9c28a740314e6746",
+    "C:/Program Files/Git/Family_app/assets/Family Values - Backyard Games.png": "d97e06d14a6ea405cbccd197e03974ebfc0fb0a1",
+    "C:/Program Files/Git/Family_app/assets/Hands - Camera.png": "88946ba9aa040c8f7bcb3bf1687fb05ff094e668",
+    "C:/Program Files/Git/Family_app/assets/Hands - Picture.png": "e9fe6ffef8b785949eba0313804704e066f53306",
+    "C:/Program Files/Git/Family_app/assets/Open Doodles - Stuff To Do.png": "18a5e0727137f19ca2e41aca48e6f1750f1880f3",
+    "C:/Program Files/Git/Family_app/assets/icons/icon-128x128.png": "8f1e5d9364172c268bd6e8437ee1727d3e95a076",
+    "C:/Program Files/Git/Family_app/assets/icons/icon-144x144.png": "848941a3ffc243897a1e33eadf454471a1732371",
+    "C:/Program Files/Git/Family_app/assets/icons/icon-152x152.png": "0d2efc54b292ad989411c622ac270b8ca7635fae",
+    "C:/Program Files/Git/Family_app/assets/icons/icon-192x192.png": "22a266989f023b064fac71a02be685b603ffca67",
+    "C:/Program Files/Git/Family_app/assets/icons/icon-384x384.png": "7475d0b56b3e5bb68d15aef016cd1302327bfb68",
+    "C:/Program Files/Git/Family_app/assets/icons/icon-512x512.png": "a1de7a1c89c00045b32e4c8a720b5cc6d9c42372",
+    "C:/Program Files/Git/Family_app/assets/icons/icon-72x72.png": "f3278f947e91060b8fa89697095077e23fa5d131",
+    "C:/Program Files/Git/Family_app/assets/icons/icon-96x96.png": "7a3a692b89c7786f2f7e6188b9aa0986ee92002a",
+    "C:/Program Files/Git/Family_app/favicon.ico": "11c35dd1a3448db598f0255cc0d02db8b227ec0b",
+    "C:/Program Files/Git/Family_app/index.html": "5cbd391823b1633a91118585f8ec203857b798ff",
+    "C:/Program Files/Git/Family_app/main.fe0c9ccf0b6f9f0a.js": "7884280adf548b1f0db11d44b3cab3a514392a05",
+    "C:/Program Files/Git/Family_app/manifest.webmanifest": "0caf21445a64e1af8701ed32dfd53d6b17b6a84c",
+    "C:/Program Files/Git/Family_app/polyfills.3ff416977d150cb6.js": "5e7c313762a8693062e58d804a894a11ec3afd3f",
+    "C:/Program Files/Git/Family_app/runtime.ac462ee0e5dfe49c.js": "7b04d2d76e73f1d1e08a3fbcda8a5a28786f64d4",
+    "C:/Program Files/Git/Family_app/styles.e4ab78ef94a000cc.css": "c2f19c587b024153e81fe10eb11315447e38c903"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/__\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}
