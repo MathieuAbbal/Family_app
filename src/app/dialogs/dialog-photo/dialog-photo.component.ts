@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Photo } from '../../models/photo.model';
 import { PhotosService } from '../../services/photos.service';
@@ -7,7 +7,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-dialog-photo',
-    imports: [CommonModule, ReactiveFormsModule],
+    imports: [ReactiveFormsModule],
     templateUrl: './dialog-photo.component.html',
     styleUrls: ['./dialog-photo.component.css']
 })

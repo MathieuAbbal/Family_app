@@ -7,7 +7,9 @@
         <input type="file" (change)="detectFiles($event)" accept="image/*" required
           class="block w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-family-pink/10 file:text-family-pink hover:file:bg-family-pink/20 transition-colors" />
       </label>
-      <p *ngIf="fileUploaded" class="text-family-green text-sm font-medium mt-2">Fichier charge !</p>
+      @if (fileUploaded) {
+        <p class="text-family-green text-sm font-medium mt-2">Fichier charge !</p>
+      }
     </div>
     <div>
       <label class="block mb-1 text-sm font-medium text-gray-600">Titre</label>

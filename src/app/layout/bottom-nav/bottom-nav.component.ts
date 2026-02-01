@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 
 @Component({
     selector: 'app-bottom-nav',
-    imports: [CommonModule, RouterModule],
+    imports: [RouterModule],
     template: `
     <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-warm-100 pb-safe z-50">
       <div class="flex justify-around items-center h-16">

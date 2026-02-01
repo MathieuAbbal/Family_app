@@ -11,16 +11,20 @@
         </button>
       </div>
       <div id="newContainer" cdkDropList [cdkDropListData]="new" (cdkDropListDropped)="drop($event)" class="flex-1 space-y-3 min-h-[60px]">
-        <div *ngFor="let itemNew of new" cdkDrag>
-          <div (click)="onEdit(itemNew.id)" class="card-fun p-4 cursor-pointer border-l-4 border-family-sky hover:shadow-card-hover transition-shadow">
-            <span [ngClass]="getUrgencyClass(itemNew.urg)">{{itemNew.urg}}</span>
-            <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemNew.title}}</h4>
-            <div class="flex items-center gap-1.5 mt-1">
-              <img *ngIf="userAvatars[itemNew.name]" [src]="userAvatars[itemNew.name]" class="w-5 h-5 rounded-full object-cover" />
-              <span class="text-xs text-gray-400">{{itemNew.name}}</span>
+        @for (itemNew of new; track itemNew) {
+          <div cdkDrag>
+            <div (click)="onEdit(itemNew.id)" class="card-fun p-4 cursor-pointer border-l-4 border-family-sky hover:shadow-card-hover transition-shadow">
+              <span [ngClass]="getUrgencyClass(itemNew.urg)">{{itemNew.urg}}</span>
+              <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemNew.title}}</h4>
+              <div class="flex items-center gap-1.5 mt-1">
+                @if (userAvatars[itemNew.name]) {
+                  <img [src]="userAvatars[itemNew.name]" class="w-5 h-5 rounded-full object-cover" />
+                }
+                <span class="text-xs text-gray-400">{{itemNew.name}}</span>
+              </div>
             </div>
           </div>
-        </div>
+        }
       </div>
     </div>
 
@@ -31,16 +35,20 @@
         <span class="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-family-orange/20 text-xs font-bold text-family-orange">{{en_cours.length}}</span>
       </div>
       <div id="inProgressContainer" cdkDropList [cdkDropListData]="en_cours" (cdkDropListDropped)="drop($event)" class="flex-1 space-y-3 min-h-[60px]">
-        <div *ngFor="let itemEnCours of en_cours" cdkDrag>
-          <div (click)="onEdit(itemEnCours.id)" class="card-fun p-4 cursor-pointer border-l-4 border-family-orange hover:shadow-card-hover transition-shadow">
-            <span [ngClass]="getUrgencyClass(itemEnCours.urg)">{{itemEnCours.urg}}</span>
-            <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemEnCours.title}}</h4>
-            <div class="flex items-center gap-1.5 mt-1">
-              <img *ngIf="userAvatars[itemEnCours.name]" [src]="userAvatars[itemEnCours.name]" class="w-5 h-5 rounded-full object-cover" />
-              <span class="text-xs text-gray-400">{{itemEnCours.name}}</span>
+        @for (itemEnCours of en_cours; track itemEnCours) {
+          <div cdkDrag>
+            <div (click)="onEdit(itemEnCours.id)" class="card-fun p-4 cursor-pointer border-l-4 border-family-orange hover:shadow-card-hover transition-shadow">
+              <span [ngClass]="getUrgencyClass(itemEnCours.urg)">{{itemEnCours.urg}}</span>
+              <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemEnCours.title}}</h4>
+              <div class="flex items-center gap-1.5 mt-1">
+                @if (userAvatars[itemEnCours.name]) {
+                  <img [src]="userAvatars[itemEnCours.name]" class="w-5 h-5 rounded-full object-cover" />
+                }
+                <span class="text-xs text-gray-400">{{itemEnCours.name}}</span>
+              </div>
             </div>
           </div>
-        </div>
+        }
       </div>
     </div>
 
@@ -51,16 +59,20 @@
         <span class="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-family-green/20 text-xs font-bold text-family-green">{{fait.length}}</span>
       </div>
       <div id="doneContainer" cdkDropList [cdkDropListData]="fait" (cdkDropListDropped)="drop($event)" class="flex-1 space-y-3 min-h-[60px]">
-        <div *ngFor="let itemFait of fait" cdkDrag>
-          <div (click)="onEdit(itemFait.id)" class="card-fun p-4 cursor-pointer border-l-4 border-family-green hover:shadow-card-hover transition-shadow">
-            <span [ngClass]="getUrgencyClass(itemFait.urg)">{{itemFait.urg}}</span>
-            <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemFait.title}}</h4>
-            <div class="flex items-center gap-1.5 mt-1">
-              <img *ngIf="userAvatars[itemFait.name]" [src]="userAvatars[itemFait.name]" class="w-5 h-5 rounded-full object-cover" />
-              <span class="text-xs text-gray-400">{{itemFait.name}}</span>
+        @for (itemFait of fait; track itemFait) {
+          <div cdkDrag>
+            <div (click)="onEdit(itemFait.id)" class="card-fun p-4 cursor-pointer border-l-4 border-family-green hover:shadow-card-hover transition-shadow">
+              <span [ngClass]="getUrgencyClass(itemFait.urg)">{{itemFait.urg}}</span>
+              <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemFait.title}}</h4>
+              <div class="flex items-center gap-1.5 mt-1">
+                @if (userAvatars[itemFait.name]) {
+                  <img [src]="userAvatars[itemFait.name]" class="w-5 h-5 rounded-full object-cover" />
+                }
+                <span class="text-xs text-gray-400">{{itemFait.name}}</span>
+              </div>
             </div>
           </div>
-        </div>
+        }
       </div>
     </div>
 
@@ -71,16 +83,20 @@
         <span class="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-100 text-xs font-bold text-red-500">{{bloquer.length}}</span>
       </div>
       <div id="bloqueContainer" cdkDropList [cdkDropListData]="bloquer" (cdkDropListDropped)="drop($event)" class="flex-1 space-y-3 min-h-[60px]">
-        <div *ngFor="let itemBloquer of bloquer" cdkDrag>
-          <div (click)="onEdit(itemBloquer.id)" class="card-fun p-4 cursor-pointer border-l-4 border-red-400 hover:shadow-card-hover transition-shadow">
-            <span [ngClass]="getUrgencyClass(itemBloquer.urg)">{{itemBloquer.urg}}</span>
-            <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemBloquer.title}}</h4>
-            <div class="flex items-center gap-1.5 mt-1">
-              <img *ngIf="userAvatars[itemBloquer.name]" [src]="userAvatars[itemBloquer.name]" class="w-5 h-5 rounded-full object-cover" />
-              <span class="text-xs text-gray-400">{{itemBloquer.name}}</span>
+        @for (itemBloquer of bloquer; track itemBloquer) {
+          <div cdkDrag>
+            <div (click)="onEdit(itemBloquer.id)" class="card-fun p-4 cursor-pointer border-l-4 border-red-400 hover:shadow-card-hover transition-shadow">
+              <span [ngClass]="getUrgencyClass(itemBloquer.urg)">{{itemBloquer.urg}}</span>
+              <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemBloquer.title}}</h4>
+              <div class="flex items-center gap-1.5 mt-1">
+                @if (userAvatars[itemBloquer.name]) {
+                  <img [src]="userAvatars[itemBloquer.name]" class="w-5 h-5 rounded-full object-cover" />
+                }
+                <span class="text-xs text-gray-400">{{itemBloquer.name}}</span>
+              </div>
             </div>
           </div>
-        </div>
+        }
       </div>
     </div>
 
@@ -91,16 +107,20 @@
         <span class="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-family-purple/20 text-xs font-bold text-family-purple">{{archiver.length}}</span>
       </div>
       <div id="archiveContainer" cdkDropList [cdkDropListData]="archiver" (cdkDropListDropped)="drop($event)" class="flex-1 space-y-3 min-h-[60px]">
-        <div *ngFor="let itemArchiver of archiver" cdkDrag>
-          <div (click)="onEdit(itemArchiver.id)" class="card-fun p-4 cursor-pointer border-l-4 border-family-purple hover:shadow-card-hover transition-shadow">
-            <span [ngClass]="getUrgencyClass(itemArchiver.urg)">{{itemArchiver.urg}}</span>
-            <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemArchiver.title}}</h4>
-            <div class="flex items-center gap-1.5 mt-1">
-              <img *ngIf="userAvatars[itemArchiver.name]" [src]="userAvatars[itemArchiver.name]" class="w-5 h-5 rounded-full object-cover" />
-              <span class="text-xs text-gray-400">{{itemArchiver.name}}</span>
+        @for (itemArchiver of archiver; track itemArchiver) {
+          <div cdkDrag>
+            <div (click)="onEdit(itemArchiver.id)" class="card-fun p-4 cursor-pointer border-l-4 border-family-purple hover:shadow-card-hover transition-shadow">
+              <span [ngClass]="getUrgencyClass(itemArchiver.urg)">{{itemArchiver.urg}}</span>
+              <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemArchiver.title}}</h4>
+              <div class="flex items-center gap-1.5 mt-1">
+                @if (userAvatars[itemArchiver.name]) {
+                  <img [src]="userAvatars[itemArchiver.name]" class="w-5 h-5 rounded-full object-cover" />
+                }
+                <span class="text-xs text-gray-400">{{itemArchiver.name}}</span>
+              </div>
             </div>
           </div>
-        </div>
+        }
       </div>
     </div>
 

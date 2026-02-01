@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { EditProfileService } from '../../user/edit-profile.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'app-sidebar',
-    imports: [CommonModule, RouterModule],
+    imports: [RouterModule],
     template: `
     <aside class="w-64 h-screen bg-white/80 backdrop-blur-lg border-r border-warm-100 flex flex-col p-4 sticky top-0">
       <div class="flex items-center gap-3 px-3 py-4 mb-6">

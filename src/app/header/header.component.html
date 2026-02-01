@@ -1,45 +1,65 @@
 <mat-sidenav-container style="height: -webkit-fill-available; ">
-    <mat-sidenav #sidenav style="height: fit-content;width: 60vw;">
-        <mat-nav-list>
-            <mat-list-item *ngIf="isAuth"><a routerLink="/home" routerLinkActive="active"
-                    (click)="sidenav.toggle()">Accueil</a></mat-list-item>
-            <mat-list-item *ngIf="isAuth"><a routerLink="/add-task" routerLinkActive="active"
-                    (click)="sidenav.toggle()">Ajouter une tâche</a></mat-list-item>
-            <mat-list-item *ngIf="isAuth"><a routerLink="/photo" routerLinkActive="active"
-                    (click)="sidenav.toggle()">Photos</a></mat-list-item>
-            <mat-list-item *ngIf="isAuth"><a routerLink="/shopping" routerLinkActive="active"
-                    (click)="sidenav.toggle()">Shopping</a></mat-list-item>
-            <mat-list-item *ngIf="isAuth"><a routerLink="/map" routerLinkActive="active"
-                    (click)="sidenav.toggle()">Carte</a></mat-list-item>
-            <mat-list-item *ngIf="isAuth"><a routerLink="/user-profile" routerLinkActive="active"
-                    (click)="sidenav.toggle()">Profil</a></mat-list-item>
-            <mat-list-item *ngIf="isAuth"><a (click)="onSignOut()" (click)="sidenav.toggle()">Se déconnecter</a>
-            </mat-list-item>
-            <mat-list-item *ngIf="!isAuth"><a routerLink="/auth/signup" routerLinkActive="active"
-                    (click)="sidenav.toggle()">Créer un compte</a></mat-list-item>
-            <mat-list-item *ngIf="!isAuth"><a routerLink="/auth/signin" routerLinkActive="active"
-                    (click)="sidenav.toggle()">Connexion</a></mat-list-item>
+  <mat-sidenav #sidenav style="height: fit-content;width: 60vw;">
+    <mat-nav-list>
+      @if (isAuth) {
+        <mat-list-item><a routerLink="/home" routerLinkActive="active"
+        (click)="sidenav.toggle()">Accueil</a></mat-list-item>
+      }
+      @if (isAuth) {
+        <mat-list-item><a routerLink="/add-task" routerLinkActive="active"
+        (click)="sidenav.toggle()">Ajouter une tâche</a></mat-list-item>
+      }
+      @if (isAuth) {
+        <mat-list-item><a routerLink="/photo" routerLinkActive="active"
+        (click)="sidenav.toggle()">Photos</a></mat-list-item>
+      }
+      @if (isAuth) {
+        <mat-list-item><a routerLink="/shopping" routerLinkActive="active"
+        (click)="sidenav.toggle()">Shopping</a></mat-list-item>
+      }
+      @if (isAuth) {
+        <mat-list-item><a routerLink="/map" routerLinkActive="active"
+        (click)="sidenav.toggle()">Carte</a></mat-list-item>
+      }
+      @if (isAuth) {
+        <mat-list-item><a routerLink="/user-profile" routerLinkActive="active"
+        (click)="sidenav.toggle()">Profil</a></mat-list-item>
+      }
+      @if (isAuth) {
+        <mat-list-item><a (click)="onSignOut()" (click)="sidenav.toggle()">Se déconnecter</a>
+      </mat-list-item>
+    }
+    @if (!isAuth) {
+      <mat-list-item><a routerLink="/auth/signup" routerLinkActive="active"
+      (click)="sidenav.toggle()">Créer un compte</a></mat-list-item>
+    }
+    @if (!isAuth) {
+      <mat-list-item><a routerLink="/auth/signin" routerLinkActive="active"
+      (click)="sidenav.toggle()">Connexion</a></mat-list-item>
+    }
 
-        </mat-nav-list>
-    </mat-sidenav>
-    <mat-sidenav-content>
-        <div style="height: 88vh;">
-            <mat-toolbar color="primary">
-                <div class="flex flex-row justify-between align-middle w-full">
-                    <div class="flex align-middle">
-                        <button mat-icon-button aria-label="Menu" (click)="sidenav.open()">
-                            <mat-icon>menu</mat-icon>
-                        </button>
-                        <span style="margin: 10px;">Family App</span>
-                    </div>
-
-                    <div *ngIf="isAuth">
-                        <app-user-avatar ></app-user-avatar>
-                    </div>
-                </div>
-
-            </mat-toolbar>
-            <router-outlet></router-outlet>
+  </mat-nav-list>
+</mat-sidenav>
+<mat-sidenav-content>
+  <div style="height: 88vh;">
+    <mat-toolbar color="primary">
+      <div class="flex flex-row justify-between align-middle w-full">
+        <div class="flex align-middle">
+          <button mat-icon-button aria-label="Menu" (click)="sidenav.open()">
+            <mat-icon>menu</mat-icon>
+          </button>
+          <span style="margin: 10px;">Family App</span>
         </div>
-    </mat-sidenav-content>
+
+        @if (isAuth) {
+          <div>
+            <app-user-avatar ></app-user-avatar>
+          </div>
+        }
+      </div>
+
+    </mat-toolbar>
+    <router-outlet></router-outlet>
+  </div>
+</mat-sidenav-content>
 </mat-sidenav-container>
