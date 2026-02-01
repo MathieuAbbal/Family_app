@@ -1,0 +1,5 @@
+{
+  "installCommand": "npm install --legacy-peer-deps",
+  "buildCommand": "ng build",
+  "outputDirectory": "dist/familyapp"
+}
