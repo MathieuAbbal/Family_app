@@ -1,7 +1,69 @@
-/* You can add global styles to this file, and also import other style files */
-
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
+/* Base */
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #FFF8F0, #FFF1F2, #FFF7ED);
+  min-height: 100vh;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Nunito', sans-serif;
+}
+
+/* Page transition */
+router-outlet + * {
+  animation: fadeSlideIn 0.3s ease-out;
+}
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Reusable card */
+@layer components {
+  .card-fun {
+    @apply bg-white rounded-2xl shadow-card transition-all duration-300;
+  }
+  .card-fun:hover {
+    @apply shadow-card-hover;
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-family-pink to-family-orange;
+  }
+  .btn-gradient {
+    @apply py-3 rounded-xl font-bold text-white bg-gradient-to-r from-family-pink to-family-orange hover:shadow-fun transition-all disabled:opacity-50;
+  }
+  .input-fun {
+    @apply w-full px-4 py-3 rounded-xl border-2 border-warm-200 focus:border-family-pink focus:ring-2 focus:ring-family-pink/20 outline-none transition-all;
+  }
+}
+
+/* Bottom nav safe area */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+
+/* Material overrides */
+.mat-toolbar.mat-primary {
+  background: linear-gradient(135deg, #FF6B9D, #FF8A65) !important;
+}
+.mat-flat-button.mat-accent,
+.mat-raised-button.mat-accent,
+.mat-fab.mat-accent {
+  background: linear-gradient(135deg, #FF6B9D, #FFB74D) !important;
+  color: white !important;
+}
+.mat-mdc-dialog-container {
+  border-radius: 1.5rem !important;
+}
+.mat-mdc-snack-bar-container {
+  border-radius: 1rem !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #FED7AA; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #FB923C; }

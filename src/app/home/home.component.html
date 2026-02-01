@@ -1,13 +1,31 @@
-<app-kanban></app-kanban>
+<!-- Welcome Card -->
+<div class="card-fun bg-gradient-to-r from-family-pink via-family-coral to-family-orange p-6 mb-6 text-white">
+  <h1 class="font-display text-2xl font-bold">Bonjour la famille ! 👋</h1>
+  <p class="mt-1 opacity-90">Bienvenue sur votre espace famille</p>
+</div>
 
+<!-- Quick Actions Grid -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <a routerLink="/photo" class="card-fun p-4 text-center hover:shadow-card-hover transition-shadow cursor-pointer">
+    <div class="text-3xl mb-2">📸</div>
+    <div class="font-display font-semibold text-gray-700 text-sm">Photos</div>
+  </a>
+  <a routerLink="/add-task" class="card-fun p-4 text-center hover:shadow-card-hover transition-shadow cursor-pointer">
+    <div class="text-3xl mb-2">✏️</div>
+    <div class="font-display font-semibold text-gray-700 text-sm">Nouvelle tache</div>
+  </a>
+  <a routerLink="/shopping" class="card-fun p-4 text-center hover:shadow-card-hover transition-shadow cursor-pointer">
+    <div class="text-3xl mb-2">🛒</div>
+    <div class="font-display font-semibold text-gray-700 text-sm">Courses</div>
+  </a>
+  <a routerLink="/map" class="card-fun p-4 text-center hover:shadow-card-hover transition-shadow cursor-pointer">
+    <div class="text-3xl mb-2">🗺️</div>
+    <div class="font-display font-semibold text-gray-700 text-sm">Carte</div>
+  </a>
+</div>
 
-<!--
-<div class="flex flex-col justify-center">
-    <h1 class="text-center">Bienvenue sur l'application Family! 💕</h1>
-    <h2 style="text-align: center;">Liste des tâches à faire:</h2>
-    <div class="flex  justify-center">
-        <img src="../../assets/Brazuca - Planning.png" alt="" style="width: 150px;">
-    </div>
-      
-
-</div>-->
+<!-- Kanban Board -->
+<div class="card-fun p-4">
+  <h2 class="font-display text-lg font-bold text-gray-700 mb-4">📋 Tableau des taches</h2>
+  <app-kanban></app-kanban>
+</div>

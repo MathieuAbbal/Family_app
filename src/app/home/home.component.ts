@@ -4,13 +4,16 @@ import { Task } from '../models/task.model';
 import { Subscription } from 'rxjs';
 import { TasksService } from '../services/tasks.service';
 import { MatDialog } from '@angular/material/dialog';
+import { KanbanComponent } from '../tasks/kanban/kanban.component';
+import { RouterModule } from '@angular/router';
 
 
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+    selector: 'app-home',
+    imports: [KanbanComponent, RouterModule],
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
 

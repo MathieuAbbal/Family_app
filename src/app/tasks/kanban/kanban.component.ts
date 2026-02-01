@@ -1,25 +1,31 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TasksService } from 'src/app/services/tasks.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { Task } from '../../models/task.model';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { KanbanService } from 'src/app/services/kanban.service';
 @Component({
-  selector: 'app-kanban',
-  templateUrl: './kanban.component.html',
-  styleUrls: ['./kanban.component.css']
+    selector: 'app-kanban',
+    imports: [CommonModule, DragDropModule, RouterModule],
+    templateUrl: './kanban.component.html',
+    styleUrls: ['./kanban.component.css']
 })
 export class KanbanComponent implements OnInit {
 
   tasks: Task[] = [];
   tasksSubsription!: Subscription;
+  userAvatars: { [name: string]: string } = {};
+
   constructor(
     private ts: TasksService,
     public dialog: MatDialog,
     private router: Router,
-    private kanbanService: KanbanService
+    private kanbanService: KanbanService,
+    private authService: AuthService
   ) { }
 
   new: Task[] = [];
@@ -39,6 +45,13 @@ export class KanbanComponent implements OnInit {
       });
     this.ts.getTasks();
     this.ts.emitTasks();
+    this.authService.getAllUsers().then((users: any[]) => {
+      users.forEach(u => {
+        if (u.displayName && u.photoURL) {
+          this.userAvatars[u.displayName] = u.photoURL;
+        }
+      });
+    });
   }
 
   drop(event: CdkDragDrop<any[]>) {

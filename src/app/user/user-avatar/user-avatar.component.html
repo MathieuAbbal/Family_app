@@ -1,6 +1,4 @@
-<div *ngIf="user" class="flex items-center gap-4">
-    <img class="h-12 w-12 object-cover rounded-full" [src]="fileUrl" alt="Photo de profil">
-    <div class="font-medium dark:text-white">
-        <div>{{user.displayName}}</div>
-    </div>
-</div>
+<a *ngIf="user" routerLink="/user-profile" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+  <img [src]="fileUrl" class="w-9 h-9 rounded-full object-cover ring-2 ring-family-pink/30" alt="Photo de profil">
+  <span class="font-medium text-sm text-gray-700 hidden md:inline">{{user.displayName}}</span>
+</a>

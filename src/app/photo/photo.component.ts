@@ -5,68 +5,138 @@ import { DialogPhotoComponent } from '../dialogs/dialog-photo/dialog-photo.compo
 import { Photo } from '../models/photo.model';
 import { PhotosService } from '../services/photos.service';
 import { ConfirmDialogComponent } from '../dialogs/confirm-dialog/confirm-dialog.component';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { CommentsService } from '../services/comments.service';
+import { auth, db } from '../firebase';
+import { ref, get } from 'firebase/database';
+
+import { CommonModule, registerLocaleData } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import localeFr from '@angular/common/locales/fr';
+
+registerLocaleData(localeFr);
 
 @Component({
-  selector: 'app-photo',
-  templateUrl: './photo.component.html',
-  styleUrls: ['./photo.component.css']
+    selector: 'app-photo',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './photo.component.html',
+    styleUrls: ['./photo.component.css']
 })
 export class PhotoComponent implements OnInit {
   photos: Photo[] = [];
   photosSubscription!: Subscription;
-  private _snackBar: MatSnackBar
   @ViewChild('photoContainer') photoContainer!: ElementRef;
 
   constructor(
     public dialog: MatDialog,
-    private ps: PhotosService
-    ) { }
+    private ps: PhotosService,
+    private commentsService: CommentsService
+  ) { }
 
   hideButton = false;
+  scrollSubscription!: Subscription;
+  currentUid = auth.currentUser?.uid || '';
+  usersCache: { [uid: string]: { displayName: string; photoURL: string } } = {};
 
-  
-
-  scrollSubscription!: Subscription
   ngOnInit(): void {
+    get(ref(db, '/users')).then(snap => {
+      const data = snap.val() || {};
+      Object.keys(data).forEach(uid => {
+        this.usersCache[uid] = {
+          displayName: data[uid].displayName || '',
+          photoURL: data[uid].photoURL || ''
+        };
+      });
+    });
     this.photosSubscription = this.ps.photosSubject.subscribe(
       (photos: Photo[]) => {
         this.photos = photos.sort((a, b) => {
           const dateA = new Date(a.createdDate);
           const dateB = new Date(b.createdDate);
-          return dateB.getTime() - dateA.getTime();  // Tri décroissant par createdDate
+          return dateB.getTime() - dateA.getTime();
         });
+        this.loadInteractions();
       });
     this.ps.emitPhotos();
     this.ps.getPhotos();
   }
 
-  openDialog() {
-    const dialogRef = this.dialog.open(DialogPhotoComponent, {
-      disableClose: true
-    });
-
-  
-  }
-  onDelete(photo: Photo) {
-    let dialogRef = this.dialog.open(ConfirmDialogComponent,  { 
-      data: { customMessage: "Etes-vous sûr(e) de vouloir supprimer la photo ?" } ,
-      
-    })
-    dialogRef.afterClosed().subscribe(
-      result => {
-        if (result === true) {
-          this.ps.removePhoto(photo)
-        }
-        else { return }
+  loadInteractions() {
+    const uid = auth.currentUser?.uid;
+    this.photos.forEach((photo, i) => {
+      this.commentsService.getComments(i).then(comments => photo._comments = comments);
+      this.commentsService.getLikeCount(i).then(count => photo._likeCount = count);
+      if (uid) {
+        this.commentsService.isLiked(i, uid).then(liked => photo._liked = liked);
       }
-    )
+    });
   }
+
+  toggleLike(index: number) {
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
+    this.commentsService.toggleLike(index, uid).then(liked => {
+      this.photos[index]._liked = liked;
+      return this.commentsService.getLikeCount(index);
+    }).then(count => {
+      this.photos[index]._likeCount = count;
+    });
+  }
+
+  toggleComments(index: number) {
+    this.photos[index]._showComments = !this.photos[index]._showComments;
+    if (this.photos[index]._showComments && !this.photos[index]._comments?.length) {
+      this.commentsService.getComments(index).then(comments => this.photos[index]._comments = comments);
+    }
+  }
+
+  addComment(index: number) {
+    const text = this.photos[index]._newCommentText?.trim();
+    if (!text) return;
+    const user = auth.currentUser;
+    if (!user) return;
+    get(ref(db, `/users/${user.uid}`)).then(snapshot => {
+      const profile = snapshot.val() || {};
+      const comment = {
+        photoIndex: index,
+        userId: user.uid,
+        userName: profile.displayName || user.displayName || user.email || 'Anonyme',
+        userPhoto: profile.photoURL || user.photoURL || '',
+        text,
+        createdDate: new Date().toISOString()
+      };
+      return this.commentsService.addComment(index, comment);
+    }).then(() => {
+      this.photos[index]._newCommentText = '';
+      this.commentsService.getComments(index).then(comments => this.photos[index]._comments = comments);
+    });
+  }
+
+  deleteComment(photoIndex: number, commentId: string) {
+    this.commentsService.deleteComment(photoIndex, commentId).then(() => {
+      this.commentsService.getComments(photoIndex).then(comments => this.photos[photoIndex]._comments = comments);
+    });
+  }
+
+  openDialog() {
+    this.dialog.open(DialogPhotoComponent, { disableClose: true });
+  }
+
+  onDelete(photo: Photo) {
+    let dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: { customMessage: "Etes-vous sur(e) de vouloir supprimer la photo ?" },
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        this.ps.removePhoto(photo);
+      }
+    });
+  }
+
   onScroll(event: any): void {
-    if(event){
-      this.hideButton = true
-      if(event.target.scrollTop === 0){
-        this.hideButton = false
+    if (event) {
+      this.hideButton = true;
+      if (event.target.scrollTop === 0) {
+        this.hideButton = false;
       }
     }
   }
@@ -77,11 +147,8 @@ export class PhotoComponent implements OnInit {
     }
   }
 
-  ngAfterViewInit(): void {
-    
-  }
   ngOnDestroy() {
-    if (this.photosSubscription) { this.photosSubscription.unsubscribe() }
-    if (this.scrollSubscription) { this.scrollSubscription.unsubscribe() }
+    if (this.photosSubscription) { this.photosSubscription.unsubscribe(); }
+    if (this.scrollSubscription) { this.scrollSubscription.unsubscribe(); }
   }
 }

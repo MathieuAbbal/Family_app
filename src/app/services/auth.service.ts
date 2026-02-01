@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import * as firebase from 'firebase/app';
-
+import { auth, db } from '../firebase';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { ref, set, get } from 'firebase/database';
 
 @Injectable({
   providedIn: 'root'
@@ -11,22 +12,18 @@ export class AuthService {
   createNewUser(email: string, password: string) {
     return new Promise<void>(
       (resolve, reject) => {
-        firebase.auth().createUserWithEmailAndPassword(email, password)
+        createUserWithEmailAndPassword(auth, email, password)
           .then((userCredential) => {
-            // L'utilisateur a été créé dans Firebase Authentication
-            // Maintenant, enregistrez les informations supplémentaires dans la Realtime Database
             const user = userCredential.user;
-            return firebase.database().ref('/users/' + user.uid).set({
+            return set(ref(db, '/users/' + user.uid), {
               email: user.email,
               uid: user.uid
             });
           })
           .then(() => {
-            // Les données de l'utilisateur sont enregistrées dans la Realtime Database
             resolve();
           })
           .catch((error) => {
-            // Gérer les erreurs
             reject(error);
           });
       }
@@ -36,7 +33,7 @@ export class AuthService {
   signInUser(email: string, password: string) {
     return new Promise<void>(
       (resolve, reject) => {
-        firebase.auth().signInWithEmailAndPassword(email, password).then(
+        signInWithEmailAndPassword(auth, email, password).then(
           () => {
             resolve();
           },
@@ -48,20 +45,19 @@ export class AuthService {
     );
   }
   signOutUser() {
-    firebase.auth().signOut();
+    signOut(auth);
   }
   allUsers: any[] = [];
   getAllUsers() {
     return new Promise((resolve, reject) => {
-      const dbRef = firebase.database().ref('/users');
-      dbRef.once('value')
+      const dbRef = ref(db, '/users');
+      get(dbRef)
         .then(snapshot => {
-          const usersObject = snapshot.val(); // Ceci est un objet
+          const usersObject = snapshot.val();
           if (usersObject) {
-            // Transformer l'objet en tableau
             this.allUsers = Object.keys(usersObject).map(key => ({ id: key, ...usersObject[key] }));
           } else {
-            this.allUsers = []; // Aucun utilisateur, donc on initialise un tableau vide
+            this.allUsers = [];
           }
           console.log("Utilisateurs récupérés : ", this.allUsers);
           resolve(this.allUsers);
@@ -71,7 +67,5 @@ export class AuthService {
         });
     });
   }
-  
 
 }
-

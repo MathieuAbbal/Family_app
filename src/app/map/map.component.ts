@@ -6,6 +6,7 @@ import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
 
 @Component({
   selector: 'app-map',
+  standalone: true,
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css']
 })

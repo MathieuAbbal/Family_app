@@ -1,29 +1,58 @@
-<!--<button mat-flat-button color="accent" (click)="openDialog()">Ajouter</button>-->
-
-    <div #photoContainer class="bg-gradient-to-tr from-blue-200 via-indigo-200 to-pink-200 text-gray-700" (scroll)="onScroll($event)">
-
-        <div class="text-center text-xl font-bold">Partage de Photos</div>
-        <div class="flex  justify-center">
-            <img src="../../assets/Hands - Camera.png" alt="" style="width: 150px;">
+<div #photoContainer class="max-w-2xl mx-auto px-4" (scroll)="onScroll($event)">
+  <div class="text-center mb-6">
+    <h1 class="font-display text-2xl font-bold text-gradient">📸 Photos de famille</h1>
+  </div>
+  <div class="space-y-6">
+    <div *ngFor="let item of photos; let i = index" class="card-fun overflow-hidden">
+      <img [src]="item.image" class="w-full object-contain" alt="{{item.title}}">
+      <div class="p-4">
+        <h3 class="font-display font-bold text-gray-700">{{item.title}}</h3>
+        <p class="text-xs text-gray-400 mt-1">{{item.createdDate | date: "d MMMM yyyy 'à' HH:mm" : '' : 'fr'}}</p>
+        <div class="flex items-center gap-4 mt-3 pt-3 border-t border-gray-100">
+          <button (click)="toggleLike(i)" class="flex items-center gap-1 text-sm transition-colors"
+            [class]="item._liked ? 'text-family-pink' : 'text-gray-400 hover:text-family-pink'">
+            <span>{{item._liked ? '❤️' : '🤍'}}</span>
+            <span class="font-medium">{{item._likeCount || 0}}</span>
+          </button>
+          <button (click)="toggleComments(i)" class="flex items-center gap-1 text-sm text-gray-400 hover:text-family-sky transition-colors">
+            <span>💬</span>
+            <span class="font-medium">{{item._comments?.length || 0}}</span>
+          </button>
+          <button (click)="onDelete(item)" title="supprimer" class="ml-auto text-gray-300 hover:text-red-400 transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          </button>
         </div>
-
-        <mat-card *ngFor="let item of photos" class="mat-elevation-z6 card">
-            <h2>{{item.title}}</h2>
-            <img [src]="item.image">
-            <p>Mis en ligne le : {{item.createdDate | date: ' le d MMMM yyyy à HH:mm'}}</p>
-            <mat-card-actions style="padding: 1em;" fxLayoutAlign="end">
-                <button matTooltip="supprimer la photo" (click)="onDelete(item)"  type="submit" mat-mini-fab color="warn">
-                    <mat-icon>delete</mat-icon>
+        <div *ngIf="item._showComments" class="mt-3 pt-3 border-t border-gray-100">
+          <div *ngFor="let comment of item._comments" class="flex gap-2 mb-3">
+            <img [src]="usersCache[comment.userId]?.photoURL || comment.userPhoto || 'https://i.pinimg.com/originals/2f/15/f2/2f15f2e8c688b3120d3d26467b06330c.jpg'"
+              class="w-7 h-7 rounded-full object-cover flex-shrink-0" />
+            <div class="bg-gray-50 rounded-xl px-3 py-2 flex-1">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-gray-600">{{usersCache[comment.userId]?.displayName || comment.userName || 'Anonyme'}}</span>
+                <button *ngIf="comment.userId === currentUid" (click)="deleteComment(i, comment.id)"
+                  class="text-gray-300 hover:text-red-400 transition-colors ml-2">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
-            </mat-card-actions>
-
-        </mat-card>
+              </div>
+              <p class="text-sm text-gray-700">{{comment.text}}</p>
+            </div>
+          </div>
+          <div class="flex gap-2 mt-2">
+            <input [(ngModel)]="item._newCommentText" placeholder="Ecrire un commentaire..."
+              (keyup.enter)="addComment(i)" class="input-fun flex-1 text-sm py-2" />
+            <button (click)="addComment(i)" class="btn-gradient text-sm px-3 py-2">Envoyer</button>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+</div>
 
-<button (click)="openDialog()" matTooltip="ajouter une photo" id="add-button" class="mat-fab-bottom-right" mat-fab>
-    <mat-icon class="icon">add</mat-icon>
+<button (click)="openDialog()" title="ajouter une photo"
+  class="fixed bottom-24 md:bottom-8 right-6 w-14 h-14 rounded-full btn-gradient flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow z-50">
+  <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
 </button>
-<button (click)="scrollToTop()" matTooltip="Vers le haut"
-    id="scroll-button" class="mat-fab-bottom-right" mat-fab *ngIf="hideButton">
-    <mat-icon class="icon">arrow_upward</mat-icon>
+<button *ngIf="hideButton" (click)="scrollToTop()" title="Vers le haut"
+  class="fixed bottom-24 md:bottom-8 right-24 w-14 h-14 rounded-full bg-white shadow-lg flex items-center justify-center hover:shadow-xl transition-shadow z-50 text-family-pink">
+  <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
 </button>

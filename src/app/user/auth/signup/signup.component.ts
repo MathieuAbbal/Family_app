@@ -1,17 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder,UntypedFormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 
-
 @Component({
-  selector: 'app-signup',
-  templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.css']
+    selector: 'app-signup',
+    imports: [CommonModule, RouterModule, ReactiveFormsModule],
+    templateUrl: './signup.component.html',
+    styleUrls: ['./signup.component.css']
 })
 export class SignupComponent implements OnInit {
   signupForm!: UntypedFormGroup;
   errorMessage!: string;
+  showPassword = false;
 
 
 
@@ -45,16 +48,22 @@ export class SignupComponent implements OnInit {
     this.authService.createNewUser(email, password).then(
       () => {
         this.router.navigate(['/']);
-        console.log('utilisateur créer !',createNewUser )
+        console.log('utilisateur cree !')
       },
       (error) => {
-        this.errorMessage = error;
+        this.errorMessage = this.translateError(error);
       }
     );
   }
-}
 
-function createNewUser(arg0: string, createNewUser: any) {
-  throw new Error('Function not implemented.');
+  translateError(error: any): string {
+    const code = error?.code || String(error);
+    switch (code) {
+      case 'auth/email-already-in-use': return 'Cette adresse email est deja utilisee.';
+      case 'auth/invalid-email': return 'Adresse email invalide.';
+      case 'auth/weak-password': return 'Le mot de passe doit contenir au moins 6 caracteres.';
+      case 'auth/operation-not-allowed': return 'Operation non autorisee.';
+      default: return 'Une erreur est survenue lors de la creation du compte.';
+    }
+  }
 }
-
