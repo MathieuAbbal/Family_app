@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TasksService } from 'src/app/services/tasks.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { User } from 'src/app/models/user.model';
 import { Task } from '../../models/task.model';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { KanbanService } from 'src/app/services/kanban.service';
@@ -14,7 +15,7 @@ import { KanbanService } from 'src/app/services/kanban.service';
     templateUrl: './kanban.component.html',
     styleUrls: ['./kanban.component.css']
 })
-export class KanbanComponent implements OnInit {
+export class KanbanComponent implements OnInit, OnDestroy {
 
   tasks: Task[] = [];
   tasksSubsription!: Subscription;
@@ -45,7 +46,7 @@ export class KanbanComponent implements OnInit {
       });
     this.ts.getTasks();
     this.ts.emitTasks();
-    this.authService.getAllUsers().then((users: any[]) => {
+    this.authService.getAllUsers().then((users: User[]) => {
       users.forEach(u => {
         if (u.displayName && u.photoURL) {
           this.userAvatars[u.displayName] = u.photoURL;
@@ -54,8 +55,7 @@ export class KanbanComponent implements OnInit {
     });
   }
 
-  drop(event: CdkDragDrop<any[]>) {
-    console.log('drop', event);
+  drop(event: CdkDragDrop<Task[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
@@ -64,8 +64,7 @@ export class KanbanComponent implements OnInit {
       this.kanbanService.transferTask(event.previousContainer.data, movedTask, event.container.data, newStatus);
     }
   }
-  
-  // Cette méthode détermine le nouveau statut basé sur l'ID du conteneur
+
   getStatusFromContainer(containerId: string): string {
     switch (containerId) {
       case 'newContainer': return 'Nouveau';
@@ -76,7 +75,7 @@ export class KanbanComponent implements OnInit {
       default: return 'Nouveau';
     }
   }
-  
+
   getUrgencyClass(urgency: string): string {
     switch(urgency) {
       case 'Urgent':
@@ -96,4 +95,3 @@ export class KanbanComponent implements OnInit {
     if (this.tasksSubsription) { this.tasksSubsription.unsubscribe() };
   }
 }
-

@@ -1,9 +1,10 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, ViewChild } from '@angular/core';
 
 import { EditProfileService } from '../edit-profile.service';
 import { User } from '../../models/user.model';
-import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-user-profile',
@@ -11,26 +12,32 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     templateUrl: './user-profile.component.html',
     styleUrls: ['./user-profile.component.css']
 })
-export class UserProfileComponent {
+export class UserProfileComponent implements OnInit, OnDestroy {
   user: User | null = null;
-  profileForm!: UntypedFormGroup;
-  formBuilder = new UntypedFormBuilder();
+  profileForm!: FormGroup;
   fileUrl!: string;
   fileIsUploading = false;
   fileUploaded = false;
+  private userSubscription!: Subscription;
 
-  @ViewChild('previewImg') previewImg: ElementRef<HTMLImageElement>;
+  @ViewChild('previewImg') previewImg!: ElementRef<HTMLImageElement>;
 
-  constructor(private editProfileService: EditProfileService, private _snackBar: MatSnackBar) { }
+  constructor(
+    private editProfileService: EditProfileService,
+    private _snackBar: MatSnackBar,
+    private formBuilder: FormBuilder
+  ) { }
 
   ngOnInit(): void {
-    this.editProfileService.getUserData().subscribe(
+    this.userSubscription = this.editProfileService.getUserData().subscribe(
       (userData) => {
         this.user = userData;
-        this.initForm(this.user);
+        if (this.user) {
+          this.initForm(this.user);
+        }
       },
-      (error) => {
-        console.error(error);
+      () => {
+        this._snackBar.open('Erreur lors du chargement du profil', '', { duration: 5000 });
       }
     );
   }
@@ -51,20 +58,24 @@ export class UserProfileComponent {
     const oldUrl = this.user?.photoURL || '';
     this.editProfileService.deleteOldAvatar(oldUrl).then(() => {
       return this.editProfileService.uploadFile(file);
-    }).then((url: any) => {
+    }).then((url: string) => {
       this.fileUrl = url;
-      this.profileForm.get('photoURLControl').setValue('');
+      this.profileForm.get('photoURLControl')?.setValue('');
       this.fileIsUploading = false;
       this.fileUploaded = true;
     });
   }
 
-  detectFiles(event: any) {
-    this.loadFile(event.target.files[0]);
+  detectFiles(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files?.[0]) {
+      this.loadFile(input.files[0]);
+    }
   }
 
   onSubmitProfileForm() {
-    const uid = this.user.uid;
+    const uid = this.user?.uid;
+    if (!uid) return;
     const formData = this.profileForm.value;
     const userData = {
       displayName: formData.displayNameControl,
@@ -77,5 +88,8 @@ export class UserProfileComponent {
       .catch(() => this._snackBar.open('Erreur lors de la mise a jour', '', { duration: 5000 }));
   }
 
-  ngAfterViewInit() { }
+
+  ngOnDestroy() {
+    if (this.userSubscription) { this.userSubscription.unsubscribe(); }
+  }
 }

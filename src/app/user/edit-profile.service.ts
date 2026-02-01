@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { User } from '../models/user.model';
 import { auth, db, storage } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { ref, get, update } from 'firebase/database';
@@ -12,7 +13,7 @@ export class EditProfileService {
 
   constructor() { }
 
-  getUserData(): Observable<any> {
+  getUserData(): Observable<User | null> {
     return new Observable((observer) => {
       const unsubscribe = onAuthStateChanged(auth,
         (user) => {
@@ -37,7 +38,7 @@ export class EditProfileService {
       return unsubscribe;
     });
   }
-  updateUserData(uid: string, data: any): Promise<void> {
+  updateUserData(uid: string, data: Partial<User>): Promise<void> {
     return update(ref(db, `/users/${uid}`), data);
   }
 
@@ -53,7 +54,7 @@ export class EditProfileService {
     return new Promise((resolve, reject) => {
       const img = new Image();
       const reader = new FileReader();
-      reader.onload = (e: any) => {
+      reader.onload = (e: ProgressEvent<FileReader>) => {
         img.onload = () => {
           const canvas = document.createElement('canvas');
           let width = img.width;
@@ -73,14 +74,14 @@ export class EditProfileService {
           );
         };
         img.onerror = reject;
-        img.src = e.target.result;
+        img.src = e.target?.result as string;
       };
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
   }
 
-  uploadFile(file: File) {
+  uploadFile(file: File): Promise<string> {
     return this.compressImage(file).then((compressed) => {
       const almostUniqueFileName = Date.now().toString();
       const fileRef = storageRef(storage, '/avatars/' + almostUniqueFileName + '.jpg');

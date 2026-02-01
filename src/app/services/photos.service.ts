@@ -22,17 +22,14 @@ export class PhotosService {
   durationInSeconds = 5;
   emitPhotos() {
     this.photosSubject.next(this.photos);
-    console.log(this.photos);
   }
   savePhotos() {
     set(ref(db, '/photos'), this.photos);
-    console.log('Images sauvegarder', this.photos);
   }
   getPhotos() {
     onValue(ref(db, '/photos'), (data) => {
       this.photos = data.val() ? data.val() : [];
       this.emitPhotos();
-      console.log('photos récupérer', this.photos);
     });
   }
 
@@ -41,7 +38,6 @@ export class PhotosService {
     this.photos.push(newPhoto);
     this.savePhotos();
 
-    console.log('image enregistrer', this.photos)
     this._snackBar.open('Photo ajoutée', 'avec succès !!', {
       duration: this.durationInSeconds * 1000,
     });
@@ -50,7 +46,7 @@ export class PhotosService {
     return new Promise((resolve, reject) => {
       const img = new Image();
       const reader = new FileReader();
-      reader.onload = (e: any) => {
+      reader.onload = (e: ProgressEvent<FileReader>) => {
         img.onload = () => {
           const canvas = document.createElement('canvas');
           let width = img.width;
@@ -70,14 +66,14 @@ export class PhotosService {
           );
         };
         img.onerror = reject;
-        img.src = e.target.result;
+        img.src = e.target?.result as string;
       };
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
   }
 
-  uploadFile(file: File) {
+  uploadFile(file: File): Promise<string> {
     return this.compressImage(file).then((compressed) => {
       const almostUniqueFileName = Date.now().toString();
       const fileRef = storageRef(storage, 'photos/' + almostUniqueFileName + '.jpg');
@@ -88,11 +84,7 @@ export class PhotosService {
   removePhoto(photo: Photo) {
     if (photo?.image) {
       const fileRef = storageRef(storage, photo.image);
-      deleteObject(fileRef).then(
-        () => {
-          console.log('Photo supprimée !');
-        }
-      ).catch(
+      deleteObject(fileRef).catch(
         (error) => {
           console.log('Fichier non trouvé : ' + error);
         }
@@ -100,17 +92,11 @@ export class PhotosService {
     }
     const photoIndexToRemove = this.photos.findIndex(
       (El) => El === photo);
-    console.log(photoIndexToRemove);
     this.photos.splice(photoIndexToRemove, 1);
     this.savePhotos();
     this.emitPhotos();
     this._snackBar.open('Photo supprimée', 'avec succès !!', {
       duration: this.durationInSeconds * 1000,
     });
-  }
-
-
-  ngOnDestroy() {
-    this.photosSubject.unsubscribe();
   }
 }

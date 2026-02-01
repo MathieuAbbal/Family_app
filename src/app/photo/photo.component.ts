@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { DialogPhotoComponent } from '../dialogs/dialog-photo/dialog-photo.component';
@@ -21,7 +21,7 @@ registerLocaleData(localeFr);
     templateUrl: './photo.component.html',
     styleUrls: ['./photo.component.css']
 })
-export class PhotoComponent implements OnInit {
+export class PhotoComponent implements OnInit, OnDestroy {
   photos: Photo[] = [];
   photosSubscription!: Subscription;
   @ViewChild('photoContainer') photoContainer!: ElementRef;
@@ -122,7 +122,7 @@ export class PhotoComponent implements OnInit {
   }
 
   onDelete(photo: Photo) {
-    let dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: { customMessage: "Etes-vous sur(e) de vouloir supprimer la photo ?" },
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -132,10 +132,11 @@ export class PhotoComponent implements OnInit {
     });
   }
 
-  onScroll(event: any): void {
-    if (event) {
+  onScroll(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (target) {
       this.hideButton = true;
-      if (event.target.scrollTop === 0) {
+      if (target.scrollTop === 0) {
         this.hideButton = false;
       }
     }
