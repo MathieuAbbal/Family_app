@@ -4,6 +4,8 @@ import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angula
 import { Photo } from '../../models/photo.model';
 import { PhotosService } from '../../services/photos.service';
 import { MatDialogRef } from '@angular/material/dialog';
+import { auth, db } from '../../firebase';
+import { ref, get } from 'firebase/database';
 
 @Component({
     selector: 'app-dialog-photo',
@@ -40,8 +42,20 @@ export class DialogPhotoComponent implements OnInit {
     const createdDate = date.toString();
     const newPhoto = new Photo(title, createdDate);
     newPhoto.image = this.fileUrl;
-    this.ps.createNewPhoto(newPhoto);
-    this.dialogRef.close();
+    const user = auth.currentUser;
+    if (user) {
+      newPhoto.authorUid = user.uid;
+      get(ref(db, `/users/${user.uid}`)).then(snap => {
+        const profile = snap.val() || {};
+        newPhoto.authorName = profile.displayName || user.displayName || '';
+        newPhoto.authorPhoto = profile.photoURL || user.photoURL || '';
+        this.ps.createNewPhoto(newPhoto);
+        this.dialogRef.close();
+      });
+    } else {
+      this.ps.createNewPhoto(newPhoto);
+      this.dialogRef.close();
+    }
   }
 
   onUploadFile(file: File) {

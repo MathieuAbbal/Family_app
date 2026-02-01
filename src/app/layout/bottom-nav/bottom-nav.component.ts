@@ -32,6 +32,10 @@ import { RouterModule } from '@angular/router';
            class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors">
           <span class="text-[10px] font-medium">Calendrier</span>
         </a>
+        <a routerLink="/documents" routerLinkActive="text-family-purple"
+           class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors">
+          <span class="text-[10px] font-medium">Docs</span>
+        </a>
       </div>
     </nav>
   `

@@ -2,6 +2,9 @@ import { Comment } from './comment.model';
 
 export class Photo {
     image!: string;
+    authorUid?: string;
+    authorName?: string;
+    authorPhoto?: string;
     _comments?: Comment[];
     _likeCount?: number;
     _liked?: boolean;
