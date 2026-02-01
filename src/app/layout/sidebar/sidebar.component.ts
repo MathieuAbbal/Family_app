@@ -39,6 +39,10 @@ import { Subscription } from 'rxjs';
            class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-warm-50 transition-all font-medium">
            Calendrier
         </a>
+        <a routerLink="/documents" routerLinkActive="bg-gradient-to-r from-family-purple/10 to-family-lavender/10 text-family-purple"
+           class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-warm-50 transition-all font-medium">
+           Documents
+        </a>
       </nav>
 
       <div class="border-t border-warm-100 pt-4">

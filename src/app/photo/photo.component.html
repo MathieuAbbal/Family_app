@@ -7,6 +7,14 @@
       <div class="card-fun overflow-hidden">
         <img [src]="item.image" class="w-full object-contain" alt="{{item.title}}">
         <div class="p-4">
+          <div class="flex items-center gap-2 mb-1">
+            @if (item.authorPhoto) {
+              <img [src]="item.authorPhoto" class="w-6 h-6 rounded-full object-cover" />
+            }
+            @if (item.authorName) {
+              <span class="text-xs font-semibold text-gray-500">{{item.authorName}}</span>
+            }
+          </div>
           <h3 class="font-display font-bold text-gray-700">{{item.title}}</h3>
           <p class="text-xs text-gray-400 mt-1">{{item.createdDate | date: "d MMMM yyyy 'à' HH:mm" : '' : 'fr'}}</p>
           <div class="flex items-center gap-4 mt-3 pt-3 border-t border-gray-100">

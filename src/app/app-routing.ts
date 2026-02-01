@@ -9,6 +9,7 @@ import { ShoppingComponent } from './shopping/shopping.component';
 import { EditTaskComponent } from './tasks/edit-task/edit-task.component';
 import { UserProfileComponent } from './user/user-profile/user-profile.component';
 import { CalendarComponent } from './calendar/calendar.component';
+import { DocumentsComponent } from './documents/documents.component';
 
 export const routes: Routes = [
   { path: 'auth/signin', component: SigninComponent },
@@ -20,6 +21,7 @@ export const routes: Routes = [
   { path: 'shopping', canActivate: [AuthGuardService], component: ShoppingComponent },
   { path: 'map', canActivate: [AuthGuardService], component: MapComponent },
   { path: 'calendar', canActivate: [AuthGuardService], component: CalendarComponent },
+  { path: 'documents', canActivate: [AuthGuardService], component: DocumentsComponent },
   { path: 'task/edit/:id', canActivate: [AuthGuardService], component: EditTaskComponent },
 ];
   
