@@ -1,4 +1,4 @@
-import { enableProdMode, LOCALE_ID, importProvidersFrom } from '@angular/core';
+import { enableProdMode, LOCALE_ID, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
@@ -28,7 +28,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideRouter(routes),
+    provideZoneChangeDetection(),provideRouter(routes),
     provideAnimations(),
     provideHttpClient(),
     importProvidersFrom(

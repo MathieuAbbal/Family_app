@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { BottomNavComponent } from './layout/bottom-nav/bottom-nav.component';
@@ -9,7 +9,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 
 @Component({
     selector: 'app-root',
-    imports: [CommonModule, RouterOutlet, SidebarComponent, BottomNavComponent, TopBarComponent],
+    imports: [RouterOutlet, SidebarComponent, BottomNavComponent, TopBarComponent],
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css']
 })

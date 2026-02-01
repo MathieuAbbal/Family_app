@@ -7,7 +7,9 @@
         <select formControlName="name" id="name" class="input-fun w-full">
           <option value="" disabled>Choisir...</option>
           <option value="Tout le monde">Tout le monde</option>
-          <option *ngFor="let u of allUsers" [value]="u.displayName || u.email">{{u.displayName || u.email}}</option>
+          @for (u of allUsers; track u) {
+            <option [value]="u.displayName || u.email">{{u.displayName || u.email}}</option>
+          }
         </select>
       </div>
       <div>

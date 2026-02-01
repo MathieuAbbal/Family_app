@@ -37,7 +37,9 @@
         </button>
       </form>
 
-      <p *ngIf="errorMessage" class="mt-4 text-red-400 text-center text-sm">{{ errorMessage }}</p>
+      @if (errorMessage) {
+        <p class="mt-4 text-red-400 text-center text-sm">{{ errorMessage }}</p>
+      }
 
       <p class="text-center mt-6 text-gray-500 text-sm">
         Deja un compte ?

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   CdkDragDrop,
   DragDropModule,
@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-shopping',
-    imports: [CommonModule, DragDropModule, ReactiveFormsModule],
+    imports: [DragDropModule, ReactiveFormsModule],
     templateUrl: './shopping.component.html',
     styleUrls: ['./shopping.component.css']
 })

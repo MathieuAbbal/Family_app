@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { UntypedFormBuilder, UntypedFormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Task } from '../../models/task.model';
 import { Router } from '@angular/router';
@@ -10,7 +10,7 @@ import { EditorModule } from '@tinymce/tinymce-angular';
 
 @Component({
     selector: 'app-add-task',
-    imports: [ReactiveFormsModule, EditorModule, CommonModule],
+    imports: [ReactiveFormsModule, EditorModule],
     templateUrl: './add-task.component.html',
     styleUrls: ['./add-task.component.css']
 })

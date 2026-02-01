@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -13,7 +13,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 
 @Component({
     selector: 'app-header',
-    imports: [CommonModule, RouterModule, MatSidenavModule, MatToolbarModule, MatIconModule, MatButtonModule, MatListModule, UserAvatarComponent],
+    imports: [RouterModule, MatSidenavModule, MatToolbarModule, MatIconModule, MatButtonModule, MatListModule, UserAvatarComponent],
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.css']
 })

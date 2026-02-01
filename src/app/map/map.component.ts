@@ -54,6 +54,7 @@ export class MapComponent implements AfterViewInit {
       }
 
       return {
+        type: "FeatureCollection" as const,
         features
       };
     }

@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { EditProfileService } from '../edit-profile.service';
 import { User } from 'src/app/models/user.model';
 
 @Component({
     selector: 'app-user-avatar',
-    imports: [CommonModule, RouterModule],
+    imports: [RouterModule],
     templateUrl: './user-avatar.component.html',
     styleUrls: ['./user-avatar.component.css']
 })

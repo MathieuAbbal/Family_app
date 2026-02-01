@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ActivatedRoute, Router } from '@angular/router';
 import { TasksService } from '../../services/tasks.service';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -12,7 +12,7 @@ import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
     selector: 'app-edit-task',
-    imports: [ReactiveFormsModule, EditorModule, CommonModule],
+    imports: [ReactiveFormsModule, EditorModule],
     templateUrl: './edit-task.component.html',
     styleUrls: ['./edit-task.component.css']
 })
