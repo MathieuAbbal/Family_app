@@ -36,7 +36,7 @@
       </div>
       <div>
         <label class="block mb-1 text-sm font-medium text-gray-600">Descriptif</label>
-        <editor formControlName="descriptif" [init]="tinymceInitParams" apiKey="etj7r4fmm6rkitgaelt4dgjx428mep5837b745zgcik1mxth" style="z-index:1000"></editor>
+        <textarea formControlName="descriptif" rows="5" placeholder="Décrivez la tâche..." class="input-fun w-full resize-y"></textarea>
       </div>
       <div class="flex justify-end gap-3 pt-2">
         <button type="button" (click)="goBack()" class="px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors font-medium text-sm">Retour</button>

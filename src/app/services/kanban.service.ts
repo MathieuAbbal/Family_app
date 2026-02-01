@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TasksService } from './tasks.service';
+import { Task } from '../models/task.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +11,11 @@ export class KanbanService {
     private tasksService: TasksService
   ) { }
 
-  transferTask(from: any[], movedTask: any, to: any[], newStatus: string) {
-    // Mettre à jour le statut de la tâche
+  transferTask(from: Task[], movedTask: Task, to: Task[], newStatus: string) {
     const updatedTask = {...movedTask, statut: newStatus};
 
-    // Mettre à jour dans le service de tâches
     this.tasksService.updateTaskStatus(updatedTask);
 
-    // Transférer la tâche entre les tableaux
     from.splice(from.indexOf(movedTask), 1);
     to.push(updatedTask);
   }

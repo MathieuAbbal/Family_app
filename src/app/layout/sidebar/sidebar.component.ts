@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { RouterModule } from '@angular/router';
 import { EditProfileService } from '../../user/edit-profile.service';
 import { AuthService } from '../../services/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-sidebar',
@@ -34,6 +35,10 @@ import { AuthService } from '../../services/auth.service';
            class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-warm-50 transition-all font-medium">
            Carte
         </a>
+        <a routerLink="/calendar" routerLinkActive="bg-gradient-to-r from-family-yellow/10 to-family-orange/10 text-family-orange"
+           class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-warm-50 transition-all font-medium">
+           Calendrier
+        </a>
       </nav>
 
       <div class="border-t border-warm-100 pt-4">
@@ -45,9 +50,10 @@ import { AuthService } from '../../services/auth.service';
     </aside>
   `
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
   userName = '';
   userPhoto = '';
+  private userSubscription!: Subscription;
 
   constructor(
     private editProfileService: EditProfileService,
@@ -55,7 +61,7 @@ export class SidebarComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.editProfileService.getUserData().subscribe(user => {
+    this.userSubscription = this.editProfileService.getUserData().subscribe(user => {
       if (user) {
         this.userName = user.displayName || '';
         this.userPhoto = user.photoURL || 'https://i.pinimg.com/originals/2f/15/f2/2f15f2e8c688b3120d3d26467b06330c.jpg';
@@ -65,5 +71,9 @@ export class SidebarComponent implements OnInit {
 
   onSignOut() {
     this.authService.signOutUser();
+  }
+
+  ngOnDestroy() {
+    if (this.userSubscription) { this.userSubscription.unsubscribe(); }
   }
 }

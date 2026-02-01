@@ -1,41 +1,39 @@
-import { Component, OnInit } from '@angular/core';
-
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TasksService } from '../../services/tasks.service';
-import { UntypedFormBuilder, UntypedFormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'src/app/dialogs/confirm-dialog/confirm-dialog.component';
 import { Task } from '../../models/task.model';
-import { EditorModule } from '@tinymce/tinymce-angular';
 import { AuthService } from 'src/app/services/auth.service';
+import { User } from 'src/app/models/user.model';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-edit-task',
-    imports: [ReactiveFormsModule, EditorModule],
+    imports: [ReactiveFormsModule],
     templateUrl: './edit-task.component.html',
     styleUrls: ['./edit-task.component.css']
 })
-export class EditTaskComponent implements OnInit {
+export class EditTaskComponent implements OnInit, OnDestroy {
+  taskToEdit: Task | null = null;
+  editTaskForm!: FormGroup;
+  allUsers: User[] = [];
+  private tasksSubscription!: Subscription;
+
   constructor(
     private route: ActivatedRoute,
     private tasksService: TasksService,
-    private formBuilder: UntypedFormBuilder,
+    private formBuilder: FormBuilder,
     private _snackBar: MatSnackBar,
     private router: Router,
     public dialog: MatDialog,
     private userService: AuthService
   ) { }
 
-  taskToEdit!: any;
-  editTaskForm!: UntypedFormGroup;
-  durationInSeconds = 5;
-  allUsers: any[] = [];
-
-  initForm() { }
-
-  onDelete(task: any) {
-    let dialogRef = this.dialog.open(ConfirmDialogComponent, {
+  onDelete(task: Task) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: { customMessage: "Etes-vous sûr(e) de vouloir supprimer la tâche" },
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -47,9 +45,11 @@ export class EditTaskComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.userService.getAllUsers().then((users: any[]) => this.allUsers = users).catch(() => {});
+    this.userService.getAllUsers()
+      .then((users: User[]) => this.allUsers = users)
+      .catch(() => this._snackBar.open('Erreur lors du chargement des utilisateurs', '', { duration: 5000 }));
     const taskId = this.route.snapshot.params['id'];
-    this.tasksService.tasksSubject.subscribe((tasks: Task[]) => {
+    this.tasksSubscription = this.tasksService.tasksSubject.subscribe((tasks: Task[]) => {
       if (this.taskToEdit) return;
       const task = tasks.find(t => t.id === taskId);
       if (task) {
@@ -70,7 +70,7 @@ export class EditTaskComponent implements OnInit {
   }
 
   editTask() {
-    let dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: { customMessage: "Etes-vous sûr(e) de vouloir modifier la tâche" },
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -79,27 +79,16 @@ export class EditTaskComponent implements OnInit {
         const taskId: string = this.route.snapshot.params['id'];
         this.tasksService.updateTaskById(taskId, updatedTask);
         this.router.navigate(['/home']);
-        this.openSnackBar();
+        this._snackBar.open('Tâche modifiée', 'avec succès !!', { duration: 5000 });
       }
     });
   }
 
-  openSnackBar() {
-    this._snackBar.open('Tâche modifiée', 'avec succès !!', {
-      duration: this.durationInSeconds * 1000,
-    });
-  }
-
-  tinymceInitParams = {
-    selector: "textarea",
-    browser_spellcheck: true,
-    height: 300,
-    plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-    language: 'fr_FR',
-    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
-  };
-
   goBack() {
     this.router.navigate(['/home']);
+  }
+
+  ngOnDestroy() {
+    if (this.tasksSubscription) { this.tasksSubscription.unsubscribe(); }
   }
 }

@@ -11,7 +11,7 @@ export class ConfirmDialogComponent {
   customMessage: string;
   constructor(
     public dialogRef: MatDialogRef<ConfirmDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
+    @Inject(MAT_DIALOG_DATA) public data: { customMessage: string },
   ) {
     this.customMessage = data.customMessage;
   }

@@ -1,12 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import {
   CdkDragDrop,
   DragDropModule,
   moveItemInArray,
-  transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { UntypedFormBuilder, UntypedFormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Item } from '../models/item.model';
 import { ItemService } from '../services/item.service';
 import { Subscription } from 'rxjs';
@@ -17,17 +16,17 @@ import { Subscription } from 'rxjs';
     templateUrl: './shopping.component.html',
     styleUrls: ['./shopping.component.css']
 })
-export class ShoppingComponent implements OnInit {
-  addItemForm!: UntypedFormGroup;
+export class ShoppingComponent implements OnInit, OnDestroy {
+  addItemForm!: FormGroup;
 
-  constructor(private formBuilder: UntypedFormBuilder,
+  constructor(private formBuilder: FormBuilder,
     private is: ItemService) { }
-  items: any[] = [];
-  basket: any[] = [];
+  items: Item[] = [];
+  basket: Item[] = [];
   itemsSubsciption!: Subscription;
   basketSub!: Subscription;
 
-  drop(event: CdkDragDrop<string[]>) {
+  drop(event: CdkDragDrop<Item[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
@@ -44,14 +43,14 @@ export class ShoppingComponent implements OnInit {
 
   getBasket() {
     this.basketSub = this.is.basketSubject.subscribe(
-      (basket: any[]) => { this.basket = basket; }
+      (basket: Item[]) => { this.basket = basket; }
     );
     this.is.getBasket();
   }
 
   getItem() {
     this.itemsSubsciption = this.is.itemSubject.subscribe(
-      (item: any[]) => { this.items = item; }
+      (item: Item[]) => { this.items = item; }
     );
   }
 
@@ -60,7 +59,7 @@ export class ShoppingComponent implements OnInit {
       item: ['', [Validators.required]],
     });
     this.itemsSubsciption = this.is.itemSubject.subscribe(
-      (item: any[]) => { this.items = item; }
+      (item: Item[]) => { this.items = item; }
     );
     this.is.getItems();
     this.is.emitItems();
@@ -75,5 +74,10 @@ export class ShoppingComponent implements OnInit {
 
   OnDelete(item: Item) {
     this.is.removeItem(item);
+  }
+
+  ngOnDestroy() {
+    if (this.itemsSubsciption) { this.itemsSubsciption.unsubscribe(); }
+    if (this.basketSub) { this.basketSub.unsubscribe(); }
   }
 }

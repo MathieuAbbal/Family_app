@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Photo } from '../../models/photo.model';
 import { PhotosService } from '../../services/photos.service';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -12,7 +12,7 @@ import { MatDialogRef } from '@angular/material/dialog';
     styleUrls: ['./dialog-photo.component.css']
 })
 export class DialogPhotoComponent implements OnInit {
-  photoForm!: UntypedFormGroup;
+  photoForm!: FormGroup;
   fileUrl!: string;
   fileIsUploading = false;
   fileUploaded = false;
@@ -20,7 +20,7 @@ export class DialogPhotoComponent implements OnInit {
 
   constructor(
     private ps: PhotosService,
-    private formBuilder: UntypedFormBuilder,
+    private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<DialogPhotoComponent>
   ) {}
 
@@ -46,14 +46,17 @@ export class DialogPhotoComponent implements OnInit {
 
   onUploadFile(file: File) {
     this.fileIsUploading = true;
-    this.ps.uploadFile(file).then((url: any) => {
+    this.ps.uploadFile(file).then((url: string) => {
       this.fileUrl = url;
       this.fileIsUploading = false;
       this.fileUploaded = true;
     });
   }
 
-  detectFiles(event: any) {
-    this.onUploadFile(event.target.files[0]);
+  detectFiles(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files?.[0]) {
+      this.onUploadFile(input.files[0]);
+    }
   }
 }

@@ -26,8 +26,11 @@ import { RouterModule } from '@angular/router';
         </a>
         <a routerLink="/map" routerLinkActive="text-family-sky"
            class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors">
-          <span class="text-xl">&#x1F5FA;</span>
           <span class="text-[10px] font-medium">Carte</span>
+        </a>
+        <a routerLink="/calendar" routerLinkActive="text-family-orange"
+           class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors">
+          <span class="text-[10px] font-medium">Calendrier</span>
         </a>
       </div>
     </nav>
