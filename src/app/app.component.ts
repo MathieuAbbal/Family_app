@@ -1,26 +1,25 @@
-import { Component } from '@angular/core';
-import { initializeApp } from "firebase";
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet } from '@angular/router';
+import { SidebarComponent } from './layout/sidebar/sidebar.component';
+import { BottomNavComponent } from './layout/bottom-nav/bottom-nav.component';
+import { TopBarComponent } from './layout/top-bar/top-bar.component';
+import { auth } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+    selector: 'app-root',
+    imports: [CommonModule, RouterOutlet, SidebarComponent, BottomNavComponent, TopBarComponent],
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'FamilyApp';
+  isAuth = false;
 
-  constructor(){
-   
-const firebaseConfig = {
-  apiKey: "AIzaSyB4DkZu3SqYLJCrxFGS7DybGGKUBrlJqaI",
-  authDomain: "familyapp-e83b7.firebaseapp.com",
-  databaseURL: "https://familyapp-e83b7-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "familyapp-e83b7",
-  storageBucket: "familyapp-e83b7.appspot.com",
-  messagingSenderId: "728695329604",
-  appId: "1:728695329604:web:c0a1ef7ebf32de4bcd7d11"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+  ngOnInit() {
+    onAuthStateChanged(auth, user => {
+      this.isAuth = !!user;
+    });
   }
 }

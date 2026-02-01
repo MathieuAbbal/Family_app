@@ -1,14 +1,18 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Task } from '../../models/task.model';
 import { Router } from '@angular/router';
 import { TasksService } from '../../services/tasks.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from 'src/app/services/auth.service';
+import { EditorModule } from '@tinymce/tinymce-angular';
+
 @Component({
-  selector: 'app-add-task',
-  templateUrl: './add-task.component.html',
-  styleUrls: ['./add-task.component.css'],
+    selector: 'app-add-task',
+    imports: [ReactiveFormsModule, EditorModule, CommonModule],
+    templateUrl: './add-task.component.html',
+    styleUrls: ['./add-task.component.css']
 })
 export class AddTaskComponent implements OnInit {
   addTaskForm!: UntypedFormGroup;
@@ -43,7 +47,6 @@ export class AddTaskComponent implements OnInit {
       urg: ['', [Validators.required]],
       title: ['', [Validators.required]],
       descriptif: [''],
-
     });
   }
   goBack() {
@@ -69,9 +72,6 @@ export class AddTaskComponent implements OnInit {
     plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
     language: 'fr_FR',
     toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
-
   };
-  getUserInfo() {
-    
-  }
+  getUserInfo() { }
 }

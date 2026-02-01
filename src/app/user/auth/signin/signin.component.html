@@ -1,22 +1,42 @@
-<mat-card  class="flex flex-col justify-center max-w-lg mx-auto">
-      <mat-card-content>
-        <div class="flex flex-col">
-            <div class="text-center" >
-                <h3>Se connecter à un compte existant</h3>
-            </div>
-            <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="flex flex-col justify-center">
-                <mat-form-field apparance="outline">
-                <label for="email">Adresse mail</label>
-                <input matInput formControlName="email" type="text" id="email">
-                </mat-form-field>
-                <mat-form-field>
-                    <label for="password">Mot de passe</label>
-                    <input  matInput formControlName="password" type="password">
-                </mat-form-field>
-                <button mat-flat-button color="accent" type="submit" [disabled]="signInForm.invalid">Connexion</button>
-            </form>
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-family-pink via-family-coral to-family-orange p-4">
+  <div class="w-full max-w-md">
+    <div class="text-center mb-8">
+      <span class="text-6xl block mb-2">👨‍👩‍👧‍👦</span>
+      <h1 class="font-display font-extrabold text-3xl text-white">Family App</h1>
+      <p class="text-white/80 mt-1">Votre espace famille</p>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow-fun p-8">
+      <h2 class="font-display font-bold text-xl text-center text-gray-800 mb-6">Connexion 👋</h2>
+
+      <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Adresse mail</label>
+          <input formControlName="email" type="text" class="input-fun" placeholder="votre@email.com">
         </div>
-        <p>{{ errorMessage }}</p>
-      </mat-card-content>
-        
-</mat-card>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Mot de passe</label>
+          <div class="relative">
+            <input formControlName="password" [type]="showPassword ? 'text' : 'password'" class="input-fun pr-10" placeholder="••••••">
+            <button type="button" (click)="showPassword = !showPassword"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+              <span class="text-lg">{{showPassword ? '🙈' : '👁️'}}</span>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" [disabled]="signInForm.invalid"
+          class="w-full btn-gradient">
+          Se connecter 🚀
+        </button>
+      </form>
+
+      <p *ngIf="errorMessage" class="mt-4 text-red-400 text-center text-sm p-4">{{ errorMessage }}</p>
+
+      <p class="text-center mt-6 text-gray-500 text-sm">
+        Pas encore de compte ?
+        <a routerLink="/auth/signup" class="text-family-pink font-semibold hover:underline">Creer un compte</a>
+      </p>
+    </div>
+  </div>
+</div>

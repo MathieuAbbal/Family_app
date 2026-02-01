@@ -35,6 +35,10 @@
 
             ],
             "scripts": [],
+            "allowedCommonJsDependencies": [
+              "maplibre-gl",
+              "@maplibre/maplibre-gl-geocoder"
+            ],
             "serviceWorker": true,
             "ngswConfigPath": "ngsw-config.json"
           },
@@ -75,10 +79,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "applist:build:production"
+              "buildTarget": "applist:build:production"
             },
             "development": {
-              "browserTarget": "applist:build:development"
+              "buildTarget": "applist:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -86,7 +90,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "applist:build"
+            "buildTarget": "applist:build"
           }
         },
         "test": {

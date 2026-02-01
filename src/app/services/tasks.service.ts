@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import * as firebase from 'firebase';
+import { db } from '../firebase';
+import { ref, set, onValue } from 'firebase/database';
 import { Subject } from 'rxjs';
 import { Task} from '../models/task.model';
 
@@ -18,22 +19,19 @@ export class TasksService {
     console.log(this.tasks);
   }
   saveTasks() {
-    firebase.database().ref('/tasks').set(this.tasks);
+    set(ref(db, '/tasks'), this.tasks);
     console.log('Tâche sauvegarder', this.tasks);
   }
   getTasks() {
-    firebase
-      .database()
-      .ref('/tasks')
-      .on('value', (data) => {
-        this.tasks = data.val() ? data.val() : [];
-        this.emitTasks();
-        console.log('Tâches récupérer', this.tasks);
-      });
+    onValue(ref(db, '/tasks'), (data) => {
+      this.tasks = data.val() ? data.val() : [];
+      this.emitTasks();
+      console.log('Tâches récupérer', this.tasks);
+    });
   }
   generateUniqueId(): string {
-    const timestamp = new Date().getTime(); // Obtient le timestamp actuel
-    const randomPart = Math.random().toString(36).substring(2, 15); // Génère une partie aléatoire
+    const timestamp = new Date().getTime();
+    const randomPart = Math.random().toString(36).substring(2, 15);
     const uniqueId = `${timestamp}-${randomPart}`;
     return uniqueId;
   }
@@ -41,7 +39,7 @@ export class TasksService {
     newTask.id = this.generateUniqueId();
     this.tasks.push(newTask);
     this.saveTasks();
-    
+
     console.log('Tâche créer', this.tasks);
   }
   removeTask(taskId: string) {
@@ -55,13 +53,13 @@ export class TasksService {
       console.error('Tâche non trouvée avec l\'ID:', taskId);
     }
   }
-  
+
 
   getTaskById(id: string): Task | null {
     const task = this.tasks.find((t) => t.id === id);
     return task || null;
   }
-  
+
   updateTaskById(id: string, updatedTask: Task) {
     const taskIndex = this.tasks.findIndex((t) => t.id === id);
     if (taskIndex !== -1) {
@@ -76,11 +74,11 @@ export class TasksService {
     const taskIndex = this.tasks.findIndex((t) => t.id === updatedTask.id);
     if (taskIndex !== -1) {
       this.tasks[taskIndex] = updatedTask;
-      this.saveTasks(); 
+      this.saveTasks();
       this.emitTasks();
     }
   }
-  
+
 
   ngOnDestroy() {
     this.tasksSubject.unsubscribe();

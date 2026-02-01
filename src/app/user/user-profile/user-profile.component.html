@@ -1,51 +1,45 @@
-<form *ngIf="profileForm" [formGroup]="profileForm" (ngSubmit)="onSubmitProfileForm()" class="max-w-sm mx-auto p-10">
-    <div class="flex items-start mb-5">
-        <div class="flex items-center space-x-6">
-            <div class="shrink-0">
-                <img  id='preview_img' alt="Photo de profil" class="h-16 w-16 object-cover rounded-full"
-                    [src]="fileUrl"/>
-            </div>
-            <label class="block">
-                <span class="sr-only">Choisir une photo</span>
-                <input formControlName="photoURLControl" type="file" (change)="detectFiles($event)" accept="image/*"
-                    class="block w-full text-sm text-slate-500
-                file:mr-4 file:py-2 file:px-4
-                file:rounded-full file:border-0
-                file:text-sm file:font-semibold
-                file:bg-violet-50 file:text-violet-700
-                hover:file:bg-violet-100
-              " />
-            </label>
-            <p *ngIf="fileUploaded" style="color: aquamarine;">Fichier chargé !</p>
-        </div>
+<!-- Profile Header -->
+<div class="card-fun overflow-hidden mb-6">
+  <div class="h-24 bg-gradient-to-r from-family-pink via-family-coral to-family-orange"></div>
+  <div class="px-6 pb-6 -mt-10 flex items-end gap-4">
+    <img [src]="fileUrl" alt="Photo de profil"
+      class="h-20 w-20 rounded-full object-cover ring-4 ring-white shadow-lg" />
+    <div class="pb-1">
+      <h2 class="font-display text-xl font-bold text-gray-700">{{user?.displayName || 'Mon Profil'}}</h2>
+      <p class="text-sm text-gray-400">{{user?.email}}</p>
     </div>
-    <div class="mb-5">
-        <label for="prenom" class="block mb-2 text-sm font-medium ">Prénom</label>
-        <input type="text" id="prenom" formControlName="displayNameControl"
-            class="border border-gray-300  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-            placeholder="prénom" required>
+  </div>
+</div>
+
+<!-- Profile Form -->
+<div class="card-fun p-6 max-w-lg mx-auto" *ngIf="profileForm">
+  <h3 class="font-display text-lg font-bold text-gray-700 mb-4">✏️ Modifier le profil</h3>
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmitProfileForm()" class="space-y-4">
+    <div class="flex items-center gap-4">
+      <img [src]="fileUrl" alt="Avatar" class="h-14 w-14 rounded-full object-cover ring-2 ring-family-pink/30" />
+      <label class="block">
+        <span class="sr-only">Choisir une photo</span>
+        <input formControlName="photoURLControl" type="file" (change)="detectFiles($event)" accept="image/*"
+          class="block w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-family-pink/10 file:text-family-pink hover:file:bg-family-pink/20 transition-colors" />
+      </label>
+      <span *ngIf="fileUploaded" class="text-family-green text-sm font-medium">Charge !</span>
     </div>
-    <div class="mb-5">
-        <label for="phone" class="block mb-2 text-sm font-medium ">Téléphone</label>
-        <input type="phone" id="phone" formControlName="phoneNumberControl"
-            class="border border-gray-300  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-            placeholder="Votre numéro">
+    <div>
+      <label for="prenom" class="block mb-1 text-sm font-medium text-gray-600">Prenom</label>
+      <input type="text" id="prenom" formControlName="displayNameControl" placeholder="Prenom" class="input-fun w-full" />
     </div>
-    <div class="mb-5">
-        <label for="email" class="block mb-2 text-sm font-medium ">Email</label>
-        <input type="email" id="email" formControlName="emailControl"
-            class="border border-gray-300  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-            placeholder="Votre email">
+    <div>
+      <label for="phone" class="block mb-1 text-sm font-medium text-gray-600">Telephone</label>
+      <input type="tel" id="phone" formControlName="phoneNumberControl" placeholder="Votre numero" class="input-fun w-full" />
     </div>
-    <div class="mb-5">
-        <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Anniversaire</mat-label>
-            <input matInput [matDatepicker]="picker" formControlName="dateBirthControl">
-            <mat-hint>jj/mm/aaaa</mat-hint>
-            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-          </mat-form-field>
+    <div>
+      <label for="email" class="block mb-1 text-sm font-medium text-gray-600">Email</label>
+      <input type="email" id="email" formControlName="emailControl" placeholder="Votre email" class="input-fun w-full" />
     </div>
-    <button type="submit" [disabled]="profileForm.invalid"
-        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Enregistrer</button>
-</form>
+    <div>
+      <label for="dateBirth" class="block mb-1 text-sm font-medium text-gray-600">Anniversaire</label>
+      <input type="date" id="dateBirth" formControlName="dateBirthControl" class="input-fun w-full" />
+    </div>
+    <button type="submit" [disabled]="profileForm.invalid" class="btn-gradient w-full">Enregistrer</button>
+  </form>
+</div>

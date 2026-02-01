@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Photo } from '../../models/photo.model';
 import { PhotosService } from '../../services/photos.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-dialog-photo',
-  templateUrl: './dialog-photo.component.html',
-  styleUrls: ['./dialog-photo.component.css'],
+    selector: 'app-dialog-photo',
+    imports: [CommonModule, ReactiveFormsModule],
+    templateUrl: './dialog-photo.component.html',
+    styleUrls: ['./dialog-photo.component.css']
 })
 export class DialogPhotoComponent implements OnInit {
   photoForm!: UntypedFormGroup;
@@ -16,7 +17,6 @@ export class DialogPhotoComponent implements OnInit {
   fileIsUploading = false;
   fileUploaded = false;
   createdDate!: string;
-  durationInSeconds = 5;
 
   constructor(
     private ps: PhotosService,
@@ -33,15 +33,14 @@ export class DialogPhotoComponent implements OnInit {
       title: [''],
     });
   }
+
   onSavePhoto() {
     const title = this.photoForm.get('title')!.value;
     const date = new Date();
     const createdDate = date.toString();
     const newPhoto = new Photo(title, createdDate);
     newPhoto.image = this.fileUrl;
-
     this.ps.createNewPhoto(newPhoto);
-    console.log('Object', newPhoto);
     this.dialogRef.close();
   }
 
@@ -53,8 +52,8 @@ export class DialogPhotoComponent implements OnInit {
       this.fileUploaded = true;
     });
   }
+
   detectFiles(event: any) {
     this.onUploadFile(event.target.files[0]);
   }
-
 }
