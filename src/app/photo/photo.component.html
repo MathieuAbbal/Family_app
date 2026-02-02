@@ -1,11 +1,11 @@
-<div #photoContainer class="max-w-2xl mx-auto px-4" (scroll)="onScroll($event)">
+<div #photoContainer class="max-w-2xl mx-auto px-4">
   <div class="text-center mb-6">
     <h1 class="font-display text-2xl font-bold text-gradient">📸 Photos de famille</h1>
   </div>
   <div class="space-y-6">
     @for (item of photos; track item; let i = $index) {
       <div class="card-fun overflow-hidden">
-        <img [src]="item.image" class="w-full object-contain" alt="{{item.title}}">
+        <img [src]="item.image" loading="lazy" class="w-full object-contain" alt="{{item.title}}">
         <div class="p-4">
           <div class="flex items-center gap-2 mb-1">
             @if (item.authorPhoto) {
@@ -70,7 +70,7 @@
 </button>
 @if (hideButton) {
   <button (click)="scrollToTop()" title="Vers le haut"
-    class="fixed bottom-24 md:bottom-8 right-24 w-14 h-14 rounded-full bg-white shadow-lg flex items-center justify-center hover:shadow-xl transition-shadow z-50 text-family-pink">
+    class="fixed bottom-24 md:bottom-8 left-6 md:left-72 w-14 h-14 rounded-full bg-white border-2 border-family-pink shadow-lg flex items-center justify-center hover:shadow-xl transition-shadow z-50 text-family-pink">
     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
   </button>
 }
