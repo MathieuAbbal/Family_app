@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { DialogPhotoComponent } from '../dialogs/dialog-photo/dialog-photo.component';
@@ -21,7 +21,7 @@ registerLocaleData(localeFr);
     templateUrl: './photo.component.html',
     styleUrls: ['./photo.component.css']
 })
-export class PhotoComponent implements OnInit, OnDestroy {
+export class PhotoComponent implements OnInit, AfterViewInit, OnDestroy {
   photos: Photo[] = [];
   photosSubscription!: Subscription;
   @ViewChild('photoContainer') photoContainer!: ElementRef;
@@ -132,23 +132,22 @@ export class PhotoComponent implements OnInit, OnDestroy {
     });
   }
 
-  onScroll(event: Event): void {
-    const target = event.target as HTMLElement;
-    if (target) {
-      this.hideButton = true;
-      if (target.scrollTop === 0) {
-        this.hideButton = false;
-      }
-    }
+  private mainEl: HTMLElement | null = null;
+  private scrollHandler = () => {
+    this.hideButton = (this.mainEl?.scrollTop || 0) > 200;
+  };
+
+  ngAfterViewInit(): void {
+    this.mainEl = document.querySelector('main');
+    this.mainEl?.addEventListener('scroll', this.scrollHandler);
   }
 
   scrollToTop(): void {
-    if (this.photoContainer) {
-      this.photoContainer.nativeElement.scrollTop = 0;
-    }
+    this.mainEl?.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   ngOnDestroy() {
+    this.mainEl?.removeEventListener('scroll', this.scrollHandler);
     if (this.photosSubscription) { this.photosSubscription.unsubscribe(); }
     if (this.scrollSubscription) { this.scrollSubscription.unsubscribe(); }
   }

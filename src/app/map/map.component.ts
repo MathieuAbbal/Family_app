@@ -93,9 +93,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       'top-left'
     );
 
-    // Start tracking current user's location to Firebase
-    this.locationService.startTracking();
-
     // Listen for all family members (including self) after map loads
     this.map.on('load', () => {
       this.unsubscribeLocations = this.locationService.listenAllLocations((locations) => {
@@ -170,7 +167,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.locationService.stopTracking();
     if (this.unsubscribeLocations) {
       this.unsubscribeLocations();
     }
