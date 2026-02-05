@@ -1,13 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { Task } from '../models/task.model';
-import { Subscription } from 'rxjs';
-import { TasksService } from '../services/tasks.service';
-import { MatDialog } from '@angular/material/dialog';
+import { VacationsService } from '../services/vacations.service';
 import { KanbanComponent } from '../tasks/kanban/kanban.component';
 import { RouterModule } from '@angular/router';
-
-
 
 @Component({
     selector: 'app-home',
@@ -15,43 +10,22 @@ import { RouterModule } from '@angular/router';
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
 
-  tasks: Task[] = [];
-  tasksSubsription!: Subscription;
-
+  // Accès direct au signal du service
+  nextVacation = this.vacService.nextVacation;
 
   constructor(
-    private ts: TasksService,
-    public dialog: MatDialog,
+    private vacService: VacationsService,
     private router: Router
-  ) { }
+  ) {}
 
-  // urgence
-  listeUrgence = ['aucune', 'urgent', 'relative', 'pas urgent']
-  getCouleurUrgence(item: string) {
-    return item === "Pas urgent" ? "green" :
-      item === "Urgent" ? "red" :
-        item ===  "Relativement urgent" ? "orange" :
-          "white"
-  }
-  ngOnInit(): void {
-    this.tasksSubsription = this.ts.tasksSubject.subscribe(
-      (tasks: Task[]) => {
-        this.tasks = tasks;
-        console.log(tasks)
-      });
-    this.ts.getTasks();
-    this.ts.emitTasks();
-  }
-
-  ngOnDestroy() {
-    if (this.tasksSubsription) { this.tasksSubsription.unsubscribe() };
+  daysUntil(dateStr: string): number {
+    const diff = new Date(dateStr).getTime() - Date.now();
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
   }
 
   onEdit(id: string) {
     this.router.navigate(['/task/edit', id]);
   }
-
-
 }

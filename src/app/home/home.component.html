@@ -6,9 +6,9 @@
 
 <!-- Quick Actions Grid -->
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-  <a routerLink="/photo" class="card-fun p-4 text-center hover:shadow-card-hover transition-shadow cursor-pointer">
-    <div class="text-3xl mb-2">📸</div>
-    <div class="font-display font-semibold text-gray-700 text-sm">Photos</div>
+  <a routerLink="/chat" class="card-fun p-4 text-center hover:shadow-card-hover transition-shadow cursor-pointer">
+    <div class="text-3xl mb-2">📱</div>
+    <div class="font-display font-semibold text-gray-700 text-sm">Fil d'actu</div>
   </a>
   <a routerLink="/add-task" class="card-fun p-4 text-center hover:shadow-card-hover transition-shadow cursor-pointer">
     <div class="text-3xl mb-2">✏️</div>
@@ -30,7 +30,25 @@
     <div class="text-3xl mb-2">📁</div>
     <div class="font-display font-semibold text-gray-700 text-sm">Documents</div>
   </a>
+  <a routerLink="/vacances" class="card-fun p-4 text-center hover:shadow-card-hover transition-shadow cursor-pointer">
+    <div class="text-3xl mb-2">🏖️</div>
+    <div class="font-display font-semibold text-gray-700 text-sm">Vacances</div>
+  </a>
 </div>
+
+<!-- Vacation Countdown -->
+@if (nextVacation(); as vacation) {
+  <a routerLink="/vacances" class="card-fun p-4 mb-6 flex items-center gap-4 hover:shadow-card-hover transition-shadow cursor-pointer bg-gradient-to-r from-family-coral/5 to-family-orange/5">
+    <div class="text-3xl">🏖️</div>
+    <div class="flex-1">
+      <div class="font-display font-bold text-gray-700">{{vacation.title}}</div>
+      <div class="text-sm text-gray-500">{{vacation.destination}}</div>
+    </div>
+    <div class="text-center">
+      <div class="text-2xl font-display font-extrabold text-family-pink">J-{{daysUntil(vacation.startDate)}}</div>
+    </div>
+  </a>
+}
 
 <!-- Kanban Board -->
 <div class="card-fun p-4">

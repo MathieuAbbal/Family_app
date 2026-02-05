@@ -17,7 +17,6 @@ import { environment } from './environments/environment';
 import { AuthService } from './app/services/auth.service';
 import { AuthGuardService } from './app/services/auth-guard.service';
 import { TasksService } from './app/services/tasks.service';
-import { PhotosService } from './app/services/photos.service';
 import { EditProfileService } from './app/user/edit-profile.service';
 
 registerLocaleData(fr.default);
@@ -42,7 +41,6 @@ bootstrapApplication(AppComponent, {
     AuthService,
     AuthGuardService,
     TasksService,
-    PhotosService,
     EditProfileService,
     { provide: LOCALE_ID, useValue: 'fr-FR' },
   ]

@@ -1,7 +1,7 @@
 <div class="max-w-2xl mx-auto px-4">
   <div class="text-center mb-6">
     <h1 class="font-display text-2xl font-bold text-gradient">🛒 Liste de courses</h1>
-    <p class="text-sm text-gray-400 mt-1">{{totalItems}} article{{totalItems > 1 ? 's' : ''}} restant{{totalItems > 1 ? 's' : ''}}</p>
+    <p class="text-sm text-gray-400 mt-1">{{totalItems()}} article{{totalItems() > 1 ? 's' : ''}} restant{{totalItems() > 1 ? 's' : ''}}</p>
   </div>
 
   <!-- Add item button -->
@@ -36,7 +36,7 @@
   }
 
   <!-- Items by category -->
-  @for (cat of uncheckedByCategory; track cat.key) {
+  @for (cat of uncheckedByCategory(); track cat.key) {
     <div class="mb-4">
       <h3 class="font-display font-bold text-sm text-gray-500 mb-2 flex items-center gap-1.5">
         <span>{{cat.icon}}</span> {{cat.label}}
@@ -53,7 +53,12 @@
                 <span class="text-xs text-gray-400 ml-2">x{{item.quantity}}</span>
               }
               @if (item.addedByName) {
-                <p class="text-xs text-gray-400 truncate">ajouté par {{item.addedByName}}</p>
+                <div class="flex items-center gap-1.5 mt-0.5">
+                  @if (item.addedByPhoto) {
+                    <img [src]="item.addedByPhoto" class="w-4 h-4 rounded-full object-cover" referrerpolicy="no-referrer" />
+                  }
+                  <span class="text-xs text-gray-400 truncate">{{item.addedByName}}</span>
+                </div>
               }
             </div>
             <button (click)="removeItem(item)" class="text-gray-300 hover:text-red-400 transition-colors flex-shrink-0">
@@ -66,18 +71,18 @@
   }
 
   <!-- Checked items -->
-  @if (checkedItems.length > 0) {
+  @if (checkedItems().length > 0) {
     <div class="mt-6">
       <div class="flex items-center justify-between mb-2">
         <h3 class="font-display font-bold text-sm text-gray-400 flex items-center gap-1.5">
-          <span>✅</span> Dans le panier ({{checkedItems.length}})
+          <span>✅</span> Dans le panier ({{checkedItems().length}})
         </h3>
         <button (click)="clearChecked()" class="text-xs text-red-400 hover:text-red-500 transition-colors font-medium">
           Vider le panier
         </button>
       </div>
       <div class="card-fun overflow-hidden divide-y divide-gray-100 opacity-60">
-        @for (item of checkedItems; track item.id) {
+        @for (item of checkedItems(); track item.id) {
           <div class="flex items-center gap-3 px-4 py-3">
             <button (click)="toggleChecked(item)"
               class="w-6 h-6 rounded-full bg-family-green flex-shrink-0 flex items-center justify-center">

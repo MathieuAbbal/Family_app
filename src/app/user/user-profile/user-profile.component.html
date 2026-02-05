@@ -3,7 +3,7 @@
   <div class="h-24 bg-gradient-to-r from-family-pink via-family-coral to-family-orange"></div>
   <div class="px-6 pb-6 -mt-10 flex items-end gap-4">
     <img [src]="fileUrl" alt="Photo de profil"
-      class="h-20 w-20 rounded-full object-cover ring-4 ring-white shadow-lg" />
+      class="h-20 w-20 rounded-full object-cover ring-4 ring-white shadow-lg" referrerpolicy="no-referrer" />
     <div class="pb-1">
       <h2 class="font-display text-xl font-bold text-gray-700">{{user?.displayName || 'Mon Profil'}}</h2>
       <p class="text-sm text-gray-400">{{user?.email}}</p>
@@ -17,7 +17,7 @@
     <h3 class="font-display text-lg font-bold text-gray-700 mb-4">✏️ Modifier le profil</h3>
     <form [formGroup]="profileForm" (ngSubmit)="onSubmitProfileForm()" class="space-y-4">
       <div class="flex items-center gap-4">
-        <img [src]="fileUrl" alt="Avatar" class="h-14 w-14 rounded-full object-cover ring-2 ring-family-pink/30" />
+        <img [src]="fileUrl" alt="Avatar" class="h-14 w-14 rounded-full object-cover ring-2 ring-family-pink/30" referrerpolicy="no-referrer" />
         <label class="block">
           <span class="sr-only">Choisir une photo</span>
           <input formControlName="photoURLControl" type="file" (change)="detectFiles($event)" accept="image/*"

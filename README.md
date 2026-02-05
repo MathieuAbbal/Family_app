@@ -15,11 +15,13 @@ Disponible en tant que **Progressive Web App (PWA)** installable sur mobile et d
 - Niveaux d'urgence colorés (Urgent, Relativement urgent, Pas urgent)
 - Attribution des tâches aux membres de la famille
 
-### Galerie photos
-- Upload de photos avec compression automatique (1200px max, JPEG 70%)
-- Système de likes et commentaires par photo
-- Affichage de l'auteur (nom + avatar) et date de publication
-- Tri par date (plus récentes en premier)
+### Fil d'actu (Feed social)
+- Publications avec texte et/ou images
+- Système de likes et commentaires
+- Affichage de l'auteur (nom + avatar) et date/heure
+- Tri par date (plus récents en premier, style feed)
+- Suppression de ses propres posts avec confirmation
+- Séparateurs de date automatiques
 
 ### Liste de courses
 - Articles groupés par catégorie (Fruits & Légumes, Produits laitiers, Viandes, Épicerie, Boissons, Surgelés, Hygiène, Autre)
@@ -38,16 +40,27 @@ Disponible en tant que **Progressive Web App (PWA)** installable sur mobile et d
 - Contrôles de navigation, plein écran et boussole
 
 ### Documents partagés (Google Drive)
-- Upload de fichiers vers un dossier partagé "FamilyApp" sur Google Drive
-- Catégories : Santé, École, Administratif, Recettes, Autre
-- Liste des fichiers groupés par catégorie
+- Dossier familial partagé sur Google Drive
+- Navigation complète avec fil d'Ariane (breadcrumb)
+- Création, renommage et suppression de dossiers
+- Upload de fichiers avec auteur affiché
+- Drag & drop pour déplacer les fichiers dans les dossiers
 - Aperçu des fichiers via lien Google Drive
-- Auteur et date d'upload affichés
-- Suppression de fichiers
+- Icônes par type de fichier (PDF, images, documents, tableurs...)
 
 ### Calendrier partagé (Google Calendar)
 - Intégration avec Google Calendar
-- Affichage des événements familiaux
+- Affichage des événements de tous les calendriers
+- Création d'événements (journée entière ou avec horaires)
+- Sélection de l'agenda cible (personnel, famille...)
+- Vue mensuelle avec numéros de semaine
+
+### Vacances
+- Planification des vacances familiales
+- Filtrage par statut : à venir, en cours, passées
+- Checklist de préparation par voyage
+- Album photos par destination
+- Carte interactive avec localisation
 
 ### Gestion des utilisateurs
 - Connexion via Google (OAuth2)
@@ -74,23 +87,24 @@ Disponible en tant que **Progressive Web App (PWA)** installable sur mobile et d
 ```
 src/app/
 ├── calendar/                 # Calendrier Google Calendar
-├── dialogs/                  # Dialogues (upload photo, confirmation)
+│   ├── add-event-dialog/     # Dialogue création événement
+│   └── event-detail-dialog/  # Dialogue détail événement
+├── chat/                     # Fil d'actu (feed social)
 ├── documents/                # Documents partagés (Google Drive)
-├── header/                   # En-tête de l'application
-├── home/                     # Page d'accueil (dashboard kanban)
+├── home/                     # Page d'accueil
 ├── layout/
 │   ├── bottom-nav/           # Navigation mobile (bas d'écran)
 │   ├── sidebar/              # Navigation desktop (barre latérale)
 │   └── top-bar/              # Barre supérieure mobile
 ├── map/                      # Carte interactive avec géolocalisation famille
-├── models/                   # Modèles de données (Task, Photo, User, Item, Comment)
-├── photo/                    # Galerie photos avec interactions sociales
-├── services/                 # Services (auth, tasks, photos, items, comments, kanban, location, google-drive, google-auth)
+├── models/                   # Modèles de données (Task, Message, User, ShoppingItem, Comment)
+├── services/                 # Services (auth, tasks, chat, shopping, google-drive, google-calendar, location)
 ├── shopping/                 # Liste de courses par catégorie
 ├── tasks/
 │   ├── add-task/             # Formulaire de création de tâche
 │   ├── edit-task/            # Formulaire d'édition de tâche
 │   └── kanban/               # Board kanban
+├── vacances/                 # Gestion des vacances famille
 └── user/
     ├── auth/
     │   └── signin/           # Page de connexion Google
@@ -127,8 +141,8 @@ npm run deploy
 
 Le projet utilise Firebase avec les services suivants :
 - **Authentication** : connexion Google OAuth2
-- **Realtime Database** : stockage des tâches, photos, articles, utilisateurs, commentaires, positions
-- **Cloud Storage** : stockage des photos et avatars
+- **Realtime Database** : stockage des tâches, messages (fil d'actu), articles, utilisateurs, vacances, positions
+- **Cloud Storage** : stockage des images (fil d'actu, vacances, avatars)
 
 La configuration se trouve dans `src/app/firebase.ts`.
 

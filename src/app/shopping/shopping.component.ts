@@ -1,9 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
-import { Item, ItemCategory, CATEGORIES } from '../models/item.model';
-import { ItemService } from '../services/item.service';
+import { ShoppingItem, ShoppingCategory, SHOPPING_CATEGORIES } from '../models/shopping-item.model';
+import { ShoppingService } from '../services/shopping.service';
 import { auth, db } from '../firebase';
 import { ref, get } from 'firebase/database';
 
@@ -13,58 +12,52 @@ import { ref, get } from 'firebase/database';
     templateUrl: './shopping.component.html',
     styleUrls: ['./shopping.component.css']
 })
-export class ShoppingComponent implements OnInit, OnDestroy {
-  items: Item[] = [];
-  categories = CATEGORIES;
+export class ShoppingComponent {
+  categories = SHOPPING_CATEGORIES;
   newItemName = '';
-  newItemCategory: ItemCategory = 'autre';
+  newItemCategory: ShoppingCategory = 'autre';
   newItemQuantity = '';
   showAddForm = false;
-  private sub!: Subscription;
 
-  constructor(private itemService: ItemService) {}
+  // Accès direct aux signals du service
+  items = this.shoppingService.items;
 
-  ngOnInit(): void {
-    this.sub = this.itemService.itemSubject.subscribe(
-      (items: Item[]) => this.items = items
-    );
-    this.itemService.emitItems();
-  }
-
-  get uncheckedByCategory(): { key: ItemCategory; label: string; icon: string; items: Item[] }[] {
+  // Computed pour grouper par catégorie
+  readonly uncheckedByCategory = computed(() => {
+    const items = this.shoppingService.items();
     return this.categories
       .map(cat => ({
         ...cat,
-        items: this.items.filter(i => !i.checked && i.category === cat.key)
+        items: items.filter(i => !i.checked && i.category === cat.key)
       }))
       .filter(cat => cat.items.length > 0);
-  }
+  });
 
-  get checkedItems(): Item[] {
-    return this.items.filter(i => i.checked);
-  }
+  readonly checkedItems = computed(() => this.shoppingService.items().filter(i => i.checked));
+  readonly totalItems = computed(() => this.shoppingService.items().filter(i => !i.checked).length);
 
-  get totalItems(): number {
-    return this.items.filter(i => !i.checked).length;
-  }
+  constructor(private shoppingService: ShoppingService) {}
 
   async addItem() {
     const nom = this.newItemName.trim();
     if (!nom) return;
     const user = auth.currentUser;
     let addedByName = '';
+    let addedByPhoto = '';
     if (user) {
       const snap = await get(ref(db, `/users/${user.uid}`));
       const profile = snap.val() || {};
       addedByName = profile.displayName || user.displayName || '';
+      addedByPhoto = profile.photoURL || user.photoURL || '';
     }
-    this.itemService.addItem({
+    this.shoppingService.addItem({
       nom,
       category: this.newItemCategory,
       quantity: this.newItemQuantity.trim() || '1',
       checked: false,
       addedBy: user?.uid || '',
       addedByName,
+      addedByPhoto,
       addedAt: new Date().toISOString(),
     });
     this.newItemName = '';
@@ -73,23 +66,19 @@ export class ShoppingComponent implements OnInit, OnDestroy {
     this.showAddForm = false;
   }
 
-  toggleChecked(item: Item) {
-    this.itemService.toggleChecked(item.id, !item.checked);
+  toggleChecked(item: ShoppingItem) {
+    this.shoppingService.toggleChecked(item.id, !item.checked);
   }
 
-  removeItem(item: Item) {
-    this.itemService.removeItem(item.id);
+  removeItem(item: ShoppingItem) {
+    this.shoppingService.removeItem(item.id);
   }
 
   clearChecked() {
-    this.itemService.clearChecked();
+    this.shoppingService.clearChecked();
   }
 
   getCategoryIcon(key: string): string {
     return this.categories.find(c => c.key === key)?.icon || '📦';
-  }
-
-  ngOnDestroy() {
-    if (this.sub) this.sub.unsubscribe();
   }
 }

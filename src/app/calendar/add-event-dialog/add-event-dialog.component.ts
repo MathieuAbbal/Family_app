@@ -76,7 +76,8 @@ export class AddEventDialogComponent {
     private dialogRef: MatDialogRef<AddEventDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { date: Date; calendars: GoogleCalendarInfo[] }
   ) {
-    const dateStr = data.date.toISOString().substring(0, 10);
+    // Format as local date YYYY-MM-DD (avoid UTC shift from toISOString)
+    const dateStr = this.formatLocalDate(data.date);
     const familyId = environment.googleCalendar.familyCalendarId;
     const defaultCalendar = data.calendars?.find(c => c.id === familyId)?.id
       || data.calendars?.find(c => c.primary)?.id
@@ -100,6 +101,16 @@ export class AddEventDialogComponent {
   onSubmit() {
     if (this.eventForm.invalid) return;
     const v = this.eventForm.value;
+
+    let endDate = v.endDate;
+    if (v.allDay) {
+      // Google Calendar all-day events use exclusive end date
+      // So for a single-day event on Feb 5th, end must be Feb 6th
+      const endDateObj = new Date(v.endDate + 'T00:00:00');
+      endDateObj.setDate(endDateObj.getDate() + 1);
+      endDate = this.formatLocalDate(endDateObj);
+    }
+
     const event: CalendarEvent = {
       id: '',
       title: v.title,
@@ -107,8 +118,15 @@ export class AddEventDialogComponent {
       allDay: v.allDay,
       calendarId: v.calendarId || 'primary',
       startDate: v.allDay ? v.startDate : `${v.startDate}T${v.startTime}:00`,
-      endDate: v.allDay ? v.endDate : `${v.endDate}T${v.endTime}:00`,
+      endDate: v.allDay ? endDate : `${v.endDate}T${v.endTime}:00`,
     };
     this.dialogRef.close(event);
+  }
+
+  private formatLocalDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }

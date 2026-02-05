@@ -42,14 +42,14 @@ export class GoogleCalendarService {
       this.ensureToken();
       const response = await gapi.client.calendar.calendarList.list();
       console.log('Calendar list response:', response.result.items?.length, 'calendars');
-      // Filter out Google's built-in noise calendars (week numbers, holidays, birthdays, contacts)
+      // Filter out Google's built-in noise calendars (week numbers, holidays, contacts)
+      // Keep birthdays calendar for anniversaries
       const filtered = (response.result.items || []).filter((cal: any) => {
         const id: string = cal.id || '';
         return !id.includes('#weeknum') &&
                !id.includes('#contacts') &&
                !id.includes('#holiday') &&
-               !id.includes('addressbook') &&
-               !id.endsWith('#birthday@group.v.calendar.google.com');
+               !id.includes('addressbook');
       });
       this.calendars = filtered.map((cal: any) => ({
         id: cal.id,
