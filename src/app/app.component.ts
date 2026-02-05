@@ -7,6 +7,7 @@ import { TopBarComponent } from './layout/top-bar/top-bar.component';
 import { auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { LocationService } from './services/location.service';
+import { UpdateService } from './services/update.service';
 
 @Component({
     selector: 'app-root',
@@ -18,9 +19,14 @@ export class AppComponent implements OnInit {
   title = 'FamilyApp';
   isAuth = false;
 
-  constructor(private locationService: LocationService) {}
+  constructor(
+    private locationService: LocationService,
+    private updateService: UpdateService
+  ) {}
 
   ngOnInit() {
+    this.updateService.init();
+
     onAuthStateChanged(auth, user => {
       this.isAuth = !!user;
       if (user) {
