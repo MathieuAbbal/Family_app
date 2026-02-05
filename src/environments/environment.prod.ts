@@ -7,7 +7,8 @@ export const environment = {
       'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest',
       'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'
     ],
-    scopes: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/drive.file',
-    familyCalendarId: 'family12498967542838679084@group.calendar.google.com'
+    scopes: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/drive',
+    familyCalendarId: 'family12498967542838679084@group.calendar.google.com',
+    familyDriveFolderId: '1yWZtCJZGlt2wfqmkcrJThLuY8m-aI0TW'
   }
 };

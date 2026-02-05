@@ -2,18 +2,9 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { GoogleAuthService } from './google-auth.service';
 import { auth } from '../firebase';
+import { environment } from '../../environments/environment';
 
 declare const gapi: any;
-
-export type DocCategory = 'sante' | 'ecole' | 'administratif' | 'recettes' | 'autre';
-
-export const DOC_CATEGORIES: { key: DocCategory; label: string; icon: string }[] = [
-  { key: 'sante', label: 'Santé', icon: '🏥' },
-  { key: 'ecole', label: 'École', icon: '🎒' },
-  { key: 'administratif', label: 'Administratif', icon: '📋' },
-  { key: 'recettes', label: 'Recettes', icon: '🍳' },
-  { key: 'autre', label: 'Autre', icon: '📦' },
-];
 
 export interface DriveFile {
   id: string;
@@ -23,9 +14,14 @@ export interface DriveFile {
   iconLink: string;
   thumbnailLink?: string;
   createdTime: string;
-  category: DocCategory;
+  isFolder: boolean;
   uploadedBy: string;
   uploadedByName: string;
+}
+
+export interface BreadcrumbItem {
+  id: string;
+  name: string;
 }
 
 @Injectable({
@@ -34,7 +30,10 @@ export interface DriveFile {
 export class GoogleDriveService {
   files: DriveFile[] = [];
   filesSubject = new Subject<DriveFile[]>();
-  private folderId: string | null = null;
+  breadcrumb: BreadcrumbItem[] = [];
+  breadcrumbSubject = new Subject<BreadcrumbItem[]>();
+  private rootFolderId: string | null = null;
+  currentFolderId: string | null = null;
 
   constructor(private googleAuth: GoogleAuthService) {}
 
@@ -45,9 +44,16 @@ export class GoogleDriveService {
     }
   }
 
-  async ensureFolder(): Promise<string> {
-    if (this.folderId) return this.folderId;
+  async ensureRootFolder(): Promise<string> {
+    if (this.rootFolderId) return this.rootFolderId;
     if (!this.googleAuth.isConnected()) throw new Error('Not connected');
+
+    // Use configured shared folder if available
+    const configuredFolderId = environment.googleCalendar.familyDriveFolderId;
+    if (configuredFolderId) {
+      this.rootFolderId = configuredFolderId;
+      return this.rootFolderId;
+    }
 
     await this.googleAuth.loadGapi();
     this.ensureToken();
@@ -61,8 +67,8 @@ export class GoogleDriveService {
 
     const folders = searchResponse.result.files || [];
     if (folders.length > 0) {
-      this.folderId = folders[0].id;
-      return this.folderId!;
+      this.rootFolderId = folders[0].id;
+      return this.rootFolderId!;
     }
 
     // Create folder
@@ -73,22 +79,27 @@ export class GoogleDriveService {
       },
       fields: 'id',
     });
-    this.folderId = createResponse.result.id;
-    return this.folderId!;
+    this.rootFolderId = createResponse.result.id;
+    return this.rootFolderId!;
   }
 
-  async listFiles(): Promise<DriveFile[]> {
+  async listFiles(folderId?: string): Promise<DriveFile[]> {
     if (!this.googleAuth.isConnected()) return [];
     try {
       await this.googleAuth.loadGapi();
       this.ensureToken();
-      const folderId = await this.ensureFolder();
+      const rootId = await this.ensureRootFolder();
+      const targetFolderId = folderId || rootId;
+      this.currentFolderId = targetFolderId;
 
       const response = await gapi.client.drive.files.list({
-        q: `'${folderId}' in parents and trashed=false`,
+        q: `'${targetFolderId}' in parents and trashed=false`,
         fields: 'files(id,name,mimeType,webViewLink,iconLink,thumbnailLink,createdTime,properties)',
-        orderBy: 'createdTime desc',
+        orderBy: 'folder,name',
         pageSize: 100,
+        includeItemsFromAllDrives: true,
+        supportsAllDrives: true,
+        corpora: 'allDrives',
       });
 
       this.files = (response.result.files || []).map((f: any) => ({
@@ -99,7 +110,7 @@ export class GoogleDriveService {
         iconLink: f.iconLink || '',
         thumbnailLink: f.thumbnailLink || '',
         createdTime: f.createdTime || '',
-        category: f.properties?.category || 'autre',
+        isFolder: f.mimeType === 'application/vnd.google-apps.folder',
         uploadedBy: f.properties?.uploadedBy || '',
         uploadedByName: f.properties?.uploadedByName || '',
       }));
@@ -111,25 +122,109 @@ export class GoogleDriveService {
     }
   }
 
-  async uploadFile(file: File, category: DocCategory): Promise<DriveFile | null> {
+  async navigateToFolder(folderId: string, folderName: string): Promise<void> {
+    // Add to breadcrumb
+    this.breadcrumb.push({ id: folderId, name: folderName });
+    this.breadcrumbSubject.next(this.breadcrumb);
+    await this.listFiles(folderId);
+  }
+
+  async navigateToBreadcrumb(index: number): Promise<void> {
+    if (index < 0) {
+      // Navigate to root
+      this.breadcrumb = [];
+      this.breadcrumbSubject.next(this.breadcrumb);
+      await this.listFiles();
+    } else {
+      // Navigate to specific breadcrumb
+      const item = this.breadcrumb[index];
+      this.breadcrumb = this.breadcrumb.slice(0, index + 1);
+      this.breadcrumbSubject.next(this.breadcrumb);
+      await this.listFiles(item.id);
+    }
+  }
+
+  async navigateUp(): Promise<void> {
+    if (this.breadcrumb.length === 0) return;
+    this.breadcrumb.pop();
+    this.breadcrumbSubject.next(this.breadcrumb);
+    const parentId = this.breadcrumb.length > 0 ? this.breadcrumb[this.breadcrumb.length - 1].id : undefined;
+    await this.listFiles(parentId);
+  }
+
+  async createFolder(name: string): Promise<DriveFile | null> {
     if (!this.googleAuth.isConnected()) return null;
     try {
       await this.googleAuth.loadGapi();
       this.ensureToken();
-      const folderId = await this.ensureFolder();
+      const rootId = await this.ensureRootFolder();
+      const parentId = this.currentFolderId || rootId;
+
+      const user = auth.currentUser;
+      const response = await gapi.client.drive.files.create({
+        resource: {
+          name,
+          mimeType: 'application/vnd.google-apps.folder',
+          parents: [parentId],
+          properties: {
+            uploadedBy: user?.uid || '',
+            uploadedByName: user?.displayName || '',
+          },
+        },
+        fields: 'id,name,mimeType,createdTime',
+      });
+
+      const folder: DriveFile = {
+        id: response.result.id,
+        name: response.result.name,
+        mimeType: response.result.mimeType,
+        webViewLink: '',
+        iconLink: '',
+        createdTime: response.result.createdTime || '',
+        isFolder: true,
+        uploadedBy: user?.uid || '',
+        uploadedByName: user?.displayName || '',
+      };
+
+      return folder;
+    } catch {
+      return null;
+    }
+  }
+
+  async renameFile(fileId: string, newName: string): Promise<boolean> {
+    if (!this.googleAuth.isConnected()) return false;
+    try {
+      await this.googleAuth.loadGapi();
+      this.ensureToken();
+      await gapi.client.drive.files.update({
+        fileId,
+        resource: { name: newName },
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  async uploadFile(file: File): Promise<DriveFile | null> {
+    if (!this.googleAuth.isConnected()) return null;
+    try {
+      await this.googleAuth.loadGapi();
+      this.ensureToken();
+      const rootId = await this.ensureRootFolder();
+      const parentId = this.currentFolderId || rootId;
 
       const user = auth.currentUser;
       const metadata = {
         name: file.name,
-        parents: [folderId],
+        parents: [parentId],
         properties: {
-          category,
           uploadedBy: user?.uid || '',
           uploadedByName: user?.displayName || '',
         },
       };
 
-      // Use multipart upload via fetch (gapi doesn't support file upload directly)
       const token = this.googleAuth.getAccessToken();
       const form = new FormData();
       form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
@@ -153,7 +248,7 @@ export class GoogleDriveService {
         iconLink: result.iconLink || '',
         thumbnailLink: result.thumbnailLink || '',
         createdTime: result.createdTime || '',
-        category,
+        isFolder: false,
         uploadedBy: user?.uid || '',
         uploadedByName: user?.displayName || '',
       };
@@ -167,9 +262,36 @@ export class GoogleDriveService {
     try {
       await this.googleAuth.loadGapi();
       this.ensureToken();
-      await gapi.client.drive.files.delete({ fileId });
+      await gapi.client.drive.files.delete({ fileId, supportsAllDrives: true });
     } catch {
       // silently fail
+    }
+  }
+
+  async moveFile(fileId: string, targetFolderId: string): Promise<boolean> {
+    if (!this.googleAuth.isConnected()) return false;
+    try {
+      await this.googleAuth.loadGapi();
+      this.ensureToken();
+
+      // Get current parents
+      const file = await gapi.client.drive.files.get({
+        fileId,
+        fields: 'parents',
+      });
+      const previousParents = file.result.parents?.join(',') || '';
+
+      // Move file to new folder
+      await gapi.client.drive.files.update({
+        fileId,
+        addParents: targetFolderId,
+        removeParents: previousParents,
+        fields: 'id, parents',
+      });
+
+      return true;
+    } catch {
+      return false;
     }
   }
 }

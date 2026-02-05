@@ -78,10 +78,10 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     if (!uid) return;
     const formData = this.profileForm.value;
     const userData = {
-      displayName: formData.displayNameControl,
-      phoneNumber: formData.phoneNumberControl,
+      displayName: formData.displayNameControl || '',
+      phoneNumber: formData.phoneNumberControl || '',
       photoURL: this.fileUrl,
-      dateBirth: formData.dateBirthControl
+      dateBirth: formData.dateBirthControl || ''
     };
     this.editProfileService.updateUserData(uid, userData)
       .then(() => this._snackBar.open('Profil mis a jour', 'avec succes !!', { duration: 5000 }))

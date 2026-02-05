@@ -1,25 +1,30 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { Router, RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { TasksService } from 'src/app/services/tasks.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { User } from 'src/app/models/user.model';
 import { Task } from '../../models/task.model';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { KanbanService } from 'src/app/services/kanban.service';
+
 @Component({
     selector: 'app-kanban',
     imports: [CommonModule, DragDropModule, RouterModule],
     templateUrl: './kanban.component.html',
     styleUrls: ['./kanban.component.css']
 })
-export class KanbanComponent implements OnInit, OnDestroy {
-
-  tasks: Task[] = [];
-  tasksSubsription!: Subscription;
+export class KanbanComponent implements OnInit {
   userAvatars: { [name: string]: string } = {};
+  allUserAvatars: string[] = [];
+
+  // Arrays mutables pour drag & drop (synchronisés via effect)
+  new: Task[] = [];
+  en_cours: Task[] = [];
+  fait: Task[] = [];
+  bloquer: Task[] = [];
+  archiver: Task[] = [];
 
   constructor(
     private ts: TasksService,
@@ -27,32 +32,31 @@ export class KanbanComponent implements OnInit, OnDestroy {
     private router: Router,
     private kanbanService: KanbanService,
     private authService: AuthService
-  ) { }
+  ) {
+    // Effect pour synchroniser les arrays avec les signals Firebase
+    effect(() => {
+      const tasks = this.ts.tasks();
+      this.new = tasks.filter(t => t.statut === 'Nouveau');
+      this.en_cours = tasks.filter(t => t.statut === 'En cours');
+      this.fait = tasks.filter(t => t.statut === 'Fait');
+      this.bloquer = tasks.filter(t => t.statut === 'Bloque');
+      this.archiver = tasks.filter(t => t.statut === 'Archive');
+    });
+  }
 
-  new: Task[] = [];
-  en_cours: Task[] = [];
-  fait: Task[] = [];
-  bloquer: Task[] = [];
-  archiver: Task[] = [];
   ngOnInit(): void {
-    this.tasksSubsription = this.ts.tasksSubject.subscribe(
-      (tasks: Task[]) => {
-        this.tasks = tasks;
-        this.new = tasks.filter(task => task.statut === 'Nouveau');
-        this.en_cours = tasks.filter(task => task.statut === 'En cours');
-        this.fait = tasks.filter(task => task.statut === 'Fait');
-        this.bloquer = tasks.filter(task => task.statut === 'Bloque');
-        this.archiver = tasks.filter(task => task.statut === 'Archive');
-      });
-    this.ts.getTasks();
-    this.ts.emitTasks();
     this.authService.getAllUsers().then((users: User[]) => {
       users.forEach(u => {
         if (u.displayName && u.photoURL) {
           this.userAvatars[u.displayName] = u.photoURL;
+          this.allUserAvatars.push(u.photoURL);
         }
       });
     });
+  }
+
+  isForEveryone(task: Task): boolean {
+    return task.name === 'Tout le monde';
   }
 
   drop(event: CdkDragDrop<Task[]>) {
@@ -88,10 +92,8 @@ export class KanbanComponent implements OnInit, OnDestroy {
         return 'flex h-6 items-center rounded-full bg-gray-100 px-3 text-xs font-semibold text-gray-600';
     }
   }
+
   onEdit(id: string) {
     this.router.navigate(['/task/edit', id]);
-  }
-  ngOnDestroy() {
-    if (this.tasksSubsription) { this.tasksSubsription.unsubscribe() };
   }
 }

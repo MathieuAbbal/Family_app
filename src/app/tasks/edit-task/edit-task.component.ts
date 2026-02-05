@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, effect } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TasksService } from '../../services/tasks.service';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -8,7 +8,6 @@ import { ConfirmDialogComponent } from 'src/app/dialogs/confirm-dialog/confirm-d
 import { Task } from '../../models/task.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { User } from 'src/app/models/user.model';
-import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-edit-task',
@@ -16,11 +15,10 @@ import { Subscription } from 'rxjs';
     templateUrl: './edit-task.component.html',
     styleUrls: ['./edit-task.component.css']
 })
-export class EditTaskComponent implements OnInit, OnDestroy {
+export class EditTaskComponent implements OnInit {
   taskToEdit: Task | null = null;
   editTaskForm!: FormGroup;
   allUsers: User[] = [];
-  private tasksSubscription!: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -30,7 +28,26 @@ export class EditTaskComponent implements OnInit, OnDestroy {
     private router: Router,
     public dialog: MatDialog,
     private userService: AuthService
-  ) { }
+  ) {
+    // Effect pour charger la tâche quand les données arrivent
+    effect(() => {
+      if (this.taskToEdit) return; // Déjà chargée
+      const taskId = this.route.snapshot.params['id'];
+      const task = this.tasksService.tasks().find(t => t.id === taskId);
+      if (task) {
+        this.taskToEdit = task;
+        this.editTaskForm = this.formBuilder.group({
+          id: [task.id, [Validators.required]],
+          name: [task.name, [Validators.required]],
+          urg: [task.urg, [Validators.required]],
+          title: [task.title, [Validators.required]],
+          descriptif: [task.descriptif],
+          createdDate: [task.createdDate || ''],
+          statut: [task.statut || ''],
+        });
+      }
+    });
+  }
 
   onDelete(task: Task) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
@@ -48,25 +65,6 @@ export class EditTaskComponent implements OnInit, OnDestroy {
     this.userService.getAllUsers()
       .then((users: User[]) => this.allUsers = users)
       .catch(() => this._snackBar.open('Erreur lors du chargement des utilisateurs', '', { duration: 5000 }));
-    const taskId = this.route.snapshot.params['id'];
-    this.tasksSubscription = this.tasksService.tasksSubject.subscribe((tasks: Task[]) => {
-      if (this.taskToEdit) return;
-      const task = tasks.find(t => t.id === taskId);
-      if (task) {
-        this.taskToEdit = task;
-        this.editTaskForm = this.formBuilder.group({
-          id: [task.id, [Validators.required]],
-          name: [task.name, [Validators.required]],
-          urg: [task.urg, [Validators.required]],
-          title: [task.title, [Validators.required]],
-          descriptif: [task.descriptif],
-          createdDate: [task.createdDate || ''],
-          statut: [task.statut || ''],
-        });
-      }
-    });
-    this.tasksService.getTasks();
-    this.tasksService.emitTasks();
   }
 
   editTask() {
@@ -86,9 +84,5 @@ export class EditTaskComponent implements OnInit, OnDestroy {
 
   goBack() {
     this.router.navigate(['/home']);
-  }
-
-  ngOnDestroy() {
-    if (this.tasksSubscription) { this.tasksSubscription.unsubscribe(); }
   }
 }

@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 import { GoogleAuthService } from '../services/google-auth.service';
-import { GoogleDriveService, DriveFile, DocCategory, DOC_CATEGORIES } from '../services/google-drive.service';
+import { GoogleDriveService, DriveFile, BreadcrumbItem } from '../services/google-drive.service';
 
 import localeFr from '@angular/common/locales/fr';
 registerLocaleData(localeFr);
@@ -18,12 +18,21 @@ registerLocaleData(localeFr);
 export class DocumentsComponent implements OnInit, OnDestroy {
   isConnected = false;
   files: DriveFile[] = [];
-  categories = DOC_CATEGORIES;
+  breadcrumb: BreadcrumbItem[] = [];
   loading = false;
   uploading = false;
-  showUploadForm = false;
-  selectedCategory: DocCategory = 'autre';
+
+  // Modals
+  showNewFolderModal = false;
+  newFolderName = '';
+  showRenameModal = false;
+  renameTarget: DriveFile | null = null;
+  renameName = '';
+  showDeleteModal = false;
+  deleteTarget: DriveFile | null = null;
+
   private filesSub!: Subscription;
+  private breadcrumbSub!: Subscription;
   private connSub!: Subscription;
 
   constructor(
@@ -35,6 +44,9 @@ export class DocumentsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.filesSub = this.driveService.filesSubject.subscribe(
       (files) => this.files = files
+    );
+    this.breadcrumbSub = this.driveService.breadcrumbSubject.subscribe(
+      (breadcrumb) => this.breadcrumb = breadcrumb
     );
     this.connSub = this.googleAuth.connectionChanged.subscribe((connected) => {
       this.isConnected = connected;
@@ -50,13 +62,12 @@ export class DocumentsComponent implements OnInit, OnDestroy {
     this.loading = false;
   }
 
-  get filesByCategory(): { key: DocCategory; label: string; icon: string; files: DriveFile[] }[] {
-    return this.categories
-      .map(cat => ({
-        ...cat,
-        files: this.files.filter(f => f.category === cat.key)
-      }))
-      .filter(cat => cat.files.length > 0);
+  get folders(): DriveFile[] {
+    return this.files.filter(f => f.isFolder);
+  }
+
+  get documents(): DriveFile[] {
+    return this.files.filter(f => !f.isFolder);
   }
 
   connectGoogle() {
@@ -66,6 +77,148 @@ export class DocumentsComponent implements OnInit, OnDestroy {
     });
   }
 
+  reconnectGoogle() {
+    // Force new consent to get fresh token with all scopes (including drive)
+    this.googleAuth.signIn().then((connected) => {
+      this.isConnected = connected;
+      if (connected) this.loadFiles();
+    });
+  }
+
+  // Navigation
+  async openFolder(folder: DriveFile) {
+    this.loading = true;
+    await this.driveService.navigateToFolder(folder.id, folder.name);
+    this.loading = false;
+  }
+
+  async goToRoot() {
+    this.loading = true;
+    await this.driveService.navigateToBreadcrumb(-1);
+    this.loading = false;
+  }
+
+  async goToBreadcrumb(index: number) {
+    this.loading = true;
+    await this.driveService.navigateToBreadcrumb(index);
+    this.loading = false;
+  }
+
+  async goUp() {
+    this.loading = true;
+    await this.driveService.navigateUp();
+    this.loading = false;
+  }
+
+  // Create folder
+  openNewFolderModal() {
+    this.newFolderName = '';
+    this.showNewFolderModal = true;
+  }
+
+  closeNewFolderModal() {
+    this.showNewFolderModal = false;
+    this.newFolderName = '';
+  }
+
+  async createFolder() {
+    if (!this.newFolderName.trim()) return;
+    const result = await this.driveService.createFolder(this.newFolderName.trim());
+    this.closeNewFolderModal();
+    if (result) {
+      await this.driveService.listFiles(this.driveService.currentFolderId || undefined);
+      this.snackBar.open('Dossier créé !', '', { duration: 3000 });
+    }
+  }
+
+  // Rename
+  openRenameModal(file: DriveFile) {
+    this.renameTarget = file;
+    this.renameName = file.name;
+    this.showRenameModal = true;
+  }
+
+  closeRenameModal() {
+    this.showRenameModal = false;
+    this.renameTarget = null;
+    this.renameName = '';
+  }
+
+  async confirmRename() {
+    if (!this.renameTarget || !this.renameName.trim()) return;
+    const success = await this.driveService.renameFile(this.renameTarget.id, this.renameName.trim());
+    this.closeRenameModal();
+    if (success) {
+      await this.driveService.listFiles(this.driveService.currentFolderId || undefined);
+      this.snackBar.open('Renommé !', '', { duration: 3000 });
+    }
+  }
+
+  // Drag and drop
+  draggedFile: DriveFile | null = null;
+  dragOverFolder: string | null = null;
+
+  onDragStart(event: DragEvent, file: DriveFile) {
+    this.draggedFile = file;
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+    }
+  }
+
+  onDragEnd() {
+    this.draggedFile = null;
+    this.dragOverFolder = null;
+  }
+
+  onDragOver(event: DragEvent, folder: DriveFile) {
+    event.preventDefault();
+    if (this.draggedFile && !this.draggedFile.isFolder) {
+      this.dragOverFolder = folder.id;
+      if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = 'move';
+      }
+    }
+  }
+
+  onDragLeave(folder: DriveFile) {
+    if (this.dragOverFolder === folder.id) {
+      this.dragOverFolder = null;
+    }
+  }
+
+  async onDrop(event: DragEvent, folder: DriveFile) {
+    event.preventDefault();
+    this.dragOverFolder = null;
+    if (this.draggedFile && !this.draggedFile.isFolder) {
+      const success = await this.driveService.moveFile(this.draggedFile.id, folder.id);
+      if (success) {
+        await this.driveService.listFiles(this.driveService.currentFolderId || undefined);
+        this.snackBar.open(`Fichier déplacé dans "${folder.name}"`, '', { duration: 3000 });
+      }
+    }
+    this.draggedFile = null;
+  }
+
+  // Delete
+  openDeleteModal(file: DriveFile) {
+    this.deleteTarget = file;
+    this.showDeleteModal = true;
+  }
+
+  closeDeleteModal() {
+    this.showDeleteModal = false;
+    this.deleteTarget = null;
+  }
+
+  async confirmDelete() {
+    if (!this.deleteTarget) return;
+    await this.driveService.deleteFile(this.deleteTarget.id);
+    this.closeDeleteModal();
+    await this.driveService.listFiles(this.driveService.currentFolderId || undefined);
+    this.snackBar.open('Supprimé', '', { duration: 3000 });
+  }
+
+  // Upload
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) return;
@@ -75,12 +228,11 @@ export class DocumentsComponent implements OnInit, OnDestroy {
 
   async uploadFile(file: File) {
     this.uploading = true;
-    const result = await this.driveService.uploadFile(file, this.selectedCategory);
+    const result = await this.driveService.uploadFile(file);
     this.uploading = false;
-    this.showUploadForm = false;
     if (result) {
-      await this.loadFiles();
-      this.snackBar.open('Document ajoute !', '', { duration: 3000 });
+      await this.driveService.listFiles(this.driveService.currentFolderId || undefined);
+      this.snackBar.open('Document ajouté !', '', { duration: 3000 });
     }
   }
 
@@ -88,13 +240,8 @@ export class DocumentsComponent implements OnInit, OnDestroy {
     window.open(file.webViewLink, '_blank');
   }
 
-  async deleteFile(file: DriveFile) {
-    await this.driveService.deleteFile(file.id);
-    await this.loadFiles();
-    this.snackBar.open('Document supprime', '', { duration: 3000 });
-  }
-
   getFileIcon(mimeType: string): string {
+    if (mimeType === 'application/vnd.google-apps.folder') return '📁';
     if (mimeType.includes('pdf')) return '📄';
     if (mimeType.includes('image')) return '🖼️';
     if (mimeType.includes('spreadsheet') || mimeType.includes('excel')) return '📊';
@@ -105,6 +252,7 @@ export class DocumentsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.filesSub) this.filesSub.unsubscribe();
+    if (this.breadcrumbSub) this.breadcrumbSub.unsubscribe();
     if (this.connSub) this.connSub.unsubscribe();
   }
 }

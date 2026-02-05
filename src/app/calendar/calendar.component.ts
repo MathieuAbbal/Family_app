@@ -133,9 +133,19 @@ export class CalendarComponent implements OnInit, OnDestroy {
 
   getEventsForDay(day: Date): CalendarEvent[] {
     if (!day) return [];
-    const dayStr = day.toISOString().substring(0, 10);
+    // Format local date as YYYY-MM-DD (no timezone conversion)
+    const dayStr = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`;
     return this.events.filter(e => {
-      const eventDate = e.startDate.substring(0, 10);
+      // For all-day events: startDate is "YYYY-MM-DD"
+      // For timed events: startDate is "YYYY-MM-DDTHH:mm:ss+TZ" - extract local date
+      let eventDate: string;
+      if (e.allDay) {
+        eventDate = e.startDate.substring(0, 10);
+      } else {
+        // Parse the datetime and get local date
+        const d = new Date(e.startDate);
+        eventDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      }
       return eventDate === dayStr && !this.isWeekNumberEvent(e);
     });
   }

@@ -19,9 +19,9 @@ import { Subscription } from 'rxjs';
            class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-warm-50 transition-all font-medium">
          Tableau de bord
         </a>
-        <a routerLink="/photo" routerLinkActive="bg-gradient-to-r from-family-coral/10 to-family-orange/10 text-family-coral"
+        <a routerLink="/chat" routerLinkActive="bg-gradient-to-r from-family-coral/10 to-family-orange/10 text-family-coral"
            class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-warm-50 transition-all font-medium">
-          Photos
+          Fil d'actu
         </a>
         <a routerLink="/add-task" routerLinkActive="bg-gradient-to-r from-family-purple/10 to-family-lavender/10 text-family-purple"
            class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-warm-50 transition-all font-medium">
@@ -42,6 +42,10 @@ import { Subscription } from 'rxjs';
         <a routerLink="/documents" routerLinkActive="bg-gradient-to-r from-family-purple/10 to-family-lavender/10 text-family-purple"
            class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-warm-50 transition-all font-medium">
            Documents
+        </a>
+        <a routerLink="/vacances" routerLinkActive="bg-gradient-to-r from-family-coral/10 to-family-orange/10 text-family-coral"
+           class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-warm-50 transition-all font-medium">
+           Vacances
         </a>
       </nav>
 
