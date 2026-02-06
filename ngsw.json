@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1770315482636,
+  "timestamp": 1770399742080,
   "index": "/Family_app/index.html",
   "assetGroups": [
     {
@@ -13,11 +13,11 @@
       "urls": [
         "/Family_app/favicon.ico",
         "/Family_app/index.html",
-        "/Family_app/main.341676685d73c9ee.js",
+        "/Family_app/main.550386457ad2d28a.js",
         "/Family_app/manifest.webmanifest",
         "/Family_app/polyfills.3ff416977d150cb6.js",
         "/Family_app/runtime.ac462ee0e5dfe49c.js",
-        "/Family_app/styles.27ed66adca69793c.css"
+        "/Family_app/styles.187e89bc001a9a1c.css"
       ],
       "patterns": []
     },
@@ -52,12 +52,12 @@
     "/Family_app/assets/icons/icon-72x72.png": "33753289a13c5016d9ba025f55ca43a9eacd30e2",
     "/Family_app/assets/icons/icon-96x96.png": "ff9a383da816fbe37a7610d010210ffc833df0be",
     "/Family_app/favicon.ico": "8535a2f1f8220ba245a73da67081375e44af7a25",
-    "/Family_app/index.html": "9740f124eed61dad32954d80666b1cf682956bff",
-    "/Family_app/main.341676685d73c9ee.js": "64320b9aef70e7043c755e433284b4aef2c1585f",
+    "/Family_app/index.html": "7ce3925ed06b72a6a51da95504e2948c628ef518",
+    "/Family_app/main.550386457ad2d28a.js": "58c61f874dfdd77d0d94327d22bd831ee8a423ec",
     "/Family_app/manifest.webmanifest": "c8f97ffda8c0237485a44d2b6c87424e6cf2b517",
     "/Family_app/polyfills.3ff416977d150cb6.js": "5e7c313762a8693062e58d804a894a11ec3afd3f",
     "/Family_app/runtime.ac462ee0e5dfe49c.js": "7b04d2d76e73f1d1e08a3fbcda8a5a28786f64d4",
-    "/Family_app/styles.27ed66adca69793c.css": "980edbe59bd7da06845a59ea38c5cd7f91655209"
+    "/Family_app/styles.187e89bc001a9a1c.css": "87176b82e7dbbffd5cce8cb6df5a8313d2d083f7"
   },
   "navigationUrls": [
     {
