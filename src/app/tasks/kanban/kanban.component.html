@@ -17,16 +17,12 @@
               <span [ngClass]="getUrgencyClass(itemNew.urg)">{{itemNew.urg}}</span>
               <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemNew.title}}</h4>
               <div class="flex items-center gap-1.5 mt-1">
-                @if (isForEveryone(itemNew)) {
-                  <div class="flex -space-x-1.5">
-                    @for (avatar of allUserAvatars; track avatar) {
-                      <img [src]="avatar" class="w-5 h-5 rounded-full object-cover ring-1 ring-white" referrerpolicy="no-referrer" />
-                    }
-                  </div>
-                } @else if (userAvatars[itemNew.name]) {
-                  <img [src]="userAvatars[itemNew.name]" class="w-5 h-5 rounded-full object-cover" referrerpolicy="no-referrer" />
-                }
-                <span class="text-xs text-gray-400">{{itemNew.name}}</span>
+                <div class="flex -space-x-1.5">
+                  @for (avatar of getAssigneeAvatars(itemNew); track avatar) {
+                    <img [src]="avatar" class="w-5 h-5 rounded-full object-cover ring-1 ring-white" referrerpolicy="no-referrer" />
+                  }
+                </div>
+                <span class="text-xs text-gray-400 truncate">{{itemNew.name}}</span>
               </div>
             </div>
           </div>
@@ -47,16 +43,12 @@
               <span [ngClass]="getUrgencyClass(itemEnCours.urg)">{{itemEnCours.urg}}</span>
               <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemEnCours.title}}</h4>
               <div class="flex items-center gap-1.5 mt-1">
-                @if (isForEveryone(itemEnCours)) {
-                  <div class="flex -space-x-1.5">
-                    @for (avatar of allUserAvatars; track avatar) {
-                      <img [src]="avatar" class="w-5 h-5 rounded-full object-cover ring-1 ring-white" referrerpolicy="no-referrer" />
-                    }
-                  </div>
-                } @else if (userAvatars[itemEnCours.name]) {
-                  <img [src]="userAvatars[itemEnCours.name]" class="w-5 h-5 rounded-full object-cover" referrerpolicy="no-referrer" />
-                }
-                <span class="text-xs text-gray-400">{{itemEnCours.name}}</span>
+                <div class="flex -space-x-1.5">
+                  @for (avatar of getAssigneeAvatars(itemEnCours); track avatar) {
+                    <img [src]="avatar" class="w-5 h-5 rounded-full object-cover ring-1 ring-white" referrerpolicy="no-referrer" />
+                  }
+                </div>
+                <span class="text-xs text-gray-400 truncate">{{itemEnCours.name}}</span>
               </div>
             </div>
           </div>
@@ -77,16 +69,12 @@
               <span [ngClass]="getUrgencyClass(itemFait.urg)">{{itemFait.urg}}</span>
               <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemFait.title}}</h4>
               <div class="flex items-center gap-1.5 mt-1">
-                @if (isForEveryone(itemFait)) {
-                  <div class="flex -space-x-1.5">
-                    @for (avatar of allUserAvatars; track avatar) {
-                      <img [src]="avatar" class="w-5 h-5 rounded-full object-cover ring-1 ring-white" referrerpolicy="no-referrer" />
-                    }
-                  </div>
-                } @else if (userAvatars[itemFait.name]) {
-                  <img [src]="userAvatars[itemFait.name]" class="w-5 h-5 rounded-full object-cover" referrerpolicy="no-referrer" />
-                }
-                <span class="text-xs text-gray-400">{{itemFait.name}}</span>
+                <div class="flex -space-x-1.5">
+                  @for (avatar of getAssigneeAvatars(itemFait); track avatar) {
+                    <img [src]="avatar" class="w-5 h-5 rounded-full object-cover ring-1 ring-white" referrerpolicy="no-referrer" />
+                  }
+                </div>
+                <span class="text-xs text-gray-400 truncate">{{itemFait.name}}</span>
               </div>
             </div>
           </div>
@@ -107,16 +95,12 @@
               <span [ngClass]="getUrgencyClass(itemBloquer.urg)">{{itemBloquer.urg}}</span>
               <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemBloquer.title}}</h4>
               <div class="flex items-center gap-1.5 mt-1">
-                @if (isForEveryone(itemBloquer)) {
-                  <div class="flex -space-x-1.5">
-                    @for (avatar of allUserAvatars; track avatar) {
-                      <img [src]="avatar" class="w-5 h-5 rounded-full object-cover ring-1 ring-white" referrerpolicy="no-referrer" />
-                    }
-                  </div>
-                } @else if (userAvatars[itemBloquer.name]) {
-                  <img [src]="userAvatars[itemBloquer.name]" class="w-5 h-5 rounded-full object-cover" referrerpolicy="no-referrer" />
-                }
-                <span class="text-xs text-gray-400">{{itemBloquer.name}}</span>
+                <div class="flex -space-x-1.5">
+                  @for (avatar of getAssigneeAvatars(itemBloquer); track avatar) {
+                    <img [src]="avatar" class="w-5 h-5 rounded-full object-cover ring-1 ring-white" referrerpolicy="no-referrer" />
+                  }
+                </div>
+                <span class="text-xs text-gray-400 truncate">{{itemBloquer.name}}</span>
               </div>
             </div>
           </div>
@@ -137,16 +121,12 @@
               <span [ngClass]="getUrgencyClass(itemArchiver.urg)">{{itemArchiver.urg}}</span>
               <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemArchiver.title}}</h4>
               <div class="flex items-center gap-1.5 mt-1">
-                @if (isForEveryone(itemArchiver)) {
-                  <div class="flex -space-x-1.5">
-                    @for (avatar of allUserAvatars; track avatar) {
-                      <img [src]="avatar" class="w-5 h-5 rounded-full object-cover ring-1 ring-white" referrerpolicy="no-referrer" />
-                    }
-                  </div>
-                } @else if (userAvatars[itemArchiver.name]) {
-                  <img [src]="userAvatars[itemArchiver.name]" class="w-5 h-5 rounded-full object-cover" referrerpolicy="no-referrer" />
-                }
-                <span class="text-xs text-gray-400">{{itemArchiver.name}}</span>
+                <div class="flex -space-x-1.5">
+                  @for (avatar of getAssigneeAvatars(itemArchiver); track avatar) {
+                    <img [src]="avatar" class="w-5 h-5 rounded-full object-cover ring-1 ring-white" referrerpolicy="no-referrer" />
+                  }
+                </div>
+                <span class="text-xs text-gray-400 truncate">{{itemArchiver.name}}</span>
               </div>
             </div>
           </div>

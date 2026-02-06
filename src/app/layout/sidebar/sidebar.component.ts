@@ -31,6 +31,10 @@ import { Subscription } from 'rxjs';
            class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-warm-50 transition-all font-medium">
            Courses
         </a>
+        <a routerLink="/recipes" routerLinkActive="bg-gradient-to-r from-family-orange/10 to-family-coral/10 text-family-orange"
+           class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-warm-50 transition-all font-medium">
+           Recettes
+        </a>
         <a routerLink="/map" routerLinkActive="bg-gradient-to-r from-family-sky/10 to-family-sky/10 text-family-sky"
            class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-warm-50 transition-all font-medium">
            Carte

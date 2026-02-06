@@ -59,6 +59,17 @@ export class KanbanComponent implements OnInit {
     return task.name === 'Tout le monde';
   }
 
+  getAssigneeAvatars(task: Task): string[] {
+    if (this.isForEveryone(task)) {
+      return this.allUserAvatars;
+    }
+    // Séparer les noms par virgule et récupérer les avatars
+    const names = task.name.split(',').map(n => n.trim());
+    return names
+      .map(name => this.userAvatars[name])
+      .filter(avatar => avatar != null);
+  }
+
   drop(event: CdkDragDrop<Task[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);

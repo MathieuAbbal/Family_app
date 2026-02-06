@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { Task } from '../../models/task.model';
 import { Router } from '@angular/router';
 import { TasksService } from '../../services/tasks.service';
@@ -9,13 +10,15 @@ import { User } from 'src/app/models/user.model';
 
 @Component({
     selector: 'app-add-task',
-    imports: [ReactiveFormsModule],
+    imports: [ReactiveFormsModule, CommonModule],
     templateUrl: './add-task.component.html',
     styleUrls: ['./add-task.component.css']
 })
 export class AddTaskComponent implements OnInit {
   addTaskForm!: FormGroup;
   allUsers: User[] = [];
+  selectedUsers: Set<string> = new Set();
+  selectAll = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -38,11 +41,34 @@ export class AddTaskComponent implements OnInit {
 
   initForm() {
     this.addTaskForm = this.formBuilder.group({
-      name: ['', [Validators.required]],
       urg: ['', [Validators.required]],
       title: ['', [Validators.required]],
       descriptif: [''],
     });
+  }
+
+  toggleUser(userName: string) {
+    if (this.selectedUsers.has(userName)) {
+      this.selectedUsers.delete(userName);
+    } else {
+      this.selectedUsers.add(userName);
+    }
+    this.selectAll = false;
+  }
+
+  toggleSelectAll() {
+    this.selectAll = !this.selectAll;
+    if (this.selectAll) {
+      this.selectedUsers.clear();
+    }
+  }
+
+  isUserSelected(userName: string): boolean {
+    return this.selectedUsers.has(userName);
+  }
+
+  get hasSelection(): boolean {
+    return this.selectAll || this.selectedUsers.size > 0;
   }
 
   goBack() {
@@ -50,7 +76,12 @@ export class AddTaskComponent implements OnInit {
   }
 
   onSubmit() {
-    const name = this.addTaskForm.get('name')?.value;
+    if (!this.hasSelection) {
+      this._snackBar.open('Sélectionne au moins une personne', '', { duration: 3000 });
+      return;
+    }
+
+    const name = this.selectAll ? 'Tout le monde' : Array.from(this.selectedUsers).join(', ');
     const urg = this.addTaskForm.get('urg')?.value;
     const title = this.addTaskForm.get('title')?.value;
     const descriptif = this.addTaskForm.get('descriptif')?.value;

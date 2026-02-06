@@ -30,3 +30,13 @@ export interface ShoppingItem {
   addedByPhoto?: string;
   addedAt: string;
 }
+
+export interface ShoppingList {
+  id: string;
+  name: string;
+  icon: string;
+  createdBy: string;
+  createdAt: string;
+}
+
+export const LIST_ICONS = ['🛒', '🏠', '🎉', '🍽️', '🎂', '🏕️', '🎄', '🐕', '👶', '💼'];
