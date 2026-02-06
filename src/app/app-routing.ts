@@ -11,6 +11,7 @@ import { CalendarComponent } from './calendar/calendar.component';
 import { DocumentsComponent } from './documents/documents.component';
 import { VacancesComponent } from './vacances/vacances.component';
 import { ChatComponent } from './chat/chat.component';
+import { RecipesComponent } from './recipes/recipes.component';
 
 export const routes: Routes = [
   { path: 'auth/signin', component: SigninComponent },
@@ -24,6 +25,7 @@ export const routes: Routes = [
   { path: 'documents', canActivate: [AuthGuardService], component: DocumentsComponent },
   { path: 'vacances', canActivate: [AuthGuardService], component: VacancesComponent },
   { path: 'chat', canActivate: [AuthGuardService], component: ChatComponent },
+  { path: 'recipes', canActivate: [AuthGuardService], component: RecipesComponent },
   { path: 'task/edit/:id', canActivate: [AuthGuardService], component: EditTaskComponent },
 ];
   

@@ -51,6 +51,10 @@ import { RouterModule } from '@angular/router';
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-gray-50 transition-all text-sm">
                 <span>📁</span> Docs
               </a>
+              <a routerLink="/recipes" (click)="showMore = false" routerLinkActive="text-family-orange"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-gray-50 transition-all text-sm">
+                <span>🍽️</span> Recettes
+              </a>
               <a routerLink="/vacances" (click)="showMore = false" routerLinkActive="text-family-coral"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-gray-50 transition-all text-sm">
                 <span>🏖️</span> Vacances
