@@ -41,6 +41,9 @@ yarn-error.log
 testem.log
 /typings
 
+# Claude
+.claude/
+
 # System Files
 .DS_Store
 Thumbs.db
