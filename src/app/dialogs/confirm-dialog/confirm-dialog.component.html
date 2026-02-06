@@ -1,10 +1,7 @@
-<div style="max-width: 25em;padding:0.5em">
-    <mat-dialog-content class="center">
-      <h2 >{{customMessage}}</h2>
-    </mat-dialog-content>
-    <br>
-    <div class="flex flex-row justify-end">
-      <button class="p-2 m-2" mat-raised-button (click)="dialogRef.close()">non</button>
-      <button class="p-2 m-2" mat-raised-button (click)="dialogRef.close(true)">oui</button>
-    </div>
+<div class="p-6 max-w-sm">
+  <h2 class="font-display text-lg font-semibold text-gray-700">{{customMessage}}</h2>
+  <div class="flex justify-end gap-3 mt-6">
+    <button (click)="dialogRef.close()" class="px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors font-medium text-sm">Non</button>
+    <button (click)="dialogRef.close(true)" class="btn-gradient px-6 py-2">Oui</button>
   </div>
+</div>

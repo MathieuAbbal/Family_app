@@ -5,4 +5,8 @@ export interface User {
     phoneNumber: string;
     photoURL: string;
     dateBirth: string;
+    googleCalendar?: {
+      connected: boolean;
+      calendarId: string;
+    };
   }

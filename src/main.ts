@@ -1,12 +1,47 @@
-import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { enableProdMode, LOCALE_ID, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { registerLocaleData } from '@angular/common';
+import * as fr from '@angular/common/locales/fr';
 
-import { AppModule } from './app/app.module';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule } from '@angular/material/dialog';
+import { ServiceWorkerModule } from '@angular/service-worker';
+
+import { AppComponent } from './app/app.component';
+import { routes } from './app/app-routing';
 import { environment } from './environments/environment';
+
+import { AuthService } from './app/services/auth.service';
+import { AuthGuardService } from './app/services/auth-guard.service';
+import { TasksService } from './app/services/tasks.service';
+import { EditProfileService } from './app/user/edit-profile.service';
+
+registerLocaleData(fr.default);
 
 if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(err => console.error(err));
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideZoneChangeDetection(),provideRouter(routes),
+    provideAnimations(),
+    provideHttpClient(),
+    importProvidersFrom(
+      MatSnackBarModule,
+      MatDialogModule,
+      ServiceWorkerModule.register('ngsw-worker.js', {
+        enabled: environment.production,
+        registrationStrategy: 'registerWhenStable:30000'
+      })
+    ),
+    AuthService,
+    AuthGuardService,
+    TasksService,
+    EditProfileService,
+    { provide: LOCALE_ID, useValue: 'fr-FR' },
+  ]
+}).catch(err => console.error(err));

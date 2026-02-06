@@ -1,77 +1,72 @@
 import { Injectable } from '@angular/core';
-import * as firebase from 'firebase/app';
-
+import { auth, db } from '../firebase';
+import { GoogleAuthProvider, signInWithPopup, signOut, OAuthCredential } from 'firebase/auth';
+import { ref, get, update } from 'firebase/database';
+import { User } from '../models/user.model';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  /** Emits the Google OAuth access token after sign-in */
+  googleToken$ = new Subject<string>();
+
+  /** Resolves immediately (kept for guard compatibility) */
+  redirectReady: Promise<void> = Promise.resolve();
 
   constructor() { }
-  createNewUser(email: string, password: string) {
-    return new Promise<void>(
-      (resolve, reject) => {
-        firebase.auth().createUserWithEmailAndPassword(email, password)
-          .then((userCredential) => {
-            // L'utilisateur a été créé dans Firebase Authentication
-            // Maintenant, enregistrez les informations supplémentaires dans la Realtime Database
-            const user = userCredential.user;
-            return firebase.database().ref('/users/' + user.uid).set({
-              email: user.email,
-              uid: user.uid
-            });
-          })
-          .then(() => {
-            // Les données de l'utilisateur sont enregistrées dans la Realtime Database
-            resolve();
-          })
-          .catch((error) => {
-            // Gérer les erreurs
-            reject(error);
-          });
-      }
-    );
+
+  async signInWithGoogle(): Promise<void> {
+    const provider = new GoogleAuthProvider();
+    provider.addScope('https://www.googleapis.com/auth/calendar');
+    provider.addScope('https://www.googleapis.com/auth/drive');
+
+    const result = await signInWithPopup(auth, provider);
+    const credential = GoogleAuthProvider.credentialFromResult(result) as OAuthCredential | null;
+    if (credential?.accessToken) {
+      this.googleToken$.next(credential.accessToken);
+    }
+
+    const user = result.user;
+    const userRef = ref(db, '/users/' + user.uid);
+
+    // Récupérer les données existantes pour ne pas écraser les champs personnalisés
+    const snapshot = await get(userRef);
+    const existingData = snapshot.val() || {};
+
+    // Construire les données à mettre à jour
+    // Utiliser la valeur existante SEULEMENT si elle n'est pas vide
+    const existingPhoto = existingData['photoURL'] as string | undefined;
+    const existingName = existingData['displayName'] as string | undefined;
+    const hasExistingPhoto = existingPhoto && existingPhoto.trim() !== '';
+    const hasExistingName = existingName && existingName.trim() !== '';
+
+    const userData: Record<string, string> = {
+      email: user.email || '',
+      uid: user.uid,
+      displayName: hasExistingName ? existingName : (user.displayName || ''),
+      photoURL: hasExistingPhoto ? existingPhoto : (user.photoURL || ''),
+    };
+
+    await update(userRef, userData);
   }
 
-  signInUser(email: string, password: string) {
-    return new Promise<void>(
-      (resolve, reject) => {
-        firebase.auth().signInWithEmailAndPassword(email, password).then(
-          () => {
-            resolve();
-          },
-          (error: any) => {
-            reject(error);
-          }
-        );
-      }
-    );
-  }
   signOutUser() {
-    firebase.auth().signOut();
+    signOut(auth);
   }
-  allUsers: any[] = [];
-  getAllUsers() {
-    return new Promise((resolve, reject) => {
-      const dbRef = firebase.database().ref('/users');
-      dbRef.once('value')
-        .then(snapshot => {
-          const usersObject = snapshot.val(); // Ceci est un objet
-          if (usersObject) {
-            // Transformer l'objet en tableau
-            this.allUsers = Object.keys(usersObject).map(key => ({ id: key, ...usersObject[key] }));
-          } else {
-            this.allUsers = []; // Aucun utilisateur, donc on initialise un tableau vide
-          }
-          console.log("Utilisateurs récupérés : ", this.allUsers);
-          resolve(this.allUsers);
-        })
-        .catch(error => {
-          reject(error);
-        });
+
+  allUsers: User[] = [];
+
+  getAllUsers(): Promise<User[]> {
+    return get(ref(db, '/users')).then(snapshot => {
+      const usersObject = snapshot.val();
+      if (usersObject) {
+        this.allUsers = Object.keys(usersObject).map(key => ({ id: key, ...usersObject[key] })) as User[];
+      } else {
+        this.allUsers = [];
+      }
+      return this.allUsers;
     });
   }
-  
-
 }
-

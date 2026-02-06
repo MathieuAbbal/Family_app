@@ -1,0 +1,146 @@
+<div class="max-w-4xl mx-auto">
+  <!-- Header -->
+  <div class="card-fun bg-gradient-to-r from-family-sky via-family-purple to-family-pink p-6 mb-6 text-white">
+    <h1 class="font-display text-2xl font-bold">Calendrier</h1>
+    <p class="mt-1 opacity-90">Vos evenements Google Calendar</p>
+  </div>
+
+  <!-- Not connected -->
+  @if (!isConnected) {
+    <div class="card-fun p-8 text-center">
+      <div class="text-5xl mb-4">📅</div>
+      <h2 class="font-display text-lg font-bold text-gray-700 mb-2">Chargement du calendrier...</h2>
+      <p class="text-gray-500 mb-6">Connexion a Google Calendar en cours</p>
+      <button (click)="connectGoogle()" class="btn-gradient px-6 py-3 text-lg">
+        Reconnecter Google Calendar
+      </button>
+    </div>
+  }
+
+  <!-- Connected: Calendar view -->
+  @if (isConnected) {
+    <!-- Controls -->
+    <div class="card-fun p-4 mb-4">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <div class="flex items-center gap-2">
+          <button (click)="previousMonth()" class="p-2 rounded-xl hover:bg-warm-50 transition-colors text-gray-600">
+            &lt;
+          </button>
+          <h2 class="font-display font-bold text-gray-700 text-lg capitalize min-w-[180px] text-center">
+            {{ monthLabel }}
+          </h2>
+          <button (click)="nextMonth()" class="p-2 rounded-xl hover:bg-warm-50 transition-colors text-gray-600">
+            &gt;
+          </button>
+          <button (click)="goToday()" class="ml-2 px-3 py-1 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-warm-50 transition-colors">
+            Aujourd'hui
+          </button>
+        </div>
+        <div class="flex gap-2">
+          <button (click)="openAddEvent()" class="btn-gradient px-4 py-2 text-sm">
+            + Nouvel evenement
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calendar legend -->
+    @if (calendars.length > 1) {
+      <div class="card-fun p-3 mb-4">
+        <div class="flex flex-wrap gap-3">
+          @for (cal of calendars; track cal.id) {
+            <div class="flex items-center gap-1.5">
+              <div class="w-3 h-3 rounded-full" [style.background-color]="cal.backgroundColor"></div>
+              <span class="text-xs text-gray-600 font-medium">{{ cal.summary }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Calendar grid -->
+    <div class="card-fun p-4">
+      <!-- Week days header -->
+      <div class="grid grid-cols-7 gap-1 mb-2">
+        @for (day of weekDays; track day) {
+          <div class="text-center text-xs font-semibold text-gray-500 py-2">{{ day }}</div>
+        }
+      </div>
+
+      <!-- Days grid -->
+      @for (week of daysInMonth; track $index) {
+        <div class="grid grid-cols-7 gap-1 mb-1">
+          @for (day of week; track $index) {
+            @if (day) {
+              <div
+                (click)="openAddEvent(day)"
+                class="min-h-20 p-1 rounded-xl border cursor-pointer transition-all hover:shadow-md"
+                [class.bg-gradient-to-br]="isToday(day)"
+                [class.from-family-pink/10]="isToday(day)"
+                [class.to-family-orange/10]="isToday(day)"
+                [class.border-family-pink]="isToday(day)"
+                [class.border-gray-100]="!isToday(day)"
+              >
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-semibold"
+                        [class.text-family-pink]="isToday(day)"
+                        [class.text-gray-600]="!isToday(day)">
+                    {{ day.getDate() }}
+                  </span>
+                  @if (isMonday(day)) {
+                    <span class="text-[9px] text-gray-300 font-medium">S{{ getWeekNumber(day) }}</span>
+                  }
+                </div>
+                @for (event of getEventsForDay(day); track event.id) {
+                  <div class="text-[10px] rounded px-1 py-0.5 mb-0.5 truncate text-white cursor-pointer hover:opacity-80 transition-opacity"
+                       [style.background-color]="event.color || '#4285f4'"
+                       [title]="event.calendarName ? event.calendarName + ' — ' + event.title : event.title"
+                       (click)="viewEvent(event); $event.stopPropagation()">
+                    {{ event.title }}
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="min-h-20 p-1 rounded-xl bg-gray-50/50"></div>
+            }
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Events list for current month -->
+    @if (events.length > 0) {
+      <div class="card-fun p-4 mt-4">
+        <h3 class="font-display font-bold text-gray-700 mb-3">Prochains evenements</h3>
+        @for (event of events; track event.id) {
+          <div class="flex items-center justify-between p-3 rounded-xl hover:bg-warm-50 transition-colors mb-1 cursor-pointer" (click)="viewEvent(event)">
+            <div class="flex items-center gap-3">
+              <div class="w-2 h-2 rounded-full" [style.background-color]="event.color || '#4285f4'"></div>
+              <div>
+                <div class="font-medium text-gray-700 text-sm">{{ event.title }}</div>
+                <div class="text-xs text-gray-400">
+                  @if (event.calendarName) {
+                    <span class="font-medium">{{ event.calendarName }}</span> ·
+                  }
+                  @if (event.creatorName) {
+                    {{ event.creatorName }} ·
+                  }
+                  @if (event.allDay) {
+                    Toute la journee
+                  } @else {
+                    {{ event.startDate | date:'d MMM, HH:mm':'':'fr' }}
+                  }
+                </div>
+              </div>
+            </div>
+            @if (canDelete(event)) {
+              <button (click)="deleteEvent(event); $event.stopPropagation()" class="text-red-300 hover:text-red-500 text-sm transition-colors">
+                Supprimer
+              </button>
+            }
+          </div>
+        }
+      </div>
+    }
+  }
+</div>

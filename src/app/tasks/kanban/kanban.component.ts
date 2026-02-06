@@ -1,48 +1,76 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, effect } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Router, RouterModule } from '@angular/router';
 import { TasksService } from 'src/app/services/tasks.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { User } from 'src/app/models/user.model';
 import { Task } from '../../models/task.model';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { KanbanService } from 'src/app/services/kanban.service';
+
 @Component({
-  selector: 'app-kanban',
-  templateUrl: './kanban.component.html',
-  styleUrls: ['./kanban.component.css']
+    selector: 'app-kanban',
+    imports: [CommonModule, DragDropModule, RouterModule],
+    templateUrl: './kanban.component.html',
+    styleUrls: ['./kanban.component.css']
 })
 export class KanbanComponent implements OnInit {
+  userAvatars: { [name: string]: string } = {};
+  allUserAvatars: string[] = [];
 
-  tasks: Task[] = [];
-  tasksSubsription!: Subscription;
-  constructor(
-    private ts: TasksService,
-    public dialog: MatDialog,
-    private router: Router,
-    private kanbanService: KanbanService
-  ) { }
-
+  // Arrays mutables pour drag & drop (synchronisés via effect)
   new: Task[] = [];
   en_cours: Task[] = [];
   fait: Task[] = [];
   bloquer: Task[] = [];
   archiver: Task[] = [];
-  ngOnInit(): void {
-    this.tasksSubsription = this.ts.tasksSubject.subscribe(
-      (tasks: Task[]) => {
-        this.tasks = tasks;
-        this.new = tasks.filter(task => task.statut === 'Nouveau');
-        this.en_cours = tasks.filter(task => task.statut === 'En cours');
-        this.fait = tasks.filter(task => task.statut === 'Fait');
-        this.bloquer = tasks.filter(task => task.statut === 'Bloque');
-        this.archiver = tasks.filter(task => task.statut === 'Archive');
-      });
-    this.ts.getTasks();
-    this.ts.emitTasks();
+
+  constructor(
+    private ts: TasksService,
+    public dialog: MatDialog,
+    private router: Router,
+    private kanbanService: KanbanService,
+    private authService: AuthService
+  ) {
+    // Effect pour synchroniser les arrays avec les signals Firebase
+    effect(() => {
+      const tasks = this.ts.tasks();
+      this.new = tasks.filter(t => t.statut === 'Nouveau');
+      this.en_cours = tasks.filter(t => t.statut === 'En cours');
+      this.fait = tasks.filter(t => t.statut === 'Fait');
+      this.bloquer = tasks.filter(t => t.statut === 'Bloque');
+      this.archiver = tasks.filter(t => t.statut === 'Archive');
+    });
   }
 
-  drop(event: CdkDragDrop<any[]>) {
-    console.log('drop', event);
+  ngOnInit(): void {
+    this.authService.getAllUsers().then((users: User[]) => {
+      users.forEach(u => {
+        if (u.displayName && u.photoURL) {
+          this.userAvatars[u.displayName] = u.photoURL;
+          this.allUserAvatars.push(u.photoURL);
+        }
+      });
+    });
+  }
+
+  isForEveryone(task: Task): boolean {
+    return task.name === 'Tout le monde';
+  }
+
+  getAssigneeAvatars(task: Task): string[] {
+    if (this.isForEveryone(task)) {
+      return this.allUserAvatars;
+    }
+    // Séparer les noms par virgule et récupérer les avatars
+    const names = task.name.split(',').map(n => n.trim());
+    return names
+      .map(name => this.userAvatars[name])
+      .filter(avatar => avatar != null);
+  }
+
+  drop(event: CdkDragDrop<Task[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
@@ -51,8 +79,7 @@ export class KanbanComponent implements OnInit {
       this.kanbanService.transferTask(event.previousContainer.data, movedTask, event.container.data, newStatus);
     }
   }
-  
-  // Cette méthode détermine le nouveau statut basé sur l'ID du conteneur
+
   getStatusFromContainer(containerId: string): string {
     switch (containerId) {
       case 'newContainer': return 'Nouveau';
@@ -63,7 +90,7 @@ export class KanbanComponent implements OnInit {
       default: return 'Nouveau';
     }
   }
-  
+
   getUrgencyClass(urgency: string): string {
     switch(urgency) {
       case 'Urgent':
@@ -76,11 +103,8 @@ export class KanbanComponent implements OnInit {
         return 'flex h-6 items-center rounded-full bg-gray-100 px-3 text-xs font-semibold text-gray-600';
     }
   }
+
   onEdit(id: string) {
     this.router.navigate(['/task/edit', id]);
   }
-  ngOnDestroy() {
-    if (this.tasksSubsription) { this.tasksSubsription.unsubscribe() };
-  }
 }
-

@@ -1,88 +1,69 @@
-import { Injectable } from '@angular/core';
-import * as firebase from 'firebase';
-import { Subject } from 'rxjs';
-import { Task} from '../models/task.model';
+import { Injectable, signal, computed } from '@angular/core';
+import { db } from '../firebase';
+import { ref, set, onValue } from 'firebase/database';
+import { Task } from '../models/task.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TasksService {
-  tasks: Task [] = [];
-  tasksSubject = new Subject<Task[]>();
+  // Signal principal pour les tâches
+  private _tasks = signal<Task[]>([]);
+
+  // Signal public en lecture seule
+  readonly tasks = this._tasks.asReadonly();
+
+  // Signals computed pour filtrage par statut
+  readonly todoTasks = computed(() => this._tasks().filter(t => t.statut === 'todo'));
+  readonly inProgressTasks = computed(() => this._tasks().filter(t => t.statut === 'inProgress'));
+  readonly doneTasks = computed(() => this._tasks().filter(t => t.statut === 'done'));
+
   constructor() {
-    this.getTasks();
+    this.initListener();
   }
 
-  emitTasks() {
-    this.tasksSubject.next(this.tasks);
-    console.log(this.tasks);
+  private initListener() {
+    onValue(ref(db, '/tasks'), (data) => {
+      this._tasks.set(data.val() ? data.val() : []);
+    });
   }
-  saveTasks() {
-    firebase.database().ref('/tasks').set(this.tasks);
-    console.log('Tâche sauvegarder', this.tasks);
+
+  private saveTasks() {
+    set(ref(db, '/tasks'), this._tasks());
   }
-  getTasks() {
-    firebase
-      .database()
-      .ref('/tasks')
-      .on('value', (data) => {
-        this.tasks = data.val() ? data.val() : [];
-        this.emitTasks();
-        console.log('Tâches récupérer', this.tasks);
-      });
+
+  private generateUniqueId(): string {
+    return `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
   }
-  generateUniqueId(): string {
-    const timestamp = new Date().getTime(); // Obtient le timestamp actuel
-    const randomPart = Math.random().toString(36).substring(2, 15); // Génère une partie aléatoire
-    const uniqueId = `${timestamp}-${randomPart}`;
-    return uniqueId;
-  }
+
   createNewTask(newTask: Task) {
     newTask.id = this.generateUniqueId();
-    this.tasks.push(newTask);
+    this._tasks.update(tasks => [...tasks, newTask]);
     this.saveTasks();
-    
-    console.log('Tâche créer', this.tasks);
   }
+
   removeTask(taskId: string) {
-    const taskIndexToRemove = this.tasks.findIndex(task => task.id === taskId);
-    if (taskIndexToRemove !== -1) {
-      this.tasks.splice(taskIndexToRemove, 1);
+    const exists = this._tasks().some(t => t.id === taskId);
+    if (exists) {
+      this._tasks.update(tasks => tasks.filter(t => t.id !== taskId));
       this.saveTasks();
-      this.emitTasks();
-      console.log('Tâche supprimée avec l\'ID:', taskId);
-    } else {
-      console.error('Tâche non trouvée avec l\'ID:', taskId);
     }
   }
-  
 
   getTaskById(id: string): Task | null {
-    const task = this.tasks.find((t) => t.id === id);
-    return task || null;
+    return this._tasks().find(t => t.id === id) || null;
   }
-  
-  updateTaskById(id: string, updatedTask: Task) {
-    const taskIndex = this.tasks.findIndex((t) => t.id === id);
-    if (taskIndex !== -1) {
-      this.tasks[taskIndex] = updatedTask;
-      this.saveTasks();
-      this.emitTasks();
-    } else {
-      console.error('ID de tâche invalide:', id);
-    }
-  }
-  updateTaskStatus(updatedTask: Task) {
-    const taskIndex = this.tasks.findIndex((t) => t.id === updatedTask.id);
-    if (taskIndex !== -1) {
-      this.tasks[taskIndex] = updatedTask;
-      this.saveTasks(); 
-      this.emitTasks();
-    }
-  }
-  
 
-  ngOnDestroy() {
-    this.tasksSubject.unsubscribe();
+  updateTaskById(id: string, updatedTask: Task) {
+    const exists = this._tasks().some(t => t.id === id);
+    if (exists) {
+      this._tasks.update(tasks => tasks.map(t => t.id === id ? updatedTask : t));
+      this.saveTasks();
+    }
+  }
+
+  updateTaskStatus(updatedTask: Task) {
+    this._tasks.update(tasks => tasks.map(t => t.id === updatedTask.id ? updatedTask : t));
+    this.saveTasks();
   }
 }

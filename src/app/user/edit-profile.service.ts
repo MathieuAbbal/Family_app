@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
-import * as firebase from 'firebase/app';
 import { Observable } from 'rxjs';
-
+import { User } from '../models/user.model';
+import { auth, db, storage } from '../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { ref, get, update } from 'firebase/database';
+import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 @Injectable({
   providedIn: 'root'
@@ -10,20 +13,18 @@ export class EditProfileService {
 
   constructor() { }
 
-  getUserData(): Observable<any> {
+  getUserData(): Observable<User | null> {
     return new Observable((observer) => {
-      const unsubscribe = firebase.auth().onAuthStateChanged(
+      const unsubscribe = onAuthStateChanged(auth,
         (user) => {
           if (user) {
-            // L'utilisateur est connecté, récupérez les données supplémentaires depuis la Realtime Database
-            firebase.database().ref('/users/' + user.uid).once('value').then((snapshot) => {
+            get(ref(db, '/users/' + user.uid)).then((snapshot) => {
               const userData = snapshot.val();
-              observer.next(userData); 
+              observer.next(userData);
             }).catch((error) => {
               observer.error(error);
             });
           } else {
-            // L'utilisateur n'est pas connecté
             observer.next(null);
           }
         },
@@ -34,36 +35,58 @@ export class EditProfileService {
           observer.complete();
         }
       );
-      // Retourne la fonction de désinscription pour nettoyer lors de la désinscription
       return unsubscribe;
     });
   }
-  updateUserData(uid: string, data: any): Promise<void> {
-    return firebase.database().ref(`/users/${uid}`).update(data);
+  updateUserData(uid: string, data: Partial<User>): Promise<void> {
+    return update(ref(db, `/users/${uid}`), data);
   }
 
 
-  uploadFile(file: File) {
+  deleteOldAvatar(oldUrl: string): Promise<void> {
+    if (!oldUrl || !oldUrl.includes('firebasestorage.googleapis.com')) {
+      return Promise.resolve();
+    }
+    return deleteObject(storageRef(storage, oldUrl)).catch(() => {});
+  }
+
+  private compressImage(file: File, maxWidth = 400, quality = 0.7): Promise<Blob> {
     return new Promise((resolve, reject) => {
+      const img = new Image();
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          if (width > maxWidth) {
+            height = Math.round(height * maxWidth / width);
+            width = maxWidth;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d')!;
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob(
+            (blob) => blob ? resolve(blob) : reject('Compression echouee'),
+            'image/jpeg',
+            quality
+          );
+        };
+        img.onerror = reject;
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  uploadFile(file: File): Promise<string> {
+    return this.compressImage(file).then((compressed) => {
       const almostUniqueFileName = Date.now().toString();
-      const upload = firebase
-        .storage()
-        .ref()
-        .child('/avatars/' + almostUniqueFileName + file.name)
-        .put(file);
-      upload.on(
-        firebase.storage.TaskEvent.STATE_CHANGED,
-        () => {
-          console.log('Chargement…');
-        },
-        (error) => {
-          console.log('Erreur de chargement ! : ' + error);
-          reject();
-        },
-        () => {
-          resolve(upload.snapshot.ref.getDownloadURL());
-        }
-      );
+      const fileRef = storageRef(storage, '/avatars/' + almostUniqueFileName + '.jpg');
+      return uploadBytes(fileRef, compressed, { contentType: 'image/jpeg' })
+        .then((snapshot) => getDownloadURL(snapshot.ref));
     });
   }
 }

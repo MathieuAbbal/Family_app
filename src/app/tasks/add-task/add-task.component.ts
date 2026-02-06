@@ -1,77 +1,95 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { Task } from '../../models/task.model';
 import { Router } from '@angular/router';
 import { TasksService } from '../../services/tasks.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from 'src/app/services/auth.service';
+import { User } from 'src/app/models/user.model';
+
 @Component({
-  selector: 'app-add-task',
-  templateUrl: './add-task.component.html',
-  styleUrls: ['./add-task.component.css'],
+    selector: 'app-add-task',
+    imports: [ReactiveFormsModule, CommonModule],
+    templateUrl: './add-task.component.html',
+    styleUrls: ['./add-task.component.css']
 })
 export class AddTaskComponent implements OnInit {
-  addTaskForm!: UntypedFormGroup;
-  durationInSeconds = 5;
+  addTaskForm!: FormGroup;
+  allUsers: User[] = [];
+  selectedUsers: Set<string> = new Set();
+  selectAll = false;
 
   constructor(
-    private formBuilder: UntypedFormBuilder,
+    private formBuilder: FormBuilder,
     private ts: TasksService,
     private router: Router,
     private _snackBar: MatSnackBar,
     private userService: AuthService
   ) { }
-  openSnackBar() {
-    this._snackBar.open('Tache ajoutée', 'avec succès !!', {
-      duration: this.durationInSeconds * 1000,
-    });
-  }
-  allUsers: any
+
   ngOnInit(): void {
     this.userService.getAllUsers()
     .then(users => {
       this.allUsers = users;
     })
-    .catch(error => {
-      console.error("Erreur lors de la récupération des utilisateurs :", error);
+    .catch(() => {
+      this._snackBar.open('Erreur lors du chargement des utilisateurs', '', { duration: 5000 });
     });
     this.initForm();
   }
+
   initForm() {
     this.addTaskForm = this.formBuilder.group({
-      name: ['', [Validators.required]],
       urg: ['', [Validators.required]],
       title: ['', [Validators.required]],
       descriptif: [''],
-
     });
   }
+
+  toggleUser(userName: string) {
+    if (this.selectedUsers.has(userName)) {
+      this.selectedUsers.delete(userName);
+    } else {
+      this.selectedUsers.add(userName);
+    }
+    this.selectAll = false;
+  }
+
+  toggleSelectAll() {
+    this.selectAll = !this.selectAll;
+    if (this.selectAll) {
+      this.selectedUsers.clear();
+    }
+  }
+
+  isUserSelected(userName: string): boolean {
+    return this.selectedUsers.has(userName);
+  }
+
+  get hasSelection(): boolean {
+    return this.selectAll || this.selectedUsers.size > 0;
+  }
+
   goBack() {
     this.router.navigate(['/home']);
   }
+
   onSubmit() {
-    const name = this.addTaskForm.get('name')?.value;
+    if (!this.hasSelection) {
+      this._snackBar.open('Sélectionne au moins une personne', '', { duration: 3000 });
+      return;
+    }
+
+    const name = this.selectAll ? 'Tout le monde' : Array.from(this.selectedUsers).join(', ');
     const urg = this.addTaskForm.get('urg')?.value;
     const title = this.addTaskForm.get('title')?.value;
     const descriptif = this.addTaskForm.get('descriptif')?.value;
     const statut = 'Nouveau';
     const date = new Date().toISOString();
-    const newTask = new Task('',name, urg, title, descriptif, statut, date);
+    const newTask = new Task('', name, urg, title, descriptif, statut, date);
     this.ts.createNewTask(newTask);
-    console.log(newTask);
+    this._snackBar.open('Tache ajoutée', 'avec succès !!', { duration: 5000 });
     this.router.navigate(['/home']);
-  }
-
-  tinymceInitParams = {
-    selector: "textarea",
-    browser_spellcheck: true,
-    height: 300,
-    plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-    language: 'fr_FR',
-    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
-
-  };
-  getUserInfo() {
-    
   }
 }

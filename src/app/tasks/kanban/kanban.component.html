@@ -1,336 +1,138 @@
-<!-- Component Start -->
-<div cdkDropListGroup
-    class="flex  flex-col overflow-auto bg-gradient-to-tr from-blue-200 via-indigo-200 to-pink-200 text-gray-700">
-    <div class="mt-6 px-10">
-        <h1 class="text-2xl font-bold">Team family Board</h1>
-    </div>
-    <div class="mt-4 flex flex-grow space-x-6 overflow-auto px-10">
-        <!-- Kanban Column Nouveau-->
-        <div class="flex w-72 flex-shrink-0 flex-col">
-            <div class="flex h-10 flex-shrink-0 items-center px-2">
-                <span class="block text-sm font-semibold">Nouveau</span>
-                <span
-                    class="ml-2 flex h-5 w-5 items-center justify-center rounded bg-white bg-opacity-30 text-sm font-semibold text-indigo-500">{{new.length
-                    || 0}}</span>
-                <button 
-                    class="ml-auto flex h-6 w-6 items-center justify-center rounded text-indigo-500 hover:bg-indigo-500 hover:text-indigo-100">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
-                </button>
-            </div>
-            <div id="newContainer" cdkDropList [cdkDropListData]="new" (cdkDropListDropped)="drop($event)">
-                <div *ngFor="let itemNew of new; let i = index" cdkDrag class="flex flex-col pb-2">
-                    <div class="group relative mt-3 flex cursor-move flex-col items-start rounded-lg bg-white bg-opacity-90 p-4 hover:bg-opacity-100"
-                        draggable="true">
-                        <button (click)="onEdit(itemNew.id)"
-                            class="absolute right-0 top-0 mr-2 mt-3 flex h-5 w-5 items-center justify-center rounded text-gray-500 hover:bg-gray-200 hover:text-gray-700 group-hover:flex">
-                            <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path
-                                    d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                            </svg>
-                        </button>
-                        <!--urgence-->
-                        <span [ngClass]="getUrgencyClass(itemNew.urg)">{{itemNew.urg}}</span>
-                        <h4 class="mt-3 text-sm font-medium">{{itemNew.title}}</h4>
-                        <div class="mt-3 flex w-full items-center text-xs font-medium text-gray-400">
-                            <div class="flex items-center">
-                                <svg class="h-4 w-4 fill-current text-gray-300" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <span class="ml-1 leading-none">Dec 12</span>
-                            </div>
-                            <div class="relative ml-4 flex items-center">
-                                <svg class="relative h-4 w-4 fill-current text-gray-300"
-                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <span class="ml-1 leading-none">4</span>
-                            </div>
-                            <div class="ml-4 flex items-center">
-                                <svg class="h-4 w-4 fill-current text-gray-300" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <span class="ml-1 leading-none">1</span>
-                            </div>
-                            <img class="ml-auto h-6 w-6 rounded-full"
-                                src="https://randomuser.me/api/portraits/women/26.jpg" />
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div cdkDropListGroup class="flex flex-col">
+  <div class="flex flex-grow space-x-4 overflow-x-auto pb-4">
 
-        </div>
-        <!-- Kanban column en cours -->
-        <div class="flex w-72 flex-shrink-0 flex-col">
-            <div class="flex h-10 flex-shrink-0 items-center px-2">
-                <span class="block text-sm font-semibold">En cours</span>
-                <span
-                    class="ml-2 flex h-5 w-5 items-center justify-center rounded bg-white bg-opacity-30 text-sm font-semibold text-indigo-500">{{en_cours.length}}</span>
-                <button
-                    class="ml-auto flex h-6 w-6 items-center justify-center rounded text-indigo-500 hover:bg-indigo-500 hover:text-indigo-100">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
-                </button>
-            </div>
-            <div id="inProgressContainer" class="drop-container" cdkDropList [cdkDropListData]="en_cours" (cdkDropListDropped)="drop($event)">
-                <div cdkDrag *ngFor="let itemEnCours of en_cours; let i = index" class="flex flex-col pb-2">
-                    <div class="group relative mt-3 flex cursor-move flex-col items-start rounded-lg bg-white bg-opacity-90 p-4 hover:bg-opacity-100"
-                        draggable="true">
-                        <button (click)="onEdit(itemEnCours.id)"
-                            class="absolute right-0 top-0 mr-2 mt-3 flex  h-5 w-5 items-center justify-center rounded text-gray-500 hover:bg-gray-200 hover:text-gray-700 group-hover:flex">
-                            <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path
-                                    d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                            </svg>
-                        </button>
-                        <!--urgence-->
-                        <span [ngClass]="getUrgencyClass(itemEnCours.urg)">{{itemEnCours.urg}}</span>
-                        <h4 class="mt-3 text-sm font-medium">{{itemEnCours.title}}</h4>
-                        <div class="mt-3 flex w-full items-center text-xs font-medium text-gray-400">
-                            <div class="flex items-center">
-                                <svg class="h-4 w-4 fill-current text-gray-300" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <span class="ml-1 leading-none">Dec 12</span>
-                            </div>
-                            <div class="relative ml-4 flex items-center">
-                                <svg class="relative h-4 w-4 fill-current text-gray-300"
-                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <span class="ml-1 leading-none">4</span>
-                            </div>
-                            <div class="ml-4 flex items-center">
-                                <svg class="h-4 w-4 fill-current text-gray-300" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <span class="ml-1 leading-none">1</span>
-                            </div>
-                            <img class="ml-auto h-6 w-6 rounded-full"
-                                src="https://randomuser.me/api/portraits/women/26.jpg" />
-                        </div>
-                    </div>
+    <!-- Column: Nouveau -->
+    <div class="flex w-64 flex-shrink-0 flex-col">
+      <div class="flex items-center px-2 mb-3">
+        <span class="font-display font-bold text-gray-700">🆕 Nouveau</span>
+        <span class="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-family-sky/20 text-xs font-bold text-family-sky">{{new.length || 0}}</span>
+        <button routerLink="/add-task" class="ml-auto text-family-pink hover:text-family-coral transition-colors">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6"/></svg>
+        </button>
+      </div>
+      <div id="newContainer" cdkDropList [cdkDropListData]="new" (cdkDropListDropped)="drop($event)" class="flex-1 space-y-3 min-h-[60px]">
+        @for (itemNew of new; track itemNew) {
+          <div cdkDrag>
+            <div (click)="onEdit(itemNew.id)" class="card-fun p-4 cursor-pointer border-l-4 border-family-sky hover:shadow-card-hover transition-shadow">
+              <span [ngClass]="getUrgencyClass(itemNew.urg)">{{itemNew.urg}}</span>
+              <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemNew.title}}</h4>
+              <div class="flex items-center gap-1.5 mt-1">
+                <div class="flex -space-x-1.5">
+                  @for (avatar of getAssigneeAvatars(itemNew); track avatar) {
+                    <img [src]="avatar" class="w-5 h-5 rounded-full object-cover ring-1 ring-white" referrerpolicy="no-referrer" />
+                  }
                 </div>
+                <span class="text-xs text-gray-400 truncate">{{itemNew.name}}</span>
+              </div>
             </div>
-
-        </div>
-        <!-- Kanban Column Fait  -->
-        <div class="flex w-72 flex-shrink-0 flex-col">
-            <div class="flex h-10 flex-shrink-0 items-center px-2">
-                <span class="block text-sm font-semibold">Fait</span>
-                <span
-                    class="ml-2 flex h-5 w-5 items-center justify-center rounded bg-white bg-opacity-30 text-sm font-semibold text-indigo-500">{{fait.length}}</span>
-                <button
-                    class="ml-auto flex h-6 w-6 items-center justify-center rounded text-indigo-500 hover:bg-indigo-500 hover:text-indigo-100">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
-                </button>
-            </div>
-            <div id="doneContainer" class="drop-container" cdkDropList [cdkDropListData]="fait" (cdkDropListDropped)="drop($event)">
-                <div cdkDrag *ngFor="let itemFait of fait; let i = index" class="flex flex-col overflow-auto pb-2">
-                    <div class="group relative mt-3 flex cursor-move flex-col items-start rounded-lg bg-white bg-opacity-90 p-4 hover:bg-opacity-100"
-                        draggable="true">
-                        <button (click)="onEdit(itemFait.id)"
-                            class="absolute right-0 top-0 mr-2 mt-3 flex h-5 w-5 items-center justify-center rounded text-gray-500 hover:bg-gray-200 hover:text-gray-700 group-hover:flex">
-                            <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path
-                                    d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                            </svg>
-                        </button>
-                         <!--urgence-->
-                         <span [ngClass]="getUrgencyClass(itemFait.urg)">{{itemFait.urg}}</span>
-                        <h4 class="mt-3 text-sm font-medium">{{itemFait.title}}</h4>
-                        <div class="mt-3 flex w-full items-center text-xs font-medium text-gray-400">
-                            <div class="flex items-center">
-                                <svg class="h-4 w-4 fill-current text-gray-300" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <span class="ml-1 leading-none">Dec 12</span>
-                            </div>
-                            <div class="relative ml-4 flex items-center">
-                                <svg class="relative h-4 w-4 fill-current text-gray-300" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <span class="ml-1 leading-none">4</span>
-                            </div>
-                            <div class="ml-4 flex items-center">
-                                <svg class="h-4 w-4 fill-current text-gray-300" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <span class="ml-1 leading-none">1</span>
-                            </div>
-                            <img class="ml-auto h-6 w-6 rounded-full"
-                                src="https://randomuser.me/api/portraits/men/64.jpg" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-        </div>
-        <!-- Kanban column bloque-->
-        <div class="flex w-72 flex-shrink-0 flex-col">
-            <div class="flex h-10 flex-shrink-0 items-center px-2">
-                <span class="block text-sm font-semibold">Bloqué</span>
-                <span
-                    class="ml-2 flex h-5 w-5 items-center justify-center rounded bg-white bg-opacity-30 text-sm font-semibold text-indigo-500">{{bloquer.length}}</span>
-                <button
-                    class="ml-auto flex h-6 w-6 items-center justify-center rounded text-indigo-500 hover:bg-indigo-500 hover:text-indigo-100">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
-                </button>
-            </div>
-            <div id="bloqueContainer" class="drop-container" cdkDropList [cdkDropListData]="bloquer" (cdkDropListDropped)="drop($event)">
-                <div cdkDrag *ngFor="let itemBloquer of bloquer; let i = index" class="flex flex-col overflow-auto pb-2">
-                    <div class="group relative mt-3 flex cursor-move flex-col items-start rounded-lg bg-white bg-opacity-90 p-4 hover:bg-opacity-100"
-                        draggable="true">
-                        <button (click)="onEdit(itemBloquer.id)"
-                            class="absolute right-0 top-0 mr-2 mt-3 flex h-5 w-5 items-center justify-center rounded text-gray-500 hover:bg-gray-200 hover:text-gray-700 group-hover:flex">
-                            <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path
-                                    d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                            </svg>
-                        </button>
-                         <!--urgence-->
-                         <span [ngClass]="getUrgencyClass(itemBloquer.urg)">{{itemBloquer.urg}}</span>
-                        <h4 class="mt-3 text-sm font-medium">{{itemBloquer.title}}</h4>
-                        <div class="mt-3 flex w-full items-center text-xs font-medium text-gray-400">
-                            <div class="flex items-center">
-                                <svg class="h-4 w-4 fill-current text-gray-300" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <span class="ml-1 leading-none">Dec 12</span>
-                            </div>
-                            <div class="relative ml-4 flex items-center">
-                                <svg class="relative h-4 w-4 fill-current text-gray-300" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <span class="ml-1 leading-none">4</span>
-                            </div>
-                            <div class="ml-4 flex items-center">
-                                <svg class="h-4 w-4 fill-current text-gray-300" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <span class="ml-1 leading-none">1</span>
-                            </div>
-                            <img class="ml-auto h-6 w-6 rounded-full"
-                                src="https://randomuser.me/api/portraits/men/64.jpg" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-        </div>
-        <!-- Kanban column archive-->
-        <div class="flex w-72 flex-shrink-0 flex-col">
-            <div class="flex h-10 flex-shrink-0 items-center px-2">
-                <span class="block text-sm font-semibold">Archivé</span>
-                <span
-                    class="ml-2 flex h-5 w-5 items-center justify-center rounded bg-white bg-opacity-30 text-sm font-semibold text-indigo-500">{{archiver.length}}</span>
-                <button
-                    class="ml-auto flex h-6 w-6 items-center justify-center rounded text-indigo-500 hover:bg-indigo-500 hover:text-indigo-100">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
-                </button>
-            </div>
-            <div id="archiveContainer" class="drop-container" cdkDropList [cdkDropListData]="archiver" (cdkDropListDropped)="drop($event)">
-                <div cdkDrag *ngFor="let itemArchiver of archiver; let i = index" class="flex flex-col overflow-auto pb-2">
-                    <div class="group relative mt-3 flex cursor-move flex-col items-start rounded-lg bg-white bg-opacity-90 p-4 hover:bg-opacity-100"
-                        draggable="true">
-                        <button (click)="onEdit(itemArchiver.id)"
-                            class="absolute right-0 top-0 mr-2 mt-3 flex h-5 w-5 items-center justify-center rounded text-gray-500 hover:bg-gray-200 hover:text-gray-700 group-hover:flex">
-                            <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path
-                                    d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                            </svg>
-                        </button>
-                         <!--urgence-->
-                         <span [ngClass]="getUrgencyClass(itemArchiver.urg)">{{itemArchiver.urg}}</span>
-                        <h4 class="mt-3 text-sm font-medium">{{itemArchiver.title}}</h4>
-                        <div class="mt-3 flex w-full items-center text-xs font-medium text-gray-400">
-                            <div class="flex items-center">
-                                <svg class="h-4 w-4 fill-current text-gray-300" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <span class="ml-1 leading-none">Dec 12</span>
-                            </div>
-                            <div class="relative ml-4 flex items-center">
-                                <svg class="relative h-4 w-4 fill-current text-gray-300" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <span class="ml-1 leading-none">4</span>
-                            </div>
-                            <div class="ml-4 flex items-center">
-                                <svg class="h-4 w-4 fill-current text-gray-300" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <span class="ml-1 leading-none">1</span>
-                            </div>
-                            <img class="ml-auto h-6 w-6 rounded-full"
-                                src="https://randomuser.me/api/portraits/men/64.jpg" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-        </div>
-        <div class="w-6 flex-shrink-0"></div>
+          </div>
+        }
+      </div>
     </div>
+
+    <!-- Column: En cours -->
+    <div class="flex w-64 flex-shrink-0 flex-col">
+      <div class="flex items-center px-2 mb-3">
+        <span class="font-display font-bold text-gray-700">🔄 En cours</span>
+        <span class="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-family-orange/20 text-xs font-bold text-family-orange">{{en_cours.length}}</span>
+      </div>
+      <div id="inProgressContainer" cdkDropList [cdkDropListData]="en_cours" (cdkDropListDropped)="drop($event)" class="flex-1 space-y-3 min-h-[60px]">
+        @for (itemEnCours of en_cours; track itemEnCours) {
+          <div cdkDrag>
+            <div (click)="onEdit(itemEnCours.id)" class="card-fun p-4 cursor-pointer border-l-4 border-family-orange hover:shadow-card-hover transition-shadow">
+              <span [ngClass]="getUrgencyClass(itemEnCours.urg)">{{itemEnCours.urg}}</span>
+              <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemEnCours.title}}</h4>
+              <div class="flex items-center gap-1.5 mt-1">
+                <div class="flex -space-x-1.5">
+                  @for (avatar of getAssigneeAvatars(itemEnCours); track avatar) {
+                    <img [src]="avatar" class="w-5 h-5 rounded-full object-cover ring-1 ring-white" referrerpolicy="no-referrer" />
+                  }
+                </div>
+                <span class="text-xs text-gray-400 truncate">{{itemEnCours.name}}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Column: Fait -->
+    <div class="flex w-64 flex-shrink-0 flex-col">
+      <div class="flex items-center px-2 mb-3">
+        <span class="font-display font-bold text-gray-700">✅ Fait</span>
+        <span class="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-family-green/20 text-xs font-bold text-family-green">{{fait.length}}</span>
+      </div>
+      <div id="doneContainer" cdkDropList [cdkDropListData]="fait" (cdkDropListDropped)="drop($event)" class="flex-1 space-y-3 min-h-[60px]">
+        @for (itemFait of fait; track itemFait) {
+          <div cdkDrag>
+            <div (click)="onEdit(itemFait.id)" class="card-fun p-4 cursor-pointer border-l-4 border-family-green hover:shadow-card-hover transition-shadow">
+              <span [ngClass]="getUrgencyClass(itemFait.urg)">{{itemFait.urg}}</span>
+              <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemFait.title}}</h4>
+              <div class="flex items-center gap-1.5 mt-1">
+                <div class="flex -space-x-1.5">
+                  @for (avatar of getAssigneeAvatars(itemFait); track avatar) {
+                    <img [src]="avatar" class="w-5 h-5 rounded-full object-cover ring-1 ring-white" referrerpolicy="no-referrer" />
+                  }
+                </div>
+                <span class="text-xs text-gray-400 truncate">{{itemFait.name}}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Column: Bloque -->
+    <div class="flex w-64 flex-shrink-0 flex-col">
+      <div class="flex items-center px-2 mb-3">
+        <span class="font-display font-bold text-gray-700">🚫 Bloque</span>
+        <span class="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-100 text-xs font-bold text-red-500">{{bloquer.length}}</span>
+      </div>
+      <div id="bloqueContainer" cdkDropList [cdkDropListData]="bloquer" (cdkDropListDropped)="drop($event)" class="flex-1 space-y-3 min-h-[60px]">
+        @for (itemBloquer of bloquer; track itemBloquer) {
+          <div cdkDrag>
+            <div (click)="onEdit(itemBloquer.id)" class="card-fun p-4 cursor-pointer border-l-4 border-red-400 hover:shadow-card-hover transition-shadow">
+              <span [ngClass]="getUrgencyClass(itemBloquer.urg)">{{itemBloquer.urg}}</span>
+              <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemBloquer.title}}</h4>
+              <div class="flex items-center gap-1.5 mt-1">
+                <div class="flex -space-x-1.5">
+                  @for (avatar of getAssigneeAvatars(itemBloquer); track avatar) {
+                    <img [src]="avatar" class="w-5 h-5 rounded-full object-cover ring-1 ring-white" referrerpolicy="no-referrer" />
+                  }
+                </div>
+                <span class="text-xs text-gray-400 truncate">{{itemBloquer.name}}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Column: Archive -->
+    <div class="flex w-64 flex-shrink-0 flex-col">
+      <div class="flex items-center px-2 mb-3">
+        <span class="font-display font-bold text-gray-700">📦 Archive</span>
+        <span class="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-family-purple/20 text-xs font-bold text-family-purple">{{archiver.length}}</span>
+      </div>
+      <div id="archiveContainer" cdkDropList [cdkDropListData]="archiver" (cdkDropListDropped)="drop($event)" class="flex-1 space-y-3 min-h-[60px]">
+        @for (itemArchiver of archiver; track itemArchiver) {
+          <div cdkDrag>
+            <div (click)="onEdit(itemArchiver.id)" class="card-fun p-4 cursor-pointer border-l-4 border-family-purple hover:shadow-card-hover transition-shadow">
+              <span [ngClass]="getUrgencyClass(itemArchiver.urg)">{{itemArchiver.urg}}</span>
+              <h4 class="mt-2 text-sm font-semibold text-gray-700">{{itemArchiver.title}}</h4>
+              <div class="flex items-center gap-1.5 mt-1">
+                <div class="flex -space-x-1.5">
+                  @for (avatar of getAssigneeAvatars(itemArchiver); track avatar) {
+                    <img [src]="avatar" class="w-5 h-5 rounded-full object-cover ring-1 ring-white" referrerpolicy="no-referrer" />
+                  }
+                </div>
+                <span class="text-xs text-gray-400 truncate">{{itemArchiver.name}}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+  </div>
 </div>

@@ -1,24 +1,25 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder,UntypedFormGroup, Validators } from '@angular/forms';
+
+import { RouterModule } from '@angular/router';
+import { FormBuilder, FormGroup, AbstractControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 
-
 @Component({
-  selector: 'app-signup',
-  templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.css']
+    selector: 'app-signup',
+    imports: [RouterModule, ReactiveFormsModule],
+    templateUrl: './signup.component.html',
+    styleUrls: ['./signup.component.css']
 })
 export class SignupComponent implements OnInit {
-  signupForm!: UntypedFormGroup;
+  signupForm!: FormGroup;
   errorMessage!: string;
-
-
+  showPassword = false;
 
   constructor(
-    private formBuilder : UntypedFormBuilder,
-    private authService : AuthService,
-    private router:Router)
+    private formBuilder: FormBuilder,
+    private authService: AuthService,
+    private router: Router)
    { }
 
   ngOnInit(): void {
@@ -32,7 +33,7 @@ export class SignupComponent implements OnInit {
     }, { validator: this.checkPasswords });
   }
 
-  checkPasswords(group: UntypedFormGroup) { // Validation personnalisée pour la correspondance des mots de passe
+  checkPasswords(group: AbstractControl) {
     const password = group.get('password')!.value;
     const confirmPassword = group.get('confirmPassword')!.value;
 
@@ -41,20 +42,25 @@ export class SignupComponent implements OnInit {
   onSubmit() {
     const email = this.signupForm.get('email')!.value;
     const password = this.signupForm.get('password')!.value;
-    
+
     this.authService.createNewUser(email, password).then(
       () => {
         this.router.navigate(['/']);
-        console.log('utilisateur créer !',createNewUser )
       },
       (error) => {
-        this.errorMessage = error;
+        this.errorMessage = this.translateError(error);
       }
     );
   }
-}
 
-function createNewUser(arg0: string, createNewUser: any) {
-  throw new Error('Function not implemented.');
+  translateError(error: { code?: string }): string {
+    const code = error?.code || String(error);
+    switch (code) {
+      case 'auth/email-already-in-use': return 'Cette adresse email est deja utilisee.';
+      case 'auth/invalid-email': return 'Adresse email invalide.';
+      case 'auth/weak-password': return 'Le mot de passe doit contenir au moins 6 caracteres.';
+      case 'auth/operation-not-allowed': return 'Operation non autorisee.';
+      default: return 'Une erreur est survenue lors de la creation du compte.';
+    }
+  }
 }
-
