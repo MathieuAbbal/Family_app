@@ -1,61 +1,79 @@
-<div class="flex flex-col bg-gradient-to-tr from-blue-200 via-indigo-200 to-pink-200 text-gray-700">
-    <div class="flex justify-center">
-        <div class=" w-full md:mx-48 flex flex-col m-6 p-6 bg-white border border-gray-200 rounded-lg shadow ">
-            <div>
-                <h3>Editer la Tâche</h3>
+<div class="flex justify-center">
+  <div class="card-fun p-6 w-full max-w-lg">
+    <h3 class="font-display text-lg font-bold text-gray-700 mb-4">📝 Editer la Tache</h3>
+    <form [formGroup]="editTaskForm" class="space-y-4">
+      <div>
+        <label class="block mb-2 text-sm font-medium text-gray-600">Tache pour</label>
+        <div class="space-y-2">
+          <!-- Tout le monde -->
+          <button type="button" (click)="toggleSelectAll()"
+            [class]="selectAll
+              ? 'w-full flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-family-purple/10 to-family-pink/10 border-2 border-family-purple transition-all'
+              : 'w-full flex items-center gap-3 p-3 rounded-xl bg-gray-50 border-2 border-transparent hover:border-gray-200 transition-all'">
+            <div [class]="selectAll
+              ? 'w-5 h-5 rounded-full bg-family-purple flex items-center justify-center'
+              : 'w-5 h-5 rounded-full border-2 border-gray-300'">
+              @if (selectAll) {
+                <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              }
             </div>
-            <form [formGroup]="editTaskForm" class="flex flex-col">
-                <mat-form-field apparance="fill">
-                    <mat-label for="name">Tâche pour : </mat-label>
-                    <mat-select formControlName="name" id="name">
-                        <mat-option value="everybody">Everybody</mat-option>
-                        <mat-option value="mathieu">Mathieu</mat-option>
-                        <mat-option value="sophie">Sophie</mat-option>
-                        <mat-option value="charly">Charly</mat-option>
-                        <mat-option value="lucie">Lucie</mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field apparance="fill">
-                    <mat-label for="statut">Statut</mat-label>
-                    <mat-select formControlName="statut" id="statut" required>
-                        <mat-option value="Nouveau">Nouveau</mat-option>
-                        <mat-option value="En cours">En cours</mat-option>
-                        <mat-option value="Fait">Fait</mat-option>
-                        <mat-option value="Bloque">Bloqué</mat-option>
-                        <mat-option value="Archive">Archivé</mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field apparance="fill">
-                    <mat-label for="urg">Priorité</mat-label>
-                    <mat-select formControlName="urg" id="urg" required>
-                        <mat-option value="Urgent">Urgent !</mat-option>
-                        <mat-option value="Relativement urgent">Relativement urgent</mat-option>
-                        <mat-option value="Pas urgent">Pas Urgent</mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field appearance="fill">
-                    <mat-label for="title">Titre</mat-label>
-                    <input matInput formControlName="title" id="title" placeholder="Ex. Mon titre..." required>
-                </mat-form-field>
-                
-                    <mat-label for="descriptif">Descriptif</mat-label>
-                        <div>
-                            <editor formControlName="descriptif" [init]="tinymceInitParams" apiKey="etj7r4fmm6rkitgaelt4dgjx428mep5837b745zgcik1mxth"  style="z-index:1000">
-                            </editor>
-                        </div>
-           
+            <span class="font-medium text-gray-700">Tout le monde</span>
+          </button>
 
-                <div class="flex flex-row justify-end">
-
-                    <button class="m-2 p-2" (click)="goBack()" mat-stroked-button>Retour</button>
-                    <button class="m-2 p-2" (click)="onDelete(taskToEdit)" mat-stroked-button
-                        color="warn">Supprimer</button>
-                    <button class="m-2 p-2" (click)="editTask()" mat-stroked-button color="primary"
-                        type="submit">Modifier</button>
+          <!-- Liste des utilisateurs -->
+          <div class="grid grid-cols-2 gap-2">
+            @for (u of allUsers; track u.uid) {
+              <button type="button" (click)="toggleUser(u.displayName || u.email || '')"
+                [class]="isUserSelected(u.displayName || u.email || '')
+                  ? 'flex items-center gap-2 p-2.5 rounded-xl bg-family-purple/10 border-2 border-family-purple transition-all'
+                  : 'flex items-center gap-2 p-2.5 rounded-xl bg-gray-50 border-2 border-transparent hover:border-gray-200 transition-all'">
+                <div [class]="isUserSelected(u.displayName || u.email || '')
+                  ? 'w-4 h-4 rounded flex-shrink-0 bg-family-purple flex items-center justify-center'
+                  : 'w-4 h-4 rounded flex-shrink-0 border-2 border-gray-300'">
+                  @if (isUserSelected(u.displayName || u.email || '')) {
+                    <svg class="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                  }
                 </div>
-            </form>
-
+                @if (u.photoURL) {
+                  <img [src]="u.photoURL" class="w-6 h-6 rounded-full object-cover" referrerpolicy="no-referrer" />
+                }
+                <span class="text-sm font-medium text-gray-700 truncate">{{u.displayName || u.email}}</span>
+              </button>
+            }
+          </div>
         </div>
-
-    </div>
+      </div>
+      <div>
+        <label for="statut" class="block mb-1 text-sm font-medium text-gray-600">Statut</label>
+        <select formControlName="statut" id="statut" required class="input-fun w-full">
+          <option value="Nouveau">Nouveau</option>
+          <option value="En cours">En cours</option>
+          <option value="Fait">Fait</option>
+          <option value="Bloque">Bloque</option>
+          <option value="Archive">Archive</option>
+        </select>
+      </div>
+      <div>
+        <label for="urg" class="block mb-1 text-sm font-medium text-gray-600">Priorite</label>
+        <select formControlName="urg" id="urg" required class="input-fun w-full">
+          <option value="Urgent">Urgent !</option>
+          <option value="Relativement urgent">Relativement urgent</option>
+          <option value="Pas urgent">Pas Urgent</option>
+        </select>
+      </div>
+      <div>
+        <label for="title" class="block mb-1 text-sm font-medium text-gray-600">Titre</label>
+        <input formControlName="title" id="title" placeholder="Ex. Mon titre..." required class="input-fun w-full" />
+      </div>
+      <div>
+        <label class="block mb-1 text-sm font-medium text-gray-600">Descriptif</label>
+        <textarea formControlName="descriptif" rows="5" placeholder="Decrivez la tache..." class="input-fun w-full resize-y"></textarea>
+      </div>
+      <div class="flex justify-end gap-3 pt-2">
+        <button type="button" (click)="goBack()" class="px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors font-medium text-sm">Retour</button>
+        <button type="button" (click)="onDelete(taskToEdit)" class="px-4 py-2 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors font-medium text-sm">Supprimer</button>
+        <button type="submit" (click)="editTask()" [disabled]="editTaskForm.invalid || !hasSelection" class="btn-gradient px-6 py-2 text-sm font-medium">Modifier</button>
+      </div>
+    </form>
+  </div>
 </div>

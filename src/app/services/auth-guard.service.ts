@@ -1,27 +1,28 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import * as firebase from 'firebase/app';
+import { auth } from '../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { AuthService } from './auth.service';
 
 @Injectable()
-export class AuthGuardService implements CanActivate {
+export class AuthGuardService  {
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private authService: AuthService) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
-    return new Promise(
-      (resolve, reject) => {
-        firebase.auth().onAuthStateChanged(
-          (user) => {
-            if(user) {
-              resolve(true);
-            } else {
-              this.router.navigate(['/auth', 'signin']);
-              resolve(false);
-            }
+    // Wait for redirect result to be processed before checking auth state
+    return this.authService.redirectReady.then(() => {
+      return new Promise<boolean>((resolve) => {
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            resolve(true);
+          } else {
+            this.router.navigate(['/auth', 'signin']);
+            resolve(false);
           }
-        );
-      }
-    );
+        });
+      });
+    });
   }
 }

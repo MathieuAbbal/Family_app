@@ -1,92 +1,138 @@
-import { Component, OnInit } from '@angular/core';
-import {
-  CdkDragDrop,
-  moveItemInArray,
-  transferArrayItem,
-} from '@angular/cdk/drag-drop';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { Item } from '../models/item.model';
-import { ItemService } from '../services/item.service';
-import { Subscription } from 'rxjs';
+import { Component, computed } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ShoppingItem, ShoppingCategory, SHOPPING_CATEGORIES, LIST_ICONS } from '../models/shopping-item.model';
+import { ShoppingService } from '../services/shopping.service';
+import { auth, db } from '../firebase';
+import { ref, get } from 'firebase/database';
+
 @Component({
-  selector: 'app-shopping',
-  templateUrl: './shopping.component.html',
-  styleUrls: ['./shopping.component.css'],
+    selector: 'app-shopping',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './shopping.component.html',
+    styleUrls: ['./shopping.component.css']
 })
-export class ShoppingComponent implements OnInit {
-  addItemForm!: UntypedFormGroup;
+export class ShoppingComponent {
+  categories = SHOPPING_CATEGORIES;
+  listIcons = LIST_ICONS;
 
-  constructor(private formBuilder: UntypedFormBuilder,
-    private is: ItemService) { }
-  items: any[] = [];
+  // Form pour nouvel item
+  newItemName = '';
+  newItemCategory: ShoppingCategory = 'autre';
+  newItemQuantity = '';
+  showAddForm = false;
 
-  basket: any[] = [];
+  // Form pour nouvelle liste
+  showNewListModal = false;
+  newListName = '';
+  newListIcon = '🛒';
 
-  itemsSubsciption!: Subscription
-  basketSub!: Subscription
+  // Modal suppression liste
+  showDeleteListModal = false;
 
+  // Accès aux signals du service
+  lists = this.shoppingService.lists;
+  activeList = this.shoppingService.activeList;
+  items = this.shoppingService.items;
 
-  drop(event: CdkDragDrop<string[]>) {
-    if (event.previousContainer === event.container) {
-      moveItemInArray(
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex
-      );
-    } else {
-      const movedItem = event.previousContainer.data[event.previousIndex];
-      this.is.transferItem(
-        event.previousContainer.data,
-        movedItem,
-        event.container.data
-      );
+  // Computed pour grouper par catégorie
+  readonly uncheckedByCategory = computed(() => {
+    const items = this.shoppingService.items();
+    return this.categories
+      .map(cat => ({
+        ...cat,
+        items: items.filter(i => !i.checked && i.category === cat.key)
+      }))
+      .filter(cat => cat.items.length > 0);
+  });
+
+  readonly checkedItems = computed(() => this.shoppingService.items().filter(i => i.checked));
+  readonly totalItems = computed(() => this.shoppingService.items().filter(i => !i.checked).length);
+
+  constructor(private shoppingService: ShoppingService) {}
+
+  // Gestion des listes
+  selectList(listId: string) {
+    this.shoppingService.setActiveList(listId);
+  }
+
+  openNewListModal() {
+    this.newListName = '';
+    this.newListIcon = '🛒';
+    this.showNewListModal = true;
+  }
+
+  closeNewListModal() {
+    this.showNewListModal = false;
+  }
+
+  async createList() {
+    const name = this.newListName.trim();
+    if (!name) return;
+
+    const listId = await this.shoppingService.createList(name, this.newListIcon);
+    this.shoppingService.setActiveList(listId);
+    this.closeNewListModal();
+  }
+
+  openDeleteListModal() {
+    this.showDeleteListModal = true;
+  }
+
+  closeDeleteListModal() {
+    this.showDeleteListModal = false;
+  }
+
+  async confirmDeleteList() {
+    const activeList = this.activeList();
+    if (!activeList) return;
+
+    await this.shoppingService.deleteList(activeList.id);
+    this.closeDeleteListModal();
+  }
+
+  // Gestion des items
+  async addItem() {
+    const nom = this.newItemName.trim();
+    if (!nom) return;
+    const user = auth.currentUser;
+    let addedByName = '';
+    let addedByPhoto = '';
+    if (user) {
+      const snap = await get(ref(db, `/users/${user.uid}`));
+      const profile = snap.val() || {};
+      addedByName = profile.displayName || user.displayName || '';
+      addedByPhoto = profile.photoURL || user.photoURL || '';
     }
-  }
-  ngOnInit(): void {
-    this.initForm();
-    this.getItem()
-    this.getBasket()
+    this.shoppingService.addItem({
+      nom,
+      category: this.newItemCategory,
+      quantity: this.newItemQuantity.trim() || '1',
+      checked: false,
+      addedBy: user?.uid || '',
+      addedByName,
+      addedByPhoto,
+      addedAt: new Date().toISOString(),
+    });
+    this.newItemName = '';
+    this.newItemQuantity = '';
+    this.newItemCategory = 'autre';
+    this.showAddForm = false;
   }
 
-  getBasket() {
-    this.basketSub = this.is.basketSubject.subscribe(
-      (basket: any[]) => {
-        this.basket = basket;
-        console.log('panier', this.basket);
-      }
-    )
-    this.is.getBasket();
+  toggleChecked(item: ShoppingItem) {
+    this.shoppingService.toggleChecked(item.id, !item.checked);
   }
-  getItem() {
-    this.itemsSubsciption = this.is.itemSubject.subscribe(
-      (item: any[]) => {
-        this.items = item
-        console.log('itemGet', this.items)
-      }
-    )
-  }
-  initForm() {
-    this.addItemForm = this.formBuilder.group({
-      item: ['', [Validators.required]],
-    })
-    this.itemsSubsciption = this.is.itemSubject.subscribe(
-      (item: any[]) => {
-        this.items = item
-        console.log('item', this.items)
-      }
 
-    )
-    this.is.getItems()
-    this.is.emitItems()
+  removeItem(item: ShoppingItem) {
+    this.shoppingService.removeItem(item.id);
   }
-  onSubmit() {
-    const item = this.addItemForm.get('item')?.value;
-    const newItem = new Item(item);
-    this.is.crateNewItem(newItem);
-    // Réinitialiser le formulaire
-    this.addItemForm.reset();
+
+  clearChecked() {
+    this.shoppingService.clearChecked();
   }
-  OnDelete(item: Item) {
-    this.is.removeItem(item)
+
+  getCategoryIcon(key: string): string {
+    return this.categories.find(c => c.key === key)?.icon || '📦';
   }
 }
