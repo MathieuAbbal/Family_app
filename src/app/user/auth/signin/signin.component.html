@@ -1,12 +1,12 @@
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-family-pink via-family-coral to-family-orange p-4">
-  <div class="w-full max-w-md">
+<div class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-family-pink via-family-coral to-family-orange p-4">
+  <div class="w-full max-w-md flex-1 flex flex-col items-center justify-center">
     <div class="text-center mb-8">
       <span class="text-6xl block mb-2">👨‍👩‍👧‍👦</span>
       <h1 class="font-display font-extrabold text-3xl text-white">Family App</h1>
       <p class="text-white/80 mt-1">Votre espace famille</p>
     </div>
 
-    <div class="bg-white rounded-3xl shadow-fun p-8">
+    <div class="bg-white rounded-3xl shadow-fun p-8 w-full">
       <h2 class="font-display font-bold text-xl text-center text-gray-800 mb-6">Connexion 👋</h2>
 
       <button (click)="signInWithGoogle()"
@@ -25,4 +25,5 @@
       }
     </div>
   </div>
+  <p class="text-center text-white/60 text-xs font-bold pb-4">v{{ appVersion }}</p>
 </div>

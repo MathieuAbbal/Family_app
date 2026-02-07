@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import packageJson from '../../../../../package.json';
 
 @Component({
     selector: 'app-signin',
@@ -10,6 +11,7 @@ import { AuthService } from '../../../services/auth.service';
 })
 export class SigninComponent {
   errorMessage = '';
+  appVersion = packageJson.version;
 
   constructor(private authService: AuthService, private router: Router) {}
 
