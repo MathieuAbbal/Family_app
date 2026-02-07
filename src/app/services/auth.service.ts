@@ -15,7 +15,8 @@ export class AuthService {
   /** Resolves when redirect result is processed (for Capacitor) */
   redirectReady: Promise<void>;
 
-  private isCapacitor = !!(window as any).Capacitor?.isNativePlatform?.();
+  /** Détecte Android WebView (Capacitor charge depuis une URL distante, donc window.Capacitor n'existe pas) */
+  private isAndroidWebView = /Android/.test(navigator.userAgent) && /wv/.test(navigator.userAgent);
 
   constructor() {
     this.redirectReady = this.handleRedirectResult();
@@ -61,8 +62,8 @@ export class AuthService {
     provider.addScope('https://www.googleapis.com/auth/calendar');
     provider.addScope('https://www.googleapis.com/auth/drive');
 
-    if (this.isCapacitor) {
-      // Redirect flow pour Capacitor (reste dans la WebView)
+    if (this.isAndroidWebView) {
+      // Redirect flow pour Android WebView (Capacitor)
       await signInWithRedirect(auth, provider);
     } else {
       // Popup flow pour le web
