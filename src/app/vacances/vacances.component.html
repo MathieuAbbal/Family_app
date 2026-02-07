@@ -151,7 +151,7 @@
             <span [class]="item.checked ? 'flex-1 text-sm text-gray-400 line-through' : 'flex-1 text-sm text-gray-700'">
               {{item.text}}
             </span>
-            <button (click)="deleteItem(item)" class="text-gray-300 hover:text-red-400 transition-colors">
+            <button (click)="confirmDeleteItem(item)" class="text-gray-300 hover:text-red-400 transition-colors">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
               </svg>
@@ -190,7 +190,7 @@
             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-2 rounded-b-xl">
               <p class="text-white text-xs truncate">{{photo.addedByName}}</p>
             </div>
-            <button (click)="deletePhoto(photo)"
+            <button (click)="confirmDeletePhoto(photo)"
               class="absolute top-2 right-2 w-6 h-6 bg-white/80 rounded-full flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-red-400">
               <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
@@ -215,7 +215,7 @@
 
     <!-- Delete vacation -->
     <div class="mt-8 mb-8 text-center">
-      <button (click)="deleteVacation()" class="text-sm text-red-400 hover:text-red-600 transition-colors">
+      <button (click)="confirmDeleteVacation()" class="text-sm text-red-400 hover:text-red-600 transition-colors">
         Supprimer ce voyage
       </button>
     </div>

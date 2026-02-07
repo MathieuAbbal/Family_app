@@ -1,0 +1,60 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "chat": {
+      "messages": {
+        ".read": "auth != null",
+        "$messageId": {
+          ".write": "auth != null",
+          "likes": {
+            "$uid": {
+              ".write": "auth != null && auth.uid === $uid"
+            }
+          },
+          "comments": {
+            "$commentId": {
+              ".write": "auth != null"
+            }
+          }
+        }
+      }
+    },
+    "shopping_lists": {
+      ".read": "auth != null",
+      "$listId": {
+        ".write": "auth != null"
+      }
+    },
+    "shopping": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "locations": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "vacations": {
+      ".read": "auth != null",
+      "$vacationId": {
+        ".write": "auth != null"
+      }
+    },
+    "tasks": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "recipes": {
+      ".read": "auth != null",
+      "$recipeId": {
+        ".write": "auth != null"
+      }
+    }
+  }
+}
