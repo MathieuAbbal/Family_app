@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  vapidKey: '***VAPID_KEY***',
   googleCalendar: {
     apiKey: '***FIREBASE_API_KEY***',
     clientId: '***GOOGLE_CLIENT_ID***',

@@ -1,8 +1,8 @@
-import { Injectable, ApplicationRef } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { filter, first } from 'rxjs/operators';
-import { concat, interval } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { interval } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -10,8 +10,7 @@ import { concat, interval } from 'rxjs';
 export class UpdateService {
   constructor(
     private swUpdate: SwUpdate,
-    private snackBar: MatSnackBar,
-    private appRef: ApplicationRef
+    private snackBar: MatSnackBar
   ) {}
 
   init(): void {
@@ -19,15 +18,14 @@ export class UpdateService {
       return;
     }
 
-    // Check for updates when app stabilizes, then every 30 minutes
-    const appIsStable$ = this.appRef.isStable.pipe(first(isStable => isStable === true));
-    const everyThirtyMinutes$ = interval(30 * 60 * 1000);
-    const checkInterval$ = concat(appIsStable$, everyThirtyMinutes$);
+    // Check after 10 seconds, then every 30 minutes
+    // (appRef.isStable never resolves with Firebase realtime listeners)
+    setTimeout(() => {
+      this.swUpdate.checkForUpdate().catch(() => {});
+    }, 10_000);
 
-    checkInterval$.subscribe(() => {
-      this.swUpdate.checkForUpdate().catch(() => {
-        // Silent fail - SW might not be available
-      });
+    interval(30 * 60 * 1000).subscribe(() => {
+      this.swUpdate.checkForUpdate().catch(() => {});
     });
 
     // Listen for available updates
@@ -43,7 +41,7 @@ export class UpdateService {
       '🚀 Nouvelle version disponible !',
       'Mettre à jour',
       {
-        duration: 0, // Don't auto-dismiss
+        duration: 0,
         horizontalPosition: 'center',
         verticalPosition: 'bottom',
         panelClass: ['update-snackbar']

@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "deploy": "ng build --configuration production --base-href /Family_app/ && npx angular-cli-ghpages --dir=dist/familyapp"
+    "deploy": "ng build --configuration production --base-href /Family_app/ && npx angular-cli-ghpages --dir=dist/familyapp/browser"
   },
   "private": true,
   "dependencies": {
@@ -24,7 +24,7 @@
     "@angular/service-worker": "~21.1.2",
     "@maplibre/maplibre-gl-geocoder": "^1.5.0",
     "firebase": "^10.14.1",
-    "maplibre-gl": "^1.15.2",
+    "maplibre-gl": "^5.17.0",
     "rxjs": "~7.4.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.1"

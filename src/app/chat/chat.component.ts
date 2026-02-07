@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChatService } from '../services/chat.service';
 import { Message } from '../models/message.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { auth } from '../firebase';
 
 @Component({
@@ -31,13 +32,18 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('messagesContainer') messagesContainer!: ElementRef<HTMLElement>;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
-  constructor(private chatService: ChatService) {}
+  constructor(
+    private chatService: ChatService,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.currentUid = auth.currentUser?.uid || '';
+    this.chatService.markAsRead();
     this.unsubscribe = this.chatService.listenMessages(messages => {
       this.messages = messages;
       this.shouldScroll = true;
+      this.chatService.markAsRead();
     });
   }
 
@@ -127,6 +133,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.newMessage = '';
     this.removeImage();
     await this.chatService.sendMessage(text, image || undefined);
+    this.snackBar.open('Publication envoyée !', '', { duration: 2000 });
   }
 
   async toggleLike(msg: Message): Promise<void> {
@@ -149,6 +156,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (this.messageToDelete) {
       await this.chatService.deleteMessage(this.messageToDelete);
       this.closeDeleteModal();
+      this.snackBar.open('Publication supprimée', '', { duration: 2000 });
     }
   }
 
@@ -170,13 +178,16 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (!text) return;
     this.commentInputs[msgId] = '';
     await this.chatService.addComment(msgId, text);
+    this.snackBar.open('Commentaire ajouté', '', { duration: 2000 });
   }
 
   async deleteComment(msgId: string, commentId: string): Promise<void> {
     await this.chatService.deleteComment(msgId, commentId);
+    this.snackBar.open('Commentaire supprimé', '', { duration: 2000 });
   }
 
   ngOnDestroy(): void {
+    this.chatService.leaveChatPage();
     this.unsubscribe?.();
   }
 }

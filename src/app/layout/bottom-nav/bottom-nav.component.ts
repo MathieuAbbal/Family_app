@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { ChatService } from '../../services/chat.service';
 
 @Component({
     selector: 'app-bottom-nav',
@@ -14,8 +15,13 @@ import { RouterModule } from '@angular/router';
           <span class="text-[9px] font-medium">Accueil</span>
         </a>
         <a routerLink="/chat" routerLinkActive="text-family-coral"
-           class="flex flex-col items-center justify-center gap-0.5 text-gray-400 transition-all active:scale-90">
+           class="relative flex flex-col items-center justify-center gap-0.5 text-gray-400 transition-all active:scale-90">
           <span class="text-lg">📱</span>
+          @if (chatService.unreadCount() > 0) {
+            <span class="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full px-1">
+              {{ chatService.unreadCount() > 99 ? '99+' : chatService.unreadCount() }}
+            </span>
+          }
           <span class="text-[9px] font-medium">Fil</span>
         </a>
         <a routerLink="/map" routerLinkActive="text-family-sky"
@@ -72,5 +78,6 @@ import { RouterModule } from '@angular/router';
   `
 })
 export class BottomNavComponent {
+  chatService = inject(ChatService);
   showMore = false;
 }

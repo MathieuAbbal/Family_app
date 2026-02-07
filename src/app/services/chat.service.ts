@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { db, auth, storage } from '../firebase';
 import { ref, push, set, remove, onValue, off, query, limitToLast, get } from 'firebase/database';
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
@@ -10,6 +10,54 @@ import { Message, Comment } from '../models/message.model';
 export class ChatService {
 
   private messagesRef = ref(db, '/chat/messages');
+  private _unreadCount = signal(0);
+  readonly unreadCount = this._unreadCount.asReadonly();
+  private lastReadTimestamp = 0;
+  private isOnChatPage = false;
+  private unsubUnread: (() => void) | null = null;
+
+  constructor() {
+    this.loadLastRead();
+  }
+
+  private loadLastRead(): void {
+    const saved = localStorage.getItem('chat_last_read');
+    this.lastReadTimestamp = saved ? parseInt(saved, 10) : 0;
+  }
+
+  markAsRead(): void {
+    this.lastReadTimestamp = Date.now();
+    localStorage.setItem('chat_last_read', this.lastReadTimestamp.toString());
+    this._unreadCount.set(0);
+    this.isOnChatPage = true;
+  }
+
+  leaveChatPage(): void {
+    this.isOnChatPage = false;
+  }
+
+  startUnreadListener(): void {
+    if (this.unsubUnread) return;
+    const q = query(this.messagesRef, limitToLast(100));
+    onValue(q, (snapshot) => {
+      if (this.isOnChatPage) {
+        this._unreadCount.set(0);
+        return;
+      }
+      const data = snapshot.val();
+      if (!data) { this._unreadCount.set(0); return; }
+      const count = Object.values(data).filter((msg: any) =>
+        msg.timestamp > this.lastReadTimestamp && msg.uid !== auth.currentUser?.uid
+      ).length;
+      this._unreadCount.set(count);
+    });
+    this.unsubUnread = () => off(q);
+  }
+
+  stopUnreadListener(): void {
+    this.unsubUnread?.();
+    this.unsubUnread = null;
+  }
 
   listenMessages(callback: (messages: Message[]) => void): () => void {
     const q = query(this.messagesRef, limitToLast(100));

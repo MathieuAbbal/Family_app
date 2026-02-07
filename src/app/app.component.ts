@@ -8,6 +8,8 @@ import { auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { LocationService } from './services/location.service';
 import { UpdateService } from './services/update.service';
+import { ChatService } from './services/chat.service';
+import { NotificationService } from './services/notification.service';
 
 @Component({
     selector: 'app-root',
@@ -21,7 +23,9 @@ export class AppComponent implements OnInit {
 
   constructor(
     private locationService: LocationService,
-    private updateService: UpdateService
+    private updateService: UpdateService,
+    private chatService: ChatService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
@@ -31,8 +35,12 @@ export class AppComponent implements OnInit {
       this.isAuth = !!user;
       if (user) {
         this.locationService.startTracking();
+        this.chatService.startUnreadListener();
+        this.notificationService.init();
       } else {
         this.locationService.stopTracking();
+        this.chatService.stopUnreadListener();
+        this.notificationService.removeToken();
       }
     });
   }

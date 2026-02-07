@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 
 import { RouterModule } from '@angular/router';
 import { EditProfileService } from '../../user/edit-profile.service';
 import { AuthService } from '../../services/auth.service';
+import { ChatService } from '../../services/chat.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -20,8 +21,13 @@ import { Subscription } from 'rxjs';
          Tableau de bord
         </a>
         <a routerLink="/chat" routerLinkActive="bg-gradient-to-r from-family-coral/10 to-family-orange/10 text-family-coral"
-           class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-warm-50 transition-all font-medium">
-          Fil d'actu
+           class="flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-warm-50 transition-all font-medium">
+          <span>Fil d'actu</span>
+          @if (chatService.unreadCount() > 0) {
+            <span class="min-w-[20px] h-[20px] flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full px-1">
+              {{ chatService.unreadCount() > 99 ? '99+' : chatService.unreadCount() }}
+            </span>
+          }
         </a>
         <a routerLink="/add-task" routerLinkActive="bg-gradient-to-r from-family-purple/10 to-family-lavender/10 text-family-purple"
            class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-warm-50 transition-all font-medium">
@@ -63,6 +69,7 @@ import { Subscription } from 'rxjs';
   `
 })
 export class SidebarComponent implements OnInit, OnDestroy {
+  chatService = inject(ChatService);
   userName = '';
   userPhoto = '';
   private userSubscription!: Subscription;
