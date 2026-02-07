@@ -8,6 +8,7 @@ import { GoogleCalendarService } from '../services/google-calendar.service';
 import { CalendarEvent, GoogleCalendarInfo } from '../models/calendar-event.model';
 import { AddEventDialogComponent } from './add-event-dialog/add-event-dialog.component';
 import { EventDetailDialogComponent } from './event-detail-dialog/event-detail-dialog.component';
+import { ConfirmDialogComponent } from '../dialogs/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-calendar',
@@ -223,10 +224,16 @@ export class CalendarComponent implements OnInit, OnDestroy {
     return event.creatorName === email;
   }
 
-  deleteEvent(event: CalendarEvent) {
-    this.calendarService.deleteEvent(event.id, event.calendarId || 'primary').then(() => {
-      this.loadEvents();
-      this.snackBar.open('Evenement supprime', '', { duration: 3000 });
+  confirmDeleteEvent(event: CalendarEvent) {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: { customMessage: `Supprimer "${event.title}" ?` }
+    }).afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.calendarService.deleteEvent(event.id, event.calendarId || 'primary').then(() => {
+          this.loadEvents();
+          this.snackBar.open('Evenement supprime', '', { duration: 3000 });
+        });
+      }
     });
   }
 

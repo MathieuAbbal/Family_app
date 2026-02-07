@@ -2,7 +2,7 @@
 
 Application familiale collaborative construite avec **Angular 21** et **Firebase**. Elle permet aux membres d'une famille de gérer leurs tâches, partager des photos, organiser leurs courses, partager des documents et se localiser sur une carte interactive.
 
-Disponible en tant que **Progressive Web App (PWA)** installable sur mobile et desktop.
+Disponible en tant que **Progressive Web App (PWA)** installable sur mobile et desktop, et en tant qu'**application Android native** via Capacitor.
 
 ## Fonctionnalités
 
@@ -69,6 +69,11 @@ Disponible en tant que **Progressive Web App (PWA)** installable sur mobile et d
 - Album photos par destination
 - Carte interactive avec localisation
 
+### Dialogues de confirmation
+- Confirmation avant chaque suppression (publications, commentaires, articles, événements, vacances, photos, checklist)
+- Composant partagé `ConfirmDialogComponent` via Angular Material Dialog
+- Boutons Non/Oui avec feedback snackbar après suppression
+
 ### Gestion des utilisateurs
 - Connexion via Google (OAuth2)
 - Profil éditable (nom, téléphone, photo, date de naissance)
@@ -86,6 +91,11 @@ Disponible en tant que **Progressive Web App (PWA)** installable sur mobile et d
 - Notification toast automatique quand une nouvelle version est disponible
 - Rechargement en un clic pour appliquer la mise à jour
 
+### Application Android native (Capacitor)
+- APK générable via Capacitor 8 pour sideloading
+- Même codebase Angular que la PWA
+- Build automatisé via script `build-apk.bat`
+
 ## Stack technique
 
 | Catégorie | Technologie |
@@ -97,6 +107,7 @@ Disponible en tant que **Progressive Web App (PWA)** installable sur mobile et d
 | Carte | MapLibre GL 5.17 + Geocoder |
 | Éditeur | TinyMCE Angular 7 |
 | PWA | Angular Service Worker |
+| Mobile natif | Capacitor 8 (Android) |
 | Hébergement | GitHub Pages |
 | Langage | TypeScript 5.8 |
 
@@ -115,6 +126,8 @@ src/app/
 │   ├── sidebar/              # Navigation desktop (barre latérale)
 │   └── top-bar/              # Barre supérieure mobile
 ├── map/                      # Carte interactive avec géolocalisation famille
+├── dialogs/
+│   └── confirm-dialog/       # Dialogue de confirmation partagé (suppression)
 ├── models/                   # Modèles de données (Task, Message, User, ShoppingItem, ShoppingList, Recipe, Comment)
 ├── recipes/                  # Carnet de recettes familial
 ├── services/                 # Services (auth, tasks, chat, shopping, recipes, google-drive, google-calendar, location, notification)
@@ -137,6 +150,15 @@ functions/                       # Firebase Cloud Functions
 │   └── index.ts                 # Trigger notification push sur nouveau message chat
 ├── package.json
 └── tsconfig.json
+```
+
+```
+android/                         # Application Android native (Capacitor)
+├── app/
+│   ├── src/main/assets/public/  # Build Angular copié ici par cap sync
+│   └── build.gradle             # Config Gradle de l'app
+├── build.gradle                 # Config Gradle racine
+└── gradlew.bat                  # Wrapper Gradle
 ```
 
 ## Installation
@@ -175,6 +197,20 @@ firebase deploy --only functions
 
 ```bash
 npm run deploy
+```
+
+### Build APK Android
+
+```bash
+# Prérequis : Android Studio installé (fournit le JDK et le SDK Android)
+
+# Build Angular + sync Capacitor + générer l'APK
+ng build --configuration production
+npx cap sync android
+build-apk.bat
+
+# L'APK est généré dans :
+# android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
 ## Configuration Firebase
@@ -224,18 +260,15 @@ export const storage = getStorage(app);
 
 ### 4. Configurer les Security Rules
 
-Dans la console Firebase > Realtime Database > Règles, appliquez au minimum :
+Les règles de sécurité sont définies dans `database.rules.json` avec des permissions granulaires par noeud :
+- Lecture authentifiée sur toutes les données
+- Écriture restreinte au propriétaire pour `/users/{uid}` et `/locations/{uid}`
+- Écriture authentifiée pour les données partagées (chat, shopping, tasks, etc.)
 
-```json
-{
-  "rules": {
-    ".read": "auth != null",
-    ".write": "auth != null"
-  }
-}
+```bash
+# Déployer les règles
+firebase deploy --only database
 ```
-
-Cela garantit que seuls les utilisateurs connectés peuvent lire et écrire dans la base.
 
 ### 5. Restreindre les domaines autorisés
 

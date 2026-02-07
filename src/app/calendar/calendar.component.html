@@ -134,7 +134,7 @@
               </div>
             </div>
             @if (canDelete(event)) {
-              <button (click)="deleteEvent(event); $event.stopPropagation()" class="text-red-300 hover:text-red-500 text-sm transition-colors">
+              <button (click)="confirmDeleteEvent(event); $event.stopPropagation()" class="text-red-300 hover:text-red-500 text-sm transition-colors">
                 Supprimer
               </button>
             }

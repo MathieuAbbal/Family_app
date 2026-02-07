@@ -29,6 +29,7 @@ export class ChatService {
     this.lastReadTimestamp = Date.now();
     localStorage.setItem('chat_last_read', this.lastReadTimestamp.toString());
     this._unreadCount.set(0);
+    this.updateAppBadge(0);
     this.isOnChatPage = true;
   }
 
@@ -50,8 +51,19 @@ export class ChatService {
         msg.timestamp > this.lastReadTimestamp && msg.uid !== auth.currentUser?.uid
       ).length;
       this._unreadCount.set(count);
+      this.updateAppBadge(count);
     });
     this.unsubUnread = () => off(q);
+  }
+
+  private updateAppBadge(count: number): void {
+    if ('setAppBadge' in navigator) {
+      if (count > 0) {
+        (navigator as any).setAppBadge(count);
+      } else {
+        (navigator as any).clearAppBadge();
+      }
+    }
   }
 
   stopUnreadListener(): void {

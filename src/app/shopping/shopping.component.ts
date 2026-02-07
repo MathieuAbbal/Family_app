@@ -1,9 +1,11 @@
 import { Component, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { ShoppingItem, ShoppingCategory, SHOPPING_CATEGORIES, LIST_ICONS } from '../models/shopping-item.model';
 import { ShoppingService } from '../services/shopping.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ConfirmDialogComponent } from '../dialogs/confirm-dialog/confirm-dialog.component';
 import { auth, db } from '../firebase';
 import { ref, get } from 'firebase/database';
 
@@ -52,7 +54,8 @@ export class ShoppingComponent {
 
   constructor(
     private shoppingService: ShoppingService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   // Gestion des listes
@@ -131,14 +134,26 @@ export class ShoppingComponent {
     this.shoppingService.toggleChecked(item.id, !item.checked);
   }
 
-  removeItem(item: ShoppingItem) {
-    this.shoppingService.removeItem(item.id);
-    this.snackBar.open('Article supprimé', '', { duration: 2000 });
+  confirmRemoveItem(item: ShoppingItem) {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: { customMessage: `Supprimer "${item.nom}" de la liste ?` }
+    }).afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.shoppingService.removeItem(item.id);
+        this.snackBar.open('Article supprimé', '', { duration: 2000 });
+      }
+    });
   }
 
-  clearChecked() {
-    this.shoppingService.clearChecked();
-    this.snackBar.open('Panier vidé', '', { duration: 2000 });
+  confirmClearChecked() {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: { customMessage: 'Vider le panier ?' }
+    }).afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.shoppingService.clearChecked();
+        this.snackBar.open('Panier vidé', '', { duration: 2000 });
+      }
+    });
   }
 
   getCategoryIcon(key: string): string {

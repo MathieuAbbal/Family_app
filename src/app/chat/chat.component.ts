@@ -1,16 +1,19 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { ChatService } from '../services/chat.service';
 import { Message } from '../models/message.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ConfirmDialogComponent } from '../dialogs/confirm-dialog/confirm-dialog.component';
 import { auth } from '../firebase';
 
 @Component({
   selector: 'app-chat',
   imports: [CommonModule, FormsModule],
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.css']
+  styleUrls: ['./chat.component.css'],
+  host: { style: 'display:flex;flex-direction:column;height:100%;overflow:hidden' }
 })
 export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   messages: Message[] = [];
@@ -21,10 +24,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   private unsubscribe: (() => void) | null = null;
   private shouldScroll = true;
 
-  // Delete confirmation modal
-  showDeleteModal = false;
-  messageToDelete: Message | null = null;
-
   // Comments
   expandedComments: Set<string> = new Set();
   commentInputs: { [messageId: string]: string } = {};
@@ -34,7 +33,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   constructor(
     private chatService: ChatService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -140,24 +140,16 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     await this.chatService.toggleLike(msg.id);
   }
 
-  openDeleteModal(msg: Message): void {
-    if (msg.uid === this.currentUid) {
-      this.messageToDelete = msg;
-      this.showDeleteModal = true;
-    }
-  }
-
-  closeDeleteModal(): void {
-    this.showDeleteModal = false;
-    this.messageToDelete = null;
-  }
-
-  async confirmDelete(): Promise<void> {
-    if (this.messageToDelete) {
-      await this.chatService.deleteMessage(this.messageToDelete);
-      this.closeDeleteModal();
-      this.snackBar.open('Publication supprimée', '', { duration: 2000 });
-    }
+  confirmDeleteMessage(msg: Message): void {
+    if (msg.uid !== this.currentUid) return;
+    this.dialog.open(ConfirmDialogComponent, {
+      data: { customMessage: 'Supprimer cette publication ?' }
+    }).afterClosed().subscribe(async (confirmed) => {
+      if (confirmed) {
+        await this.chatService.deleteMessage(msg);
+        this.snackBar.open('Publication supprimée', '', { duration: 2000 });
+      }
+    });
   }
 
   // Comments methods
@@ -181,9 +173,15 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.snackBar.open('Commentaire ajouté', '', { duration: 2000 });
   }
 
-  async deleteComment(msgId: string, commentId: string): Promise<void> {
-    await this.chatService.deleteComment(msgId, commentId);
-    this.snackBar.open('Commentaire supprimé', '', { duration: 2000 });
+  confirmDeleteComment(msgId: string, commentId: string): void {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: { customMessage: 'Supprimer ce commentaire ?' }
+    }).afterClosed().subscribe(async (confirmed) => {
+      if (confirmed) {
+        await this.chatService.deleteComment(msgId, commentId);
+        this.snackBar.open('Commentaire supprimé', '', { duration: 2000 });
+      }
+    });
   }
 
   ngOnDestroy(): void {
