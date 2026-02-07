@@ -15,32 +15,27 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": "dist/familyapp",
             "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
+            "browser": "src/main.ts",
+            "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/manifest.webmanifest"
+              "src/manifest.webmanifest",
+              "src/firebase-messaging-sw.js"
             ],
             "styles": [
               "./node_modules/maplibre-gl/dist/maplibre-gl.css",
               "./node_modules/@maplibre/maplibre-gl-geocoder/dist/maplibre-gl-geocoder.css",
               "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
               "src/styles.css"
-
             ],
             "scripts": [],
-            "allowedCommonJsDependencies": [
-              "maplibre-gl",
-              "@maplibre/maplibre-gl-geocoder"
-            ],
-            "serviceWorker": true,
-            "ngswConfigPath": "ngsw-config.json"
+            "serviceWorker": "ngsw-config.json"
           },
           "configurations": {
             "production": {
@@ -65,12 +60,8 @@
               "outputHashing": "all"
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
-              "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true
+              "sourceMap": true
             }
           },
           "defaultConfiguration": "production"

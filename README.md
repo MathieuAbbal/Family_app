@@ -4,8 +4,6 @@ Application familiale collaborative construite avec **Angular 21** et **Firebase
 
 Disponible en tant que **Progressive Web App (PWA)** installable sur mobile et desktop.
 
-**URL** : https://mathieuabbal.github.io/Family_app/
-
 ## Fonctionnalités
 
 ### Tableau de bord Kanban
@@ -13,7 +11,7 @@ Disponible en tant que **Progressive Web App (PWA)** installable sur mobile et d
 - Drag & drop entre les colonnes (Angular CDK)
 - Création/édition de tâches avec éditeur rich text (TinyMCE)
 - Niveaux d'urgence colorés (Urgent, Relativement urgent, Pas urgent)
-- Attribution des tâches aux membres de la famille
+- Attribution des tâches à un ou plusieurs membres (multi-assignation)
 
 ### Fil d'actu (Feed social)
 - Publications avec texte et/ou images
@@ -22,13 +20,22 @@ Disponible en tant que **Progressive Web App (PWA)** installable sur mobile et d
 - Tri par date (plus récents en premier, style feed)
 - Suppression de ses propres posts avec confirmation
 - Séparateurs de date automatiques
+- **Notifications push** : alerte native quand un membre publie (même app fermée)
 
-### Liste de courses
+### Listes de courses (multi-listes)
+- Plusieurs listes de courses avec onglets (ex: Courses, Maison, Fête...)
 - Articles groupés par catégorie (Fruits & Légumes, Produits laitiers, Viandes, Épicerie, Boissons, Surgelés, Hygiène, Autre)
 - Quantité par article
 - Case à cocher pour marquer les articles achetés
 - Section "Dans le panier" pour les articles cochés
 - Auteur de chaque article affiché
+- Migration automatique depuis l'ancienne liste unique
+
+### Recettes
+- Carnet de recettes familial
+- Ingrédients par catégorie avec quantités
+- Ajout des ingrédients d'une recette directement dans une liste de courses
+- Multiplicateur de portions (ajustement automatique des quantités)
 
 ### Carte interactive
 - Carte MapLibre GL centrée sur la France
@@ -68,15 +75,26 @@ Disponible en tant que **Progressive Web App (PWA)** installable sur mobile et d
 - Upload d'avatar avec compression (400px max)
 - Guard d'authentification sur les routes protégées
 
+### Notifications push (FCM)
+- Notifications push via Firebase Cloud Messaging
+- Alerte native du navigateur/mobile quand un membre publie dans le chat
+- Fonctionne même avec l'application fermée (Service Worker)
+- Snackbar avec action "Voir" quand l'app est au premier plan
+- Nettoyage automatique des tokens invalides
+
+### PWA & Mises à jour
+- Notification toast automatique quand une nouvelle version est disponible
+- Rechargement en un clic pour appliquer la mise à jour
+
 ## Stack technique
 
 | Catégorie | Technologie |
 |-----------|-------------|
 | Framework | Angular 21.1.2 |
 | UI | Angular Material 21 + Tailwind CSS 3 |
-| Backend | Firebase (Auth, Realtime Database, Storage) |
+| Backend | Firebase (Auth, Realtime Database, Storage, Cloud Functions, Cloud Messaging) |
 | APIs Google | Calendar API, Drive API |
-| Carte | MapLibre GL 1.15 + Geocoder |
+| Carte | MapLibre GL 5.17 + Geocoder |
 | Éditeur | TinyMCE Angular 7 |
 | PWA | Angular Service Worker |
 | Hébergement | GitHub Pages |
@@ -97,9 +115,10 @@ src/app/
 │   ├── sidebar/              # Navigation desktop (barre latérale)
 │   └── top-bar/              # Barre supérieure mobile
 ├── map/                      # Carte interactive avec géolocalisation famille
-├── models/                   # Modèles de données (Task, Message, User, ShoppingItem, Comment)
-├── services/                 # Services (auth, tasks, chat, shopping, google-drive, google-calendar, location)
-├── shopping/                 # Liste de courses par catégorie
+├── models/                   # Modèles de données (Task, Message, User, ShoppingItem, ShoppingList, Recipe, Comment)
+├── recipes/                  # Carnet de recettes familial
+├── services/                 # Services (auth, tasks, chat, shopping, recipes, google-drive, google-calendar, location, notification)
+├── shopping/                 # Listes de courses multi-listes
 ├── tasks/
 │   ├── add-task/             # Formulaire de création de tâche
 │   ├── edit-task/            # Formulaire d'édition de tâche
@@ -110,6 +129,14 @@ src/app/
     │   └── signin/           # Page de connexion Google
     ├── user-avatar/          # Composant avatar
     └── user-profile/         # Page de profil utilisateur
+```
+
+```
+functions/                       # Firebase Cloud Functions
+├── src/
+│   └── index.ts                 # Trigger notification push sur nouveau message chat
+├── package.json
+└── tsconfig.json
 ```
 
 ## Installation
@@ -131,6 +158,19 @@ ng serve
 
 L'application est accessible sur `http://localhost:4200/`.
 
+### Cloud Functions (notifications push)
+
+```bash
+# Installer les dépendances
+cd functions && npm install
+
+# Build
+npm run build
+
+# Déployer
+firebase deploy --only functions
+```
+
 ### Déploiement GitHub Pages
 
 ```bash
@@ -139,24 +179,130 @@ npm run deploy
 
 ## Configuration Firebase
 
-Le projet utilise Firebase avec les services suivants :
-- **Authentication** : connexion Google OAuth2
-- **Realtime Database** : stockage des tâches, messages (fil d'actu), articles, utilisateurs, vacances, positions
-- **Cloud Storage** : stockage des images (fil d'actu, vacances, avatars)
+Pour faire tourner l'application, vous devez créer votre propre projet Firebase et configurer les services nécessaires.
 
-La configuration se trouve dans `src/app/firebase.ts`.
+### 1. Créer un projet Firebase
 
-## APIs Google
+1. Rendez-vous sur [console.firebase.google.com](https://console.firebase.google.com)
+2. Cliquez sur **Ajouter un projet** et suivez les étapes
+3. Activez les services suivants dans la console Firebase :
+   - **Authentication** : activez le fournisseur **Google** (Authentication > Sign-in method > Google)
+   - **Realtime Database** : créez une base de données (choisissez la région `europe-west1` pour l'Europe)
+   - **Cloud Storage** : activez le stockage pour les images
 
-- **Google Calendar API** : calendrier familial partagé
-- **Google Drive API** : dossier de documents partagé
+### 2. Récupérer la configuration Firebase
 
-Les scopes OAuth sont configurés dans `src/environments/environment.ts`.
+1. Dans la console Firebase, allez dans **Paramètres du projet** (icône engrenage) > **Général**
+2. Dans la section **Vos applications**, cliquez sur l'icône **Web** (`</>`) pour ajouter une app web
+3. Copiez l'objet `firebaseConfig` généré
+
+### 3. Configurer l'application
+
+Créez ou modifiez le fichier `src/app/firebase.ts` avec votre configuration :
+
+```typescript
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getDatabase } from 'firebase/database';
+import { getStorage } from 'firebase/storage';
+
+const firebaseConfig = {
+  apiKey: "VOTRE_API_KEY",
+  authDomain: "VOTRE_PROJET.firebaseapp.com",
+  databaseURL: "https://VOTRE_PROJET-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "VOTRE_PROJET",
+  storageBucket: "VOTRE_PROJET.appspot.com",
+  messagingSenderId: "VOTRE_SENDER_ID",
+  appId: "VOTRE_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const db = getDatabase(app);
+export const storage = getStorage(app);
+```
+
+### 4. Configurer les Security Rules
+
+Dans la console Firebase > Realtime Database > Règles, appliquez au minimum :
+
+```json
+{
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null"
+  }
+}
+```
+
+Cela garantit que seuls les utilisateurs connectés peuvent lire et écrire dans la base.
+
+### 5. Restreindre les domaines autorisés
+
+Dans Firebase Console > Authentication > Settings > Domaines autorisés, ajoutez uniquement vos domaines :
+- `localhost`
+- `votre-projet.firebaseapp.com` (défaut)
+- `votre-projet.web.app` (défaut)
+- `votre-utilisateur.github.io` (si déployé sur GitHub Pages)
+
+### 6. Restreindre la clé API (recommandé)
+
+Dans [Google Cloud Console](https://console.cloud.google.com) > APIs & Services > Credentials :
+- Sélectionnez votre clé API (Browser key)
+- Choisissez **Restrictions relatives aux applications** > **Sites Web**
+- Ajoutez les référents HTTP autorisés :
+  ```
+  http://localhost:4200/*
+  https://votre-utilisateur.github.io/*
+  https://votre-projet.firebaseapp.com/*
+  https://votre-projet.web.app/*
+  ```
+- Laissez **Ne pas restreindre la clé** pour les restrictions relatives aux API (Firebase utilise plusieurs APIs)
+- Cliquez sur **Enregistrer**
+
+> **Note** : Les domaines Firebase (`firebaseapp.com` / `web.app`) sont nécessaires pour que le flow d'authentification Google OAuth fonctionne correctement.
+
+## Sécurité
+
+Les clés Firebase sont des identifiants **client-side** visibles dans le code source. C'est normal et par design. La sécurité repose sur 3 couches :
+
+| Protection | Rôle |
+|---|---|
+| **Firebase Security Rules** (`auth != null`) | Seuls les utilisateurs connectés peuvent lire/écrire dans la base |
+| **Domaines autorisés** (Firebase Auth) | Seuls vos domaines peuvent initier une connexion Google |
+| **Restriction HTTP referrer** (Google Cloud) | La clé API ne fonctionne que depuis vos domaines autorisés |
+
+## APIs Google (optionnel)
+
+Pour les fonctionnalités Calendrier et Documents, vous devez configurer :
+
+- **Google Calendar API** : activez l'API dans la Google Cloud Console
+- **Google Drive API** : activez l'API dans la Google Cloud Console
+
+Configurez les scopes OAuth dans `src/environments/environment.ts` :
+
+```typescript
+export const environment = {
+  production: false,
+  googleCalendar: {
+    apiKey: 'VOTRE_GOOGLE_API_KEY',
+    clientId: 'VOTRE_CLIENT_ID.apps.googleusercontent.com',
+    discoveryDocs: [
+      'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest',
+      'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'
+    ],
+    scopes: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/drive',
+    familyCalendarId: 'VOTRE_CALENDAR_ID@group.calendar.google.com',
+    familyDriveFolderId: 'VOTRE_DRIVE_FOLDER_ID'
+  }
+};
+```
 
 ## PWA
 
 L'application est configurée comme Progressive Web App :
-- Service Worker activé en production
+- Service Worker activé en production (Angular ngsw + FCM)
+- Notifications push via Firebase Cloud Messaging
 - Manifest avec icônes (72x72 à 512x512)
 - Mode plein écran
 - Cache offline des assets

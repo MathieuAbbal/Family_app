@@ -8,6 +8,7 @@ import { User } from 'src/app/models/user.model';
 import { Task } from '../../models/task.model';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { KanbanService } from 'src/app/services/kanban.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
     selector: 'app-kanban',
@@ -31,7 +32,8 @@ export class KanbanComponent implements OnInit {
     public dialog: MatDialog,
     private router: Router,
     private kanbanService: KanbanService,
-    private authService: AuthService
+    private authService: AuthService,
+    private snackBar: MatSnackBar
   ) {
     // Effect pour synchroniser les arrays avec les signals Firebase
     effect(() => {
@@ -77,6 +79,7 @@ export class KanbanComponent implements OnInit {
       const movedTask = event.previousContainer.data[event.previousIndex];
       const newStatus = this.getStatusFromContainer(event.container.id);
       this.kanbanService.transferTask(event.previousContainer.data, movedTask, event.container.data, newStatus);
+      this.snackBar.open(`Tâche déplacée → ${newStatus}`, '', { duration: 2000 });
     }
   }
 

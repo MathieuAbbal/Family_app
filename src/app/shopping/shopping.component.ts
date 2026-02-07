@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ShoppingItem, ShoppingCategory, SHOPPING_CATEGORIES, LIST_ICONS } from '../models/shopping-item.model';
 import { ShoppingService } from '../services/shopping.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { auth, db } from '../firebase';
 import { ref, get } from 'firebase/database';
 
@@ -49,7 +50,10 @@ export class ShoppingComponent {
   readonly checkedItems = computed(() => this.shoppingService.items().filter(i => i.checked));
   readonly totalItems = computed(() => this.shoppingService.items().filter(i => !i.checked).length);
 
-  constructor(private shoppingService: ShoppingService) {}
+  constructor(
+    private shoppingService: ShoppingService,
+    private snackBar: MatSnackBar
+  ) {}
 
   // Gestion des listes
   selectList(listId: string) {
@@ -73,6 +77,7 @@ export class ShoppingComponent {
     const listId = await this.shoppingService.createList(name, this.newListIcon);
     this.shoppingService.setActiveList(listId);
     this.closeNewListModal();
+    this.snackBar.open('Liste créée !', '', { duration: 3000 });
   }
 
   openDeleteListModal() {
@@ -89,6 +94,7 @@ export class ShoppingComponent {
 
     await this.shoppingService.deleteList(activeList.id);
     this.closeDeleteListModal();
+    this.snackBar.open('Liste supprimée', '', { duration: 3000 });
   }
 
   // Gestion des items
@@ -118,6 +124,7 @@ export class ShoppingComponent {
     this.newItemQuantity = '';
     this.newItemCategory = 'autre';
     this.showAddForm = false;
+    this.snackBar.open('Article ajouté !', '', { duration: 2000 });
   }
 
   toggleChecked(item: ShoppingItem) {
@@ -126,10 +133,12 @@ export class ShoppingComponent {
 
   removeItem(item: ShoppingItem) {
     this.shoppingService.removeItem(item.id);
+    this.snackBar.open('Article supprimé', '', { duration: 2000 });
   }
 
   clearChecked() {
     this.shoppingService.clearChecked();
+    this.snackBar.open('Panier vidé', '', { duration: 2000 });
   }
 
   getCategoryIcon(key: string): string {

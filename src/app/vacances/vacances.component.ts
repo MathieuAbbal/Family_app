@@ -2,6 +2,7 @@ import { Component, OnDestroy, ElementRef, ViewChild, computed } from '@angular/
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { VacationsService } from '../services/vacations.service';
 import { Vacation, ChecklistItem, VacationPhoto } from '../models/vacation.model';
 import { AddVacationDialogComponent } from './add-vacation-dialog.component';
@@ -49,7 +50,8 @@ export class VacancesComponent implements OnDestroy {
 
   constructor(
     private vacService: VacationsService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
   daysUntil(dateStr: string): number {
@@ -75,6 +77,7 @@ export class VacancesComponent implements OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.vacService.addVacation(result);
+        this.snackBar.open('Vacances ajoutées !', '', { duration: 3000 });
       }
     });
   }
@@ -108,6 +111,7 @@ export class VacancesComponent implements OnDestroy {
     if (!this.newItemText.trim() || !this.selectedVacation) return;
     await this.vacService.addChecklistItem(this.selectedVacation.id, this.newItemText.trim());
     this.newItemText = '';
+    this.snackBar.open('Élément ajouté', '', { duration: 2000 });
   }
 
   async toggleItem(item: ChecklistItem): Promise<void> {
@@ -118,6 +122,7 @@ export class VacancesComponent implements OnDestroy {
   async deleteItem(item: ChecklistItem): Promise<void> {
     if (!this.selectedVacation) return;
     await this.vacService.deleteChecklistItem(this.selectedVacation.id, item.id);
+    this.snackBar.open('Élément supprimé', '', { duration: 2000 });
   }
 
   get checklistProgress(): number {
@@ -133,11 +138,13 @@ export class VacancesComponent implements OnDestroy {
     await this.vacService.uploadPhoto(this.selectedVacation.id, input.files[0]);
     this.uploading = false;
     input.value = '';
+    this.snackBar.open('Photo ajoutée !', '', { duration: 2000 });
   }
 
   async deletePhoto(photo: VacationPhoto): Promise<void> {
     if (!this.selectedVacation) return;
     await this.vacService.deletePhoto(this.selectedVacation.id, photo);
+    this.snackBar.open('Photo supprimée', '', { duration: 2000 });
   }
 
   // Map
@@ -190,6 +197,7 @@ export class VacancesComponent implements OnDestroy {
   async deleteVacation(): Promise<void> {
     if (!this.selectedVacation) return;
     await this.vacService.deleteVacation(this.selectedVacation.id);
+    this.snackBar.open('Vacances supprimées', '', { duration: 3000 });
     this.backToList();
   }
 
