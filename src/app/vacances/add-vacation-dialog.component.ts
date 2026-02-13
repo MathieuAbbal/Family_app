@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, Inject, Optional } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { auth } from '../firebase';
 import { Vacation } from '../models/vacation.model';
 
@@ -16,7 +16,7 @@ interface GeoResult {
   imports: [CommonModule, FormsModule, MatDialogModule],
   template: `
     <div class="p-6">
-      <h2 class="font-display text-xl font-bold mb-4"><span>🏖️</span> <span class="text-gradient">Nouveau voyage</span></h2>
+      <h2 class="font-display text-xl font-bold mb-4"><span>🏖️</span> <span class="text-gradient">{{editMode ? 'Modifier le voyage' : 'Nouveau voyage'}}</span></h2>
 
       <div class="space-y-4">
         <div>
@@ -63,7 +63,7 @@ interface GeoResult {
           Annuler
         </button>
         <button (click)="save()" [disabled]="!canSave" class="flex-1 btn-gradient text-sm disabled:opacity-50">
-          Creer
+          {{editMode ? 'Enregistrer' : 'Creer'}}
         </button>
       </div>
     </div>
@@ -79,9 +79,25 @@ export class AddVacationDialogComponent {
   endDate = '';
   description = '';
   geoResults: GeoResult[] = [];
+  editMode = false;
   private searchTimeout: any;
 
-  constructor(public dialogRef: MatDialogRef<AddVacationDialogComponent>) {}
+  constructor(
+    public dialogRef: MatDialogRef<AddVacationDialogComponent>,
+    @Optional() @Inject(MAT_DIALOG_DATA) public data?: Vacation
+  ) {
+    if (data) {
+      this.editMode = true;
+      this.title = data.title;
+      this.destination = data.destination;
+      this.destinationQuery = data.destination;
+      this.lat = data.lat;
+      this.lng = data.lng;
+      this.startDate = data.startDate;
+      this.endDate = data.endDate;
+      this.description = data.description || '';
+    }
+  }
 
   get canSave(): boolean {
     return !!this.title.trim() && !!this.destination && !!this.startDate && !!this.endDate;
@@ -120,19 +136,31 @@ export class AddVacationDialogComponent {
 
   save(): void {
     if (!this.canSave) return;
-    const user = auth.currentUser;
-    const vacation: Omit<Vacation, 'id'> = {
-      title: this.title.trim(),
-      destination: this.destination,
-      lat: this.lat,
-      lng: this.lng,
-      startDate: this.startDate,
-      endDate: this.endDate,
-      description: this.description.trim() || undefined,
-      createdBy: user?.uid || '',
-      createdByName: user?.displayName || '',
-      status: 'planning',
-    };
-    this.dialogRef.close(vacation);
+    if (this.editMode) {
+      this.dialogRef.close({
+        title: this.title.trim(),
+        destination: this.destination,
+        lat: this.lat,
+        lng: this.lng,
+        startDate: this.startDate,
+        endDate: this.endDate,
+        description: this.description.trim() || undefined,
+      });
+    } else {
+      const user = auth.currentUser;
+      const vacation: Omit<Vacation, 'id'> = {
+        title: this.title.trim(),
+        destination: this.destination,
+        lat: this.lat,
+        lng: this.lng,
+        startDate: this.startDate,
+        endDate: this.endDate,
+        description: this.description.trim() || undefined,
+        createdBy: user?.uid || '',
+        createdByName: user?.displayName || '',
+        status: 'planning',
+      };
+      this.dialogRef.close(vacation);
+    }
   }
 }

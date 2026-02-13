@@ -6,6 +6,7 @@ import { ShoppingItem, ShoppingCategory, SHOPPING_CATEGORIES, LIST_ICONS } from 
 import { ShoppingService } from '../services/shopping.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogComponent } from '../dialogs/confirm-dialog/confirm-dialog.component';
+import { EditItemDialogComponent } from './edit-item-dialog.component';
 import { auth, db } from '../firebase';
 import { ref, get } from 'firebase/database';
 
@@ -23,12 +24,15 @@ export class ShoppingComponent {
   newItemName = '';
   newItemCategory: ShoppingCategory = 'autre';
   newItemQuantity = '';
-  showAddForm = false;
 
-  // Form pour nouvelle liste
+  // Form pour nouvelle/édition de liste
   showNewListModal = false;
   newListName = '';
   newListIcon = '🛒';
+  editListMode = false;
+
+  // Sélecteur catégorie dans l'input d'ajout
+  showCategorySelect = false;
 
   // Modal suppression liste
   showDeleteListModal = false;
@@ -37,14 +41,17 @@ export class ShoppingComponent {
   lists = this.shoppingService.lists;
   activeList = this.shoppingService.activeList;
   items = this.shoppingService.items;
+  listItemCounts = this.shoppingService.listItemCounts;
 
-  // Computed pour grouper par catégorie
+  // Computed pour grouper par catégorie (tri alphabétique)
   readonly uncheckedByCategory = computed(() => {
     const items = this.shoppingService.items();
     return this.categories
       .map(cat => ({
         ...cat,
-        items: items.filter(i => !i.checked && i.category === cat.key)
+        items: items
+          .filter(i => !i.checked && i.category === cat.key)
+          .sort((a, b) => a.nom.localeCompare(b.nom, 'fr'))
       }))
       .filter(cat => cat.items.length > 0);
   });
@@ -64,8 +71,18 @@ export class ShoppingComponent {
   }
 
   openNewListModal() {
+    this.editListMode = false;
     this.newListName = '';
     this.newListIcon = '🛒';
+    this.showNewListModal = true;
+  }
+
+  openEditListModal() {
+    const list = this.activeList();
+    if (!list) return;
+    this.editListMode = true;
+    this.newListName = list.name;
+    this.newListIcon = list.icon;
     this.showNewListModal = true;
   }
 
@@ -77,10 +94,18 @@ export class ShoppingComponent {
     const name = this.newListName.trim();
     if (!name) return;
 
-    const listId = await this.shoppingService.createList(name, this.newListIcon);
-    this.shoppingService.setActiveList(listId);
+    if (this.editListMode) {
+      const list = this.activeList();
+      if (list) {
+        await this.shoppingService.updateList(list.id, { name, icon: this.newListIcon });
+        this.snackBar.open('Liste modifiée !', '', { duration: 3000 });
+      }
+    } else {
+      const listId = await this.shoppingService.createList(name, this.newListIcon);
+      this.shoppingService.setActiveList(listId);
+      this.snackBar.open('Liste créée !', '', { duration: 3000 });
+    }
     this.closeNewListModal();
-    this.snackBar.open('Liste créée !', '', { duration: 3000 });
   }
 
   openDeleteListModal() {
@@ -125,9 +150,22 @@ export class ShoppingComponent {
     });
     this.newItemName = '';
     this.newItemQuantity = '';
-    this.newItemCategory = 'autre';
-    this.showAddForm = false;
+    // Garder la catégorie sélectionnée pour le prochain ajout
     this.snackBar.open('Article ajouté !', '', { duration: 2000 });
+  }
+
+  editItem(item: ShoppingItem) {
+    this.dialog.open(EditItemDialogComponent, {
+      width: '95vw',
+      maxWidth: '400px',
+      panelClass: 'rounded-dialog',
+      data: item
+    }).afterClosed().subscribe((result) => {
+      if (result) {
+        this.shoppingService.updateItem(item.id, result);
+        this.snackBar.open('Article modifié', '', { duration: 2000 });
+      }
+    });
   }
 
   toggleChecked(item: ShoppingItem) {

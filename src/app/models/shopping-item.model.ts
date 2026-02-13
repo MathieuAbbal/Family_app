@@ -2,20 +2,26 @@ export type ShoppingCategory =
   | 'fruits_legumes'
   | 'produits_laitiers'
   | 'viandes'
+  | 'boulangerie'
   | 'epicerie'
+  | 'conserves'
   | 'boissons'
   | 'surgeles'
   | 'hygiene'
+  | 'animaux'
   | 'autre';
 
 export const SHOPPING_CATEGORIES: { key: ShoppingCategory; label: string; icon: string }[] = [
   { key: 'fruits_legumes', label: 'Fruits & Légumes', icon: '🥦' },
   { key: 'produits_laitiers', label: 'Produits laitiers', icon: '🧀' },
   { key: 'viandes', label: 'Viandes & Poissons', icon: '🥩' },
+  { key: 'boulangerie', label: 'Boulangerie', icon: '🥖' },
   { key: 'epicerie', label: 'Épicerie', icon: '🍝' },
+  { key: 'conserves', label: 'Conserves & Sauces', icon: '🥫' },
   { key: 'boissons', label: 'Boissons', icon: '🥤' },
   { key: 'surgeles', label: 'Surgelés', icon: '🧊' },
   { key: 'hygiene', label: 'Hygiène & Maison', icon: '🧴' },
+  { key: 'animaux', label: 'Animaux', icon: '🐾' },
   { key: 'autre', label: 'Autre', icon: '📦' },
 ];
 

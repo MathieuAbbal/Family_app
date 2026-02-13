@@ -205,6 +205,23 @@ export class VacancesComponent implements OnDestroy {
     }
   }
 
+  editVacation(): void {
+    if (!this.selectedVacation) return;
+    const dialogRef = this.dialog.open(AddVacationDialogComponent, {
+      width: '95vw',
+      maxWidth: '500px',
+      panelClass: 'rounded-dialog',
+      data: this.selectedVacation
+    });
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (result && this.selectedVacation) {
+        await this.vacService.updateVacation(this.selectedVacation.id, result);
+        this.selectedVacation = { ...this.selectedVacation, ...result };
+        this.snackBar.open('Voyage modifié !', '', { duration: 3000 });
+      }
+    });
+  }
+
   confirmDeleteVacation(): void {
     this.dialog.open(ConfirmDialogComponent, {
       data: { customMessage: 'Supprimer ce voyage et toutes ses données ?' }
