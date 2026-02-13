@@ -2,7 +2,14 @@
   <!-- Header avec liste active -->
   <div class="text-center mb-4">
     @if (activeList()) {
-      <h1 class="font-display text-2xl font-bold text-gradient">{{activeList()!.icon}} {{activeList()!.name}}</h1>
+      <div class="flex items-center justify-center gap-2">
+        <h1 class="font-display text-2xl font-bold text-gradient">{{activeList()!.icon}} {{activeList()!.name}}</h1>
+        <button (click)="openEditListModal()" class="text-gray-400 hover:text-family-pink transition-colors" title="Modifier la liste">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+          </svg>
+        </button>
+      </div>
       <p class="text-sm text-gray-400 mt-1">{{totalItems()}} article{{totalItems() > 1 ? 's' : ''}} restant{{totalItems() > 1 ? 's' : ''}}</p>
     } @else {
       <h1 class="font-display text-2xl font-bold text-gradient">🛒 Liste de courses</h1>
@@ -10,7 +17,7 @@
     }
   </div>
 
-  <!-- Tabs des listes -->
+  <!-- Tabs des listes avec badges -->
   <div class="flex items-center gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
     @for (list of lists(); track list.id) {
       <button (click)="selectList(list.id)"
@@ -18,6 +25,13 @@
           ? 'flex-shrink-0 px-4 py-2 rounded-full bg-gradient-to-r from-family-purple to-family-pink text-white font-medium text-sm shadow-md'
           : 'flex-shrink-0 px-4 py-2 rounded-full bg-white border border-gray-200 text-gray-600 font-medium text-sm hover:border-family-purple transition-colors'">
         {{list.icon}} {{list.name}}
+        @if (listItemCounts()[list.id] > 0) {
+          <span [class]="activeList()?.id === list.id
+            ? 'ml-1.5 inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-full bg-white/30 text-xs font-bold'
+            : 'ml-1.5 inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-full bg-family-pink/10 text-family-pink text-xs font-bold'">
+            {{listItemCounts()[list.id]}}
+          </span>
+        }
       </button>
     }
     <button (click)="openNewListModal()"
@@ -27,43 +41,38 @@
   </div>
 
   @if (activeList()) {
-    <!-- Actions liste -->
-    <div class="flex justify-end mb-4">
-      <button (click)="openDeleteListModal()" class="text-xs text-gray-400 hover:text-red-400 transition-colors">
-        Supprimer cette liste
-      </button>
-    </div>
-
-    <!-- Add item button -->
-    @if (!showAddForm) {
-      <button (click)="showAddForm = true"
-        class="w-full card-fun p-4 mb-6 flex items-center justify-center gap-2 text-gray-500 hover:text-family-green transition-colors">
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-        <span class="font-medium">Ajouter un article</span>
-      </button>
-    }
-
-    <!-- Add item form -->
-    @if (showAddForm) {
-      <div class="card-fun p-4 mb-6">
-        <div class="space-y-3">
-          <input [(ngModel)]="newItemName" placeholder="Nom de l'article..." class="input-fun w-full"
-            (keyup.enter)="addItem()" autofocus />
-          <div class="flex gap-3">
-            <input [(ngModel)]="newItemQuantity" placeholder="Qté (ex: 2, 500g...)" class="input-fun flex-1" />
-            <select [(ngModel)]="newItemCategory" class="input-fun flex-1">
-              @for (cat of categories; track cat.key) {
-                <option [value]="cat.key">{{cat.icon}} {{cat.label}}</option>
-              }
-            </select>
-          </div>
-          <div class="flex justify-end gap-2">
-            <button (click)="showAddForm = false" class="px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors text-sm font-medium">Annuler</button>
-            <button (click)="addItem()" [disabled]="!newItemName.trim()" class="btn-gradient text-sm px-6 py-2">Ajouter</button>
-          </div>
-        </div>
+    <!-- Input d'ajout compact toujours visible -->
+    <div class="card-fun p-3 mb-6">
+      <div class="flex items-center gap-2">
+        <button (click)="showCategorySelect = !showCategorySelect"
+          class="flex-shrink-0 w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-lg hover:bg-gray-200 transition-colors"
+          title="Catégorie">
+          {{getCategoryIcon(newItemCategory)}}
+        </button>
+        <input [(ngModel)]="newItemName" placeholder="Ajouter un article..."
+          class="flex-1 bg-transparent border-none outline-none text-sm text-gray-700 placeholder-gray-400"
+          (keyup.enter)="addItem()" />
+        <input [(ngModel)]="newItemQuantity" placeholder="Qté"
+          class="w-16 bg-transparent border-none outline-none text-sm text-gray-400 text-right placeholder-gray-300"
+          (keyup.enter)="addItem()" />
+        <button (click)="addItem()" [disabled]="!newItemName.trim()"
+          class="flex-shrink-0 w-9 h-9 rounded-xl bg-gradient-to-r from-family-purple to-family-pink text-white flex items-center justify-center disabled:opacity-30 transition-opacity">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        </button>
       </div>
-    }
+      @if (showCategorySelect) {
+        <div class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-gray-100">
+          @for (cat of categories; track cat.key) {
+            <button (click)="newItemCategory = cat.key; showCategorySelect = false"
+              [class]="newItemCategory === cat.key
+                ? 'px-3 py-1.5 rounded-full bg-family-pink/10 text-family-pink text-xs font-medium'
+                : 'px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 text-xs font-medium hover:bg-gray-200 transition-colors'">
+              {{cat.icon}} {{cat.label}}
+            </button>
+          }
+        </div>
+      }
+    </div>
 
     <!-- Items by category -->
     @for (cat of uncheckedByCategory(); track cat.key) {
@@ -77,7 +86,7 @@
               <button (click)="toggleChecked(item)"
                 class="w-6 h-6 rounded-full border-2 border-gray-300 flex-shrink-0 hover:border-family-green transition-colors">
               </button>
-              <div class="flex-1 min-w-0">
+              <div class="flex-1 min-w-0 cursor-pointer" (click)="editItem(item)">
                 <span class="font-medium text-gray-700">{{item.nom}}</span>
                 @if (item.quantity && item.quantity !== '1') {
                   <span class="text-xs text-gray-400 ml-2">x{{item.quantity}}</span>
@@ -133,6 +142,13 @@
         <p class="text-sm">Ajoute ton premier article !</p>
       </div>
     }
+
+    <!-- Supprimer liste -->
+    <div class="flex justify-center mt-8 mb-8">
+      <button (click)="openDeleteListModal()" class="text-xs text-gray-400 hover:text-red-400 transition-colors">
+        Supprimer cette liste
+      </button>
+    </div>
   } @else {
     <!-- No list selected -->
     <div class="text-center py-12 text-gray-400">
@@ -146,12 +162,12 @@
   }
 </div>
 
-<!-- Modal nouvelle liste -->
+<!-- Modal nouvelle/édition liste -->
 @if (showNewListModal) {
   <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
     <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full">
       <div class="p-6">
-        <h2 class="font-display text-xl font-bold text-gray-800 mb-4">Nouvelle liste</h2>
+        <h2 class="font-display text-xl font-bold text-gray-800 mb-4">{{editListMode ? 'Modifier la liste' : 'Nouvelle liste'}}</h2>
         <div class="space-y-4">
           <input [(ngModel)]="newListName" placeholder="Nom de la liste..." class="input-fun w-full"
             (keyup.enter)="createList()" autofocus />
@@ -176,7 +192,7 @@
           </button>
           <button (click)="createList()" [disabled]="!newListName.trim()"
             class="flex-1 btn-gradient py-2.5">
-            Créer
+            {{editListMode ? 'Enregistrer' : 'Créer'}}
           </button>
         </div>
       </div>

@@ -11,12 +11,14 @@ export class ShoppingService {
   private _lists = signal<ShoppingList[]>([]);
   private _activeListId = signal<string | null>(null);
   private _items = signal<ShoppingItem[]>([]);
+  private _listItemCounts = signal<Record<string, number>>({});
   private _migrationDone = false;
 
   // Signals publics
   readonly lists = this._lists.asReadonly();
   readonly activeListId = this._activeListId.asReadonly();
   readonly items = this._items.asReadonly();
+  readonly listItemCounts = this._listItemCounts.asReadonly();
 
   // Liste active
   readonly activeList = computed(() => {
@@ -52,12 +54,25 @@ export class ShoppingService {
         }));
         this._lists.set(lists);
 
+        // Calculer le nombre d'articles non cochés par liste
+        const counts: Record<string, number> = {};
+        for (const key of Object.keys(data)) {
+          const items = data[key].items;
+          if (items) {
+            counts[key] = Object.values(items).filter((i: any) => !i.checked).length;
+          } else {
+            counts[key] = 0;
+          }
+        }
+        this._listItemCounts.set(counts);
+
         // Sélectionner la première liste si aucune n'est active
         if (!this._activeListId() && lists.length > 0) {
           this.setActiveList(lists[0].id);
         }
       } else {
         this._lists.set([]);
+        this._listItemCounts.set({});
         this._activeListId.set(null);
         this._items.set([]);
       }
@@ -160,6 +175,16 @@ export class ShoppingService {
         this._items.set([]);
       }
     }
+  }
+
+  async updateList(listId: string, data: { name: string; icon: string }) {
+    await update(ref(db, `/shopping_lists/${listId}`), data);
+  }
+
+  updateItem(id: string, data: Partial<ShoppingItem>) {
+    const listId = this._activeListId();
+    if (!listId) return;
+    update(ref(db, `/shopping_lists/${listId}/items/${id}`), data);
   }
 
   addItem(item: Omit<ShoppingItem, 'id'>) {
