@@ -136,6 +136,31 @@ export class GoogleAuthService {
     });
   }
 
+  /** Silently refresh the access token (no popup if user already consented) */
+  refreshToken(): Promise<boolean> {
+    return new Promise(async (resolve) => {
+      try {
+        await this.loadGapi();
+        await this.initTokenClient();
+        if (!this.tokenClient) {
+          resolve(false);
+          return;
+        }
+        this.signInResolve = resolve;
+        this.tokenClient.requestAccessToken({ prompt: '' });
+        // Timeout: if no callback after 5s, resolve false
+        setTimeout(() => {
+          if (this.signInResolve === resolve) {
+            this.signInResolve = null;
+            resolve(false);
+          }
+        }, 5000);
+      } catch {
+        resolve(false);
+      }
+    });
+  }
+
   signOut(): void {
     if (this.accessToken) {
       try { google.accounts.oauth2.revoke(this.accessToken); } catch {}
