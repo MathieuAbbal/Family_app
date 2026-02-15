@@ -15,6 +15,7 @@ export interface Message {
   photoURL: string;
   timestamp: number;
   imageURL?: string;
+  imageURLs?: string[];
   likes?: { [uid: string]: boolean };
   comments?: { [key: string]: Comment };
   _likeCount?: number;

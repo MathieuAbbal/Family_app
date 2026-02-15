@@ -34,13 +34,30 @@ export class GoogleCalendarService {
     }
   }
 
+  /** Execute a gapi call, retry once with token refresh on 401 */
+  private async withRetry<T>(fn: () => Promise<T>): Promise<T> {
+    try {
+      return await fn();
+    } catch (err: any) {
+      const status = err?.status || err?.result?.error?.code;
+      if (status === 401) {
+        const refreshed = await this.googleAuth.refreshToken();
+        if (refreshed) {
+          this.ensureToken();
+          return await fn();
+        }
+      }
+      throw err;
+    }
+  }
+
   /** Fetch all calendars the user has access to */
   async getCalendars(): Promise<GoogleCalendarInfo[]> {
     if (!this.googleAuth.isConnected()) return [];
     try {
       await this.googleAuth.loadGapi();
       this.ensureToken();
-      const response = await gapi.client.calendar.calendarList.list();
+      const response: any = await this.withRetry(() => gapi.client.calendar.calendarList.list());
       console.log('Calendar list response:', response.result.items?.length, 'calendars');
       // Filter out Google's built-in noise calendars (week numbers, holidays, contacts)
       // Keep birthdays calendar for anniversaries
@@ -91,14 +108,14 @@ export class GoogleCalendarService {
       // Fetch events from each calendar in parallel
       const promises = this.calendars.map(async (cal) => {
         try {
-          const response = await gapi.client.calendar.events.list({
+          const response: any = await this.withRetry(() => gapi.client.calendar.events.list({
             calendarId: cal.id,
             timeMin: startDate.toISOString(),
             timeMax: endDate.toISOString(),
             showDeleted: false,
             singleEvents: true,
             orderBy: 'startTime',
-          });
+          }));
           return (response.result.items || []).map((item: any) => ({
             id: item.id,
             title: item.summary || '(Sans titre)',
@@ -111,6 +128,7 @@ export class GoogleCalendarService {
             calendarName: cal.summary,
             location: item.location || '',
             creatorUid: currentUser?.uid || '',
+            creatorEmail: item.creator?.email || '',
             creatorName: item.creator?.displayName || item.creator?.email || '',
           }));
         } catch (err) {
@@ -122,7 +140,18 @@ export class GoogleCalendarService {
       const results = await Promise.all(promises);
       const allEvents: CalendarEvent[] = [];
       results.forEach(events => allEvents.push(...events));
-      console.log('Total events fetched:', allEvents.length, 'from', this.calendars.length, 'calendars');
+
+      // Resolve creator emails to Firebase user profiles (name + avatar)
+      const users = await this.authService.getAllUsers();
+      for (const event of allEvents) {
+        if (event.creatorEmail) {
+          const match = users.find(u => u.email?.toLowerCase() === event.creatorEmail!.toLowerCase());
+          if (match) {
+            event.creatorName = match.displayName?.split(' ')[0] || match.displayName || event.creatorName;
+            event.creatorPhotoURL = match.photoURL || '';
+          }
+        }
+      }
 
       // Sort all events by start date
       allEvents.sort((a, b) => a.startDate.localeCompare(b.startDate));
@@ -153,10 +182,10 @@ export class GoogleCalendarService {
         resource.end = { dateTime: event.endDate };
       }
 
-      const response = await gapi.client.calendar.events.insert({
+      const response: any = await this.withRetry(() => gapi.client.calendar.events.insert({
         calendarId,
         resource,
-      });
+      }));
 
       const cal = this.calendars.find(c => c.id === calendarId);
       const created: CalendarEvent = {
@@ -181,10 +210,10 @@ export class GoogleCalendarService {
     try {
       await this.googleAuth.loadGapi();
       this.ensureToken();
-      await gapi.client.calendar.events.delete({
+      await this.withRetry(() => gapi.client.calendar.events.delete({
         calendarId,
         eventId,
-      });
+      }));
     } catch {
       // silently fail
     }

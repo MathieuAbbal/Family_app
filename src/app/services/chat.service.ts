@@ -80,6 +80,10 @@ export class ChatService {
       const messages: Message[] = Object.keys(data)
         .map(key => {
           const msg = { ...data[key], id: key };
+          // Normalize old single imageURL to imageURLs array
+          if (msg.imageURL && !msg.imageURLs) {
+            msg.imageURLs = [msg.imageURL];
+          }
           // Calculate like count and liked status
           msg._likeCount = msg.likes ? Object.keys(msg.likes).length : 0;
           msg._liked = uid ? !!msg.likes?.[uid] : false;
@@ -95,22 +99,22 @@ export class ChatService {
           }
           return msg;
         })
-        .sort((a, b) => b.timestamp - a.timestamp); // Plus récents en premier (feed style)
+        .sort((a, b) => a.timestamp - b.timestamp); // Plus anciens en haut, récents en bas (WhatsApp style)
       callback(messages);
     });
     return () => off(q);
   }
 
-  async sendMessage(text: string, imageFile?: File): Promise<void> {
+  async sendMessage(text: string, imageFiles?: File[]): Promise<void> {
     const user = auth.currentUser;
     if (!user) return;
-    if (!text.trim() && !imageFile) return;
+    if (!text.trim() && (!imageFiles || imageFiles.length === 0)) return;
 
-    let imageURL: string | undefined;
+    let imageURLs: string[] | undefined;
 
-    // Upload image if provided
-    if (imageFile) {
-      imageURL = await this.uploadImage(imageFile);
+    // Upload images if provided
+    if (imageFiles && imageFiles.length > 0) {
+      imageURLs = await Promise.all(imageFiles.map(f => this.uploadImage(f)));
     }
 
     const newRef = push(this.messagesRef);
@@ -121,7 +125,7 @@ export class ChatService {
       displayName: user.displayName || '',
       photoURL: user.photoURL || '',
       timestamp: Date.now(),
-      ...(imageURL && { imageURL }),
+      ...(imageURLs && imageURLs.length > 0 && { imageURLs }),
     });
   }
 
@@ -195,10 +199,11 @@ export class ChatService {
   }
 
   async deleteMessage(msg: Message): Promise<void> {
-    // Delete image from storage if exists
-    if (msg.imageURL) {
+    // Delete images from storage if exist
+    const urls = msg.imageURLs || (msg.imageURL ? [msg.imageURL] : []);
+    for (const url of urls) {
       try {
-        const fileRef = storageRef(storage, msg.imageURL);
+        const fileRef = storageRef(storage, url);
         await deleteObject(fileRef);
       } catch (e) {
         console.log('Image not found or already deleted');
