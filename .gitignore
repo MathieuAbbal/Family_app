@@ -46,6 +46,10 @@ testem.log
 # Claude Code
 .claude/
 
+# Capacitor
+/android
+/ios
+
 # System Files
 .DS_Store
 Thumbs.db
