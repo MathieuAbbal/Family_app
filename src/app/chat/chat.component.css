@@ -1,0 +1,9 @@
+:host {
+  margin-bottom: -5rem;
+}
+
+@media (min-width: 768px) {
+  :host {
+    margin-bottom: 0;
+  }
+}

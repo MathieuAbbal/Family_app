@@ -1,7 +1,7 @@
 <div class="p-6 max-w-sm">
-  <h2 class="font-display text-lg font-semibold text-gray-700">{{customMessage}}</h2>
+  <h4 class="font-display text-lg font-semibold text-gray-700 text-pretty">{{customMessage}}</h4>
   <div class="flex justify-end gap-3 mt-6">
     <button (click)="dialogRef.close()" class="px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors font-medium text-sm">Non</button>
-    <button (click)="dialogRef.close(true)" class="btn-gradient px-6 py-2">Oui</button>
+    <button (click)="dialogRef.close(true)" class="px-6 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600 transition-colors font-bold text-sm">Oui</button>
   </div>
 </div>

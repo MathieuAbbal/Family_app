@@ -1,29 +1,36 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { ChatService } from '../services/chat.service';
 import { Message } from '../models/message.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ConfirmDialogComponent } from '../dialogs/confirm-dialog/confirm-dialog.component';
 import { auth } from '../firebase';
 
 @Component({
   selector: 'app-chat',
   imports: [CommonModule, FormsModule],
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.css']
+  styleUrls: ['./chat.component.css'],
+  host: { style: 'display:flex;flex-direction:column;height:100%;overflow:hidden' }
 })
 export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   messages: Message[] = [];
   newMessage = '';
   currentUid = '';
-  selectedImage: File | null = null;
-  imagePreview: string | null = null;
+  selectedImages: File[] = [];
+  imagePreviews: string[] = [];
   private unsubscribe: (() => void) | null = null;
   private shouldScroll = true;
 
-  // Delete confirmation modal
-  showDeleteModal = false;
-  messageToDelete: Message | null = null;
+  // Fullscreen lightbox (WhatsApp style)
+  fullscreenImages: string[] = [];
+  fullscreenIndex = 0;
+  showFullscreen = false;
+  private lightboxTouchStartY = 0;
+  private lightboxTouchStartX = 0;
+  lightboxTranslateY = 0;
 
   // Comments
   expandedComments: Set<string> = new Set();
@@ -31,10 +38,12 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   @ViewChild('messagesContainer') messagesContainer!: ElementRef<HTMLElement>;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('lightboxScroller') lightboxScroller!: ElementRef<HTMLElement>;
 
   constructor(
     private chatService: ChatService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -49,15 +58,15 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   ngAfterViewChecked(): void {
     if (this.shouldScroll) {
-      this.scrollToTop();
+      this.scrollToBottom();
       this.shouldScroll = false;
     }
   }
 
-  private scrollToTop(): void {
+  private scrollToBottom(): void {
     const el = this.messagesContainer?.nativeElement;
     if (el) {
-      el.scrollTop = 0;
+      el.scrollTop = el.scrollHeight;
     }
   }
 
@@ -101,38 +110,109 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     return prev !== curr;
   }
 
+  openFullscreen(urls: string[], index: number): void {
+    this.fullscreenImages = urls;
+    this.fullscreenIndex = index;
+    this.showFullscreen = true;
+    this.lightboxTranslateY = 0;
+    // Scroll to correct image after render
+    setTimeout(() => {
+      const scroller = this.lightboxScroller?.nativeElement;
+      if (scroller) {
+        scroller.scrollTo({ left: index * scroller.clientWidth, behavior: 'instant' as ScrollBehavior });
+      }
+    });
+  }
+
+  closeFullscreen(): void {
+    this.showFullscreen = false;
+    this.lightboxTranslateY = 0;
+  }
+
+  onLightboxScroll(): void {
+    const scroller = this.lightboxScroller?.nativeElement;
+    if (!scroller || scroller.clientWidth === 0) return;
+    this.fullscreenIndex = Math.round(scroller.scrollLeft / scroller.clientWidth);
+  }
+
+  onLightboxTouchStart(e: TouchEvent): void {
+    this.lightboxTouchStartY = e.touches[0].clientY;
+    this.lightboxTouchStartX = e.touches[0].clientX;
+  }
+
+  onLightboxTouchMove(e: TouchEvent): void {
+    const deltaY = e.touches[0].clientY - this.lightboxTouchStartY;
+    const deltaX = Math.abs(e.touches[0].clientX - this.lightboxTouchStartX);
+    // Only track vertical swipe if not scrolling horizontally
+    if (deltaY > 0 && deltaX < 50) {
+      this.lightboxTranslateY = deltaY;
+    }
+  }
+
+  onLightboxTouchEnd(): void {
+    // Swipe down to close (threshold 120px)
+    if (this.lightboxTranslateY > 120) {
+      this.closeFullscreen();
+    } else {
+      this.lightboxTranslateY = 0;
+    }
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onKeydown(e: KeyboardEvent): void {
+    if (!this.showFullscreen) return;
+    if (e.key === 'Escape') this.closeFullscreen();
+    if (e.key === 'ArrowLeft') {
+      const scroller = this.lightboxScroller?.nativeElement;
+      if (scroller) scroller.scrollBy({ left: -scroller.clientWidth, behavior: 'smooth' });
+    }
+    if (e.key === 'ArrowRight') {
+      const scroller = this.lightboxScroller?.nativeElement;
+      if (scroller) scroller.scrollBy({ left: scroller.clientWidth, behavior: 'smooth' });
+    }
+  }
+
   openFilePicker(): void {
     this.fileInput.nativeElement.click();
   }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      this.selectedImage = input.files[0];
-      // Create preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.imagePreview = e.target?.result as string;
-      };
-      reader.readAsDataURL(this.selectedImage);
+    if (input.files && input.files.length > 0) {
+      const newFiles = Array.from(input.files);
+      this.selectedImages.push(...newFiles);
+      // Create previews
+      for (const file of newFiles) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.imagePreviews.push(e.target?.result as string);
+        };
+        reader.readAsDataURL(file);
+      }
     }
-  }
-
-  removeImage(): void {
-    this.selectedImage = null;
-    this.imagePreview = null;
+    // Reset input so the same files can be re-selected
     if (this.fileInput) {
       this.fileInput.nativeElement.value = '';
     }
   }
 
+  removeImage(index: number): void {
+    this.selectedImages.splice(index, 1);
+    this.imagePreviews.splice(index, 1);
+  }
+
+  removeAllImages(): void {
+    this.selectedImages = [];
+    this.imagePreviews = [];
+  }
+
   async send(): Promise<void> {
-    if (!this.newMessage.trim() && !this.selectedImage) return;
+    if (!this.newMessage.trim() && this.selectedImages.length === 0) return;
     const text = this.newMessage;
-    const image = this.selectedImage;
+    const images = this.selectedImages.length > 0 ? [...this.selectedImages] : undefined;
     this.newMessage = '';
-    this.removeImage();
-    await this.chatService.sendMessage(text, image || undefined);
+    this.removeAllImages();
+    await this.chatService.sendMessage(text, images);
     this.snackBar.open('Publication envoyée !', '', { duration: 2000 });
   }
 
@@ -140,24 +220,16 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     await this.chatService.toggleLike(msg.id);
   }
 
-  openDeleteModal(msg: Message): void {
-    if (msg.uid === this.currentUid) {
-      this.messageToDelete = msg;
-      this.showDeleteModal = true;
-    }
-  }
-
-  closeDeleteModal(): void {
-    this.showDeleteModal = false;
-    this.messageToDelete = null;
-  }
-
-  async confirmDelete(): Promise<void> {
-    if (this.messageToDelete) {
-      await this.chatService.deleteMessage(this.messageToDelete);
-      this.closeDeleteModal();
-      this.snackBar.open('Publication supprimée', '', { duration: 2000 });
-    }
+  confirmDeleteMessage(msg: Message): void {
+    if (msg.uid !== this.currentUid) return;
+    this.dialog.open(ConfirmDialogComponent, {
+      data: { customMessage: 'Supprimer cette publication ?' }
+    }).afterClosed().subscribe(async (confirmed) => {
+      if (confirmed) {
+        await this.chatService.deleteMessage(msg);
+        this.snackBar.open('Publication supprimée', '', { duration: 2000 });
+      }
+    });
   }
 
   // Comments methods
@@ -181,9 +253,15 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.snackBar.open('Commentaire ajouté', '', { duration: 2000 });
   }
 
-  async deleteComment(msgId: string, commentId: string): Promise<void> {
-    await this.chatService.deleteComment(msgId, commentId);
-    this.snackBar.open('Commentaire supprimé', '', { duration: 2000 });
+  confirmDeleteComment(msgId: string, commentId: string): void {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: { customMessage: 'Supprimer ce commentaire ?' }
+    }).afterClosed().subscribe(async (confirmed) => {
+      if (confirmed) {
+        await this.chatService.deleteComment(msgId, commentId);
+        this.snackBar.open('Commentaire supprimé', '', { duration: 2000 });
+      }
+    });
   }
 
   ngOnDestroy(): void {

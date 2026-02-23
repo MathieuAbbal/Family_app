@@ -5,9 +5,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 import { GoogleAuthService } from '../services/google-auth.service';
 import { GoogleCalendarService } from '../services/google-calendar.service';
+import { VacationsService } from '../services/vacations.service';
 import { CalendarEvent, GoogleCalendarInfo } from '../models/calendar-event.model';
 import { AddEventDialogComponent } from './add-event-dialog/add-event-dialog.component';
 import { EventDetailDialogComponent } from './event-detail-dialog/event-detail-dialog.component';
+import { ConfirmDialogComponent } from '../dialogs/confirm-dialog/confirm-dialog.component';
+import { auth } from '../firebase';
 
 @Component({
   selector: 'app-calendar',
@@ -27,9 +30,12 @@ export class CalendarComponent implements OnInit, OnDestroy {
   private calendarsSubscription!: Subscription;
   private connectionSubscription!: Subscription;
 
+  readonly vacationColor = '#26A69A';
+
   constructor(
     private googleAuth: GoogleAuthService,
     private calendarService: GoogleCalendarService,
+    private vacationsService: VacationsService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {}
@@ -89,6 +95,30 @@ export class CalendarComponent implements OnInit, OnDestroy {
     this.calendarService.getEvents(start, end);
   }
 
+  /** Get vacation events that overlap with the current month for the event list */
+  get vacationEventsForMonth(): CalendarEvent[] {
+    const { start, end } = this.getMonthRange();
+    const startStr = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`;
+    const endStr = `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`;
+    return this.vacationsService.vacations()
+      .filter(v => v.startDate <= endStr && v.endDate >= startStr)
+      .map(v => ({
+        id: `vacation-${v.id}`,
+        title: `✈️ ${v.title}`,
+        description: v.description,
+        startDate: v.startDate,
+        endDate: v.endDate,
+        allDay: true,
+        color: this.vacationColor,
+        calendarName: 'Vacances',
+        location: v.destination,
+      }));
+  }
+
+  get allEventsForMonth(): CalendarEvent[] {
+    return [...this.vacationEventsForMonth, ...this.events];
+  }
+
   getMonthRange(): { start: Date; end: Date } {
     const year = this.currentDate.getFullYear();
     const month = this.currentDate.getMonth();
@@ -131,23 +161,130 @@ export class CalendarComponent implements OnInit, OnDestroy {
     return /^(S|W|Wk|Semaine|Week)\s?\d{1,2}$/.test(t) || (event.calendarId?.includes('#weeknum') ?? false);
   }
 
+  private formatDateStr(d: Date): string {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  /** Check if an event spans multiple days */
+  isMultiDayEvent(e: CalendarEvent): boolean {
+    if (this.isWeekNumberEvent(e)) return false;
+    if (e.allDay) {
+      const start = e.startDate.substring(0, 10);
+      // End is exclusive for all-day: "2025-02-15" to "2025-02-16" = 1 day (not multi)
+      const endDate = new Date(e.endDate.substring(0, 10));
+      endDate.setDate(endDate.getDate() - 1);
+      return this.formatDateStr(endDate) !== start;
+    } else {
+      return this.formatDateStr(new Date(e.startDate)) !== this.formatDateStr(new Date(e.endDate));
+    }
+  }
+
+  /** Get the inclusive end date string for an event */
+  private getEventEndDateStr(e: CalendarEvent): string {
+    if (e.allDay) {
+      const endDate = new Date(e.endDate.substring(0, 10));
+      endDate.setDate(endDate.getDate() - 1); // exclusive → inclusive
+      return this.formatDateStr(endDate);
+    }
+    return this.formatDateStr(new Date(e.endDate));
+  }
+
+  /** Get the inclusive end date as ISO string for template display (all-day exclusive → inclusive) */
+  getDisplayEndDate(event: CalendarEvent): string {
+    if (event.allDay && !event.id.startsWith('vacation-')) {
+      const endDate = new Date(event.endDate.substring(0, 10));
+      endDate.setDate(endDate.getDate() - 1);
+      return endDate.toISOString();
+    }
+    return event.endDate;
+  }
+
   getEventsForDay(day: Date): CalendarEvent[] {
     if (!day) return [];
-    // Format local date as YYYY-MM-DD (no timezone conversion)
-    const dayStr = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`;
+    const dayStr = this.formatDateStr(day);
     return this.events.filter(e => {
-      // For all-day events: startDate is "YYYY-MM-DD"
-      // For timed events: startDate is "YYYY-MM-DDTHH:mm:ss+TZ" - extract local date
-      let eventDate: string;
+      if (this.isWeekNumberEvent(e)) return false;
+      if (this.isMultiDayEvent(e)) return false; // shown as spanning bars
       if (e.allDay) {
-        eventDate = e.startDate.substring(0, 10);
+        return e.startDate.substring(0, 10) === dayStr;
       } else {
-        // Parse the datetime and get local date
-        const d = new Date(e.startDate);
-        eventDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        return this.formatDateStr(new Date(e.startDate)) === dayStr;
       }
-      return eventDate === dayStr && !this.isWeekNumberEvent(e);
     });
+  }
+
+  /** Returns multi-day event spans for a given week row with grid column positions */
+  getMultiDayEventSpansForWeek(week: (Date | null)[]): { event: CalendarEvent; startCol: number; endCol: number; isStart: boolean; isEnd: boolean }[] {
+    const spans: { event: CalendarEvent; startCol: number; endCol: number; isStart: boolean; isEnd: boolean }[] = [];
+    const weekDates = week.map(d => d ? this.formatDateStr(d) : null);
+    const multiDayEvents = this.events.filter(e => this.isMultiDayEvent(e));
+
+    for (const e of multiDayEvents) {
+      const eventStart = e.allDay ? e.startDate.substring(0, 10) : this.formatDateStr(new Date(e.startDate));
+      const eventEnd = this.getEventEndDateStr(e);
+
+      let startCol = -1;
+      let endCol = -1;
+
+      for (let i = 0; i < 7; i++) {
+        if (weekDates[i] && weekDates[i]! >= eventStart && weekDates[i]! <= eventEnd) {
+          if (startCol === -1) startCol = i;
+          endCol = i;
+        }
+      }
+
+      if (startCol !== -1) {
+        spans.push({
+          event: e,
+          startCol: startCol + 1,
+          endCol: endCol + 2,
+          isStart: weekDates[startCol] === eventStart,
+          isEnd: weekDates[endCol] === eventEnd,
+        });
+      }
+    }
+
+    return spans;
+  }
+
+  /** Returns vacation spans for a given week row with grid column positions */
+  getVacationSpansForWeek(week: (Date | null)[]): { event: CalendarEvent; startCol: number; endCol: number; isStart: boolean; isEnd: boolean }[] {
+    const spans: { event: CalendarEvent; startCol: number; endCol: number; isStart: boolean; isEnd: boolean }[] = [];
+    const weekDates = week.map(d => d ? this.formatDateStr(d) : null);
+
+    for (const v of this.vacationsService.vacations()) {
+      let startCol = -1;
+      let endCol = -1;
+
+      for (let i = 0; i < 7; i++) {
+        if (weekDates[i] && weekDates[i]! >= v.startDate && weekDates[i]! <= v.endDate) {
+          if (startCol === -1) startCol = i;
+          endCol = i;
+        }
+      }
+
+      if (startCol !== -1) {
+        spans.push({
+          event: {
+            id: `vacation-${v.id}`,
+            title: `✈️ ${v.title}`,
+            description: v.description,
+            startDate: v.startDate,
+            endDate: v.endDate,
+            allDay: true,
+            color: this.vacationColor,
+            calendarName: 'Vacances',
+            location: v.destination,
+          },
+          startCol: startCol + 1,
+          endCol: endCol + 2,
+          isStart: weekDates[startCol] === v.startDate,
+          isEnd: weekDates[endCol] === v.endDate,
+        });
+      }
+    }
+
+    return spans;
   }
 
   /** ISO week number for a given date */
@@ -212,21 +349,36 @@ export class CalendarComponent implements OnInit, OnDestroy {
 
   viewEvent(event: CalendarEvent) {
     this.dialog.open(EventDetailDialogComponent, {
-      data: { event },
+      data: { event, canDelete: this.canDelete(event) },
       width: '400px'
+    }).afterClosed().subscribe((result) => {
+      if (result === 'delete') {
+        this.confirmDeleteEvent(event);
+      }
     });
   }
 
   canDelete(event: CalendarEvent): boolean {
-    const email = this.googleAuth.getGoogleEmail();
-    if (!email) return false;
-    return event.creatorName === email;
+    if (event.id.startsWith('vacation-')) return false;
+    if (!event.creatorEmail) return false;
+    const email = this.googleAuth.getGoogleEmail() || auth.currentUser?.email;
+    return !!email && event.creatorEmail.toLowerCase() === email.toLowerCase();
   }
 
-  deleteEvent(event: CalendarEvent) {
-    this.calendarService.deleteEvent(event.id, event.calendarId || 'primary').then(() => {
-      this.loadEvents();
-      this.snackBar.open('Evenement supprime', '', { duration: 3000 });
+  isVacationEvent(event: CalendarEvent): boolean {
+    return event.id.startsWith('vacation-');
+  }
+
+  confirmDeleteEvent(event: CalendarEvent) {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: { customMessage: `Supprimer "${event.title}" ?` }
+    }).afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.calendarService.deleteEvent(event.id, event.calendarId || 'primary').then(() => {
+          this.loadEvents();
+          this.snackBar.open('Evenement supprime', '', { duration: 3000 });
+        });
+      }
     });
   }
 

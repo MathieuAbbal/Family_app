@@ -67,3 +67,12 @@ router-outlet + * {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #FED7AA; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #FB923C; }
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

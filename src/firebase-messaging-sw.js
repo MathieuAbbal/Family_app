@@ -23,10 +23,16 @@ messaging.onBackgroundMessage((payload) => {
     data: { url: data.url || '/' }
   };
   self.registration.showNotification(title, options);
+  if (navigator.setAppBadge) {
+    navigator.setAppBadge();
+  }
 });
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
+  if (navigator.clearAppBadge) {
+    navigator.clearAppBadge();
+  }
   const url = event.notification.data?.url || '/';
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {

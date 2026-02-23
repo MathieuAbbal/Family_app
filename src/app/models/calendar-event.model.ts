@@ -11,6 +11,8 @@ export interface CalendarEvent {
   location?: string;
   creatorUid?: string;
   creatorName?: string;
+  creatorEmail?: string;
+  creatorPhotoURL?: string;
 }
 
 export interface GoogleCalendarInfo {

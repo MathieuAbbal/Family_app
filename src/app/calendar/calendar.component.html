@@ -45,18 +45,20 @@
     </div>
 
     <!-- Calendar legend -->
-    @if (calendars.length > 1) {
-      <div class="card-fun p-3 mb-4">
-        <div class="flex flex-wrap gap-3">
-          @for (cal of calendars; track cal.id) {
-            <div class="flex items-center gap-1.5">
-              <div class="w-3 h-3 rounded-full" [style.background-color]="cal.backgroundColor"></div>
-              <span class="text-xs text-gray-600 font-medium">{{ cal.summary }}</span>
-            </div>
-          }
+    <div class="card-fun p-3 mb-4">
+      <div class="flex flex-wrap gap-3">
+        <div class="flex items-center gap-1.5">
+          <div class="w-3 h-3 rounded-full" [style.background-color]="vacationColor"></div>
+          <span class="text-xs text-gray-600 font-medium">Vacances</span>
         </div>
+        @for (cal of calendars; track cal.id) {
+          <div class="flex items-center gap-1.5">
+            <div class="w-3 h-3 rounded-full" [style.background-color]="cal.backgroundColor"></div>
+            <span class="text-xs text-gray-600 font-medium">{{ cal.summary }}</span>
+          </div>
+        }
       </div>
-    }
+    </div>
 
     <!-- Calendar grid -->
     <div class="card-fun p-4">
@@ -69,12 +71,41 @@
 
       <!-- Days grid -->
       @for (week of daysInMonth; track $index) {
+        <!-- Vacation spanning bars -->
+        @if (getVacationSpansForWeek(week).length > 0) {
+          <div class="grid grid-cols-7 gap-1 mb-0.5">
+            @for (span of getVacationSpansForWeek(week); track span.event.id) {
+              <div class="text-[10px] px-1.5 py-0.5 truncate text-white font-medium min-h-[18px] leading-[14px] cursor-pointer hover:opacity-80 transition-opacity"
+                [style.grid-column]="span.startCol + ' / ' + span.endCol"
+                [style.background-color]="vacationColor"
+                [style.border-radius]="(span.isStart ? '9999px' : '0') + ' ' + (span.isEnd ? '9999px' : '0') + ' ' + (span.isEnd ? '9999px' : '0') + ' ' + (span.isStart ? '9999px' : '0')"
+                (click)="viewEvent(span.event)">
+                {{ span.event.title }}
+              </div>
+            }
+          </div>
+        }
+        <!-- Multi-day event spanning bars -->
+        @if (getMultiDayEventSpansForWeek(week).length > 0) {
+          <div class="grid grid-cols-7 gap-1 mb-0.5">
+            @for (span of getMultiDayEventSpansForWeek(week); track span.event.id) {
+              <div class="text-[10px] px-1.5 py-0.5 truncate text-white font-medium min-h-[18px] leading-[14px] cursor-pointer hover:opacity-80 transition-opacity"
+                [style.grid-column]="span.startCol + ' / ' + span.endCol"
+                [style.background-color]="span.event.color || '#4285f4'"
+                [style.border-radius]="(span.isStart ? '9999px' : '0') + ' ' + (span.isEnd ? '9999px' : '0') + ' ' + (span.isEnd ? '9999px' : '0') + ' ' + (span.isStart ? '9999px' : '0')"
+                [title]="span.event.calendarName ? span.event.calendarName + ' — ' + span.event.title : span.event.title"
+                (click)="viewEvent(span.event)">
+                {{ span.event.title }}
+              </div>
+            }
+          </div>
+        }
         <div class="grid grid-cols-7 gap-1 mb-1">
           @for (day of week; track $index) {
             @if (day) {
               <div
                 (click)="openAddEvent(day)"
-                class="min-h-20 p-1 rounded-xl border cursor-pointer transition-all hover:shadow-md"
+                class="min-h-16 p-1 rounded-xl border cursor-pointer transition-all hover:shadow-md"
                 [class.bg-gradient-to-br]="isToday(day)"
                 [class.from-family-pink/10]="isToday(day)"
                 [class.to-family-orange/10]="isToday(day)"
@@ -101,7 +132,7 @@
                 }
               </div>
             } @else {
-              <div class="min-h-20 p-1 rounded-xl bg-gray-50/50"></div>
+              <div class="min-h-16 p-1 rounded-xl bg-gray-50/50"></div>
             }
           }
         </div>
@@ -109,32 +140,43 @@
     </div>
 
     <!-- Events list for current month -->
-    @if (events.length > 0) {
+    @if (allEventsForMonth.length > 0) {
       <div class="card-fun p-4 mt-4">
         <h3 class="font-display font-bold text-gray-700 mb-3">Prochains evenements</h3>
-        @for (event of events; track event.id) {
-          <div class="flex items-center justify-between p-3 rounded-xl hover:bg-warm-50 transition-colors mb-1 cursor-pointer" (click)="viewEvent(event)">
+        @for (event of allEventsForMonth; track event.id) {
+          <div class="flex items-center justify-between p-3 rounded-xl hover:bg-warm-50 transition-colors mb-1 cursor-pointer"
+            (click)="viewEvent(event)">
             <div class="flex items-center gap-3">
-              <div class="w-2 h-2 rounded-full" [style.background-color]="event.color || '#4285f4'"></div>
+              @if (event.creatorPhotoURL) {
+                <img [src]="event.creatorPhotoURL" class="w-6 h-6 rounded-full object-cover shrink-0" alt="">
+              } @else {
+                <div class="w-2 h-2 rounded-full shrink-0" [style.background-color]="event.color || '#4285f4'"></div>
+              }
               <div>
                 <div class="font-medium text-gray-700 text-sm">{{ event.title }}</div>
                 <div class="text-xs text-gray-400">
-                  @if (event.calendarName) {
-                    <span class="font-medium">{{ event.calendarName }}</span> ·
-                  }
-                  @if (event.creatorName) {
-                    {{ event.creatorName }} ·
-                  }
-                  @if (event.allDay) {
-                    Toute la journee
+                  @if (isVacationEvent(event)) {
+                    @if (event.location) {
+                      {{ event.location }} ·
+                    }
+                    {{ event.startDate | date:'d MMM':'':'fr' }} - {{ event.endDate | date:'d MMM':'':'fr' }}
                   } @else {
-                    {{ event.startDate | date:'d MMM, HH:mm':'':'fr' }}
+                    @if (event.calendarName) {
+                      <span class="font-medium">{{ event.calendarName }}</span> ·
+                    }
+                    @if (isMultiDayEvent(event)) {
+                      {{ event.startDate | date:'d MMM':'':'fr' }} → {{ getDisplayEndDate(event) | date:'d MMM':'':'fr' }}
+                    } @else if (event.allDay) {
+                      {{ event.startDate | date:'d MMM yyyy':'':'fr' }}
+                    } @else {
+                      {{ event.startDate | date:'d MMM, HH:mm':'':'fr' }}
+                    }
                   }
                 </div>
               </div>
             </div>
             @if (canDelete(event)) {
-              <button (click)="deleteEvent(event); $event.stopPropagation()" class="text-red-300 hover:text-red-500 text-sm transition-colors">
+              <button (click)="confirmDeleteEvent(event); $event.stopPropagation()" class="text-red-300 hover:text-red-500 text-sm transition-colors">
                 Supprimer
               </button>
             }

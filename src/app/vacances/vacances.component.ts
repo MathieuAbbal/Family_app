@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { VacationsService } from '../services/vacations.service';
 import { Vacation, ChecklistItem, VacationPhoto } from '../models/vacation.model';
 import { AddVacationDialogComponent } from './add-vacation-dialog.component';
+import { ConfirmDialogComponent } from '../dialogs/confirm-dialog/confirm-dialog.component';
 import { Map, Marker, Popup } from 'maplibre-gl';
 
 @Component({
@@ -119,10 +120,15 @@ export class VacancesComponent implements OnDestroy {
     await this.vacService.toggleChecklistItem(this.selectedVacation.id, item.id, !item.checked);
   }
 
-  async deleteItem(item: ChecklistItem): Promise<void> {
-    if (!this.selectedVacation) return;
-    await this.vacService.deleteChecklistItem(this.selectedVacation.id, item.id);
-    this.snackBar.open('Élément supprimé', '', { duration: 2000 });
+  confirmDeleteItem(item: ChecklistItem): void {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: { customMessage: `Supprimer "${item.text}" de la checklist ?` }
+    }).afterClosed().subscribe(async (confirmed) => {
+      if (confirmed && this.selectedVacation) {
+        await this.vacService.deleteChecklistItem(this.selectedVacation.id, item.id);
+        this.snackBar.open('Élément supprimé', '', { duration: 2000 });
+      }
+    });
   }
 
   get checklistProgress(): number {
@@ -141,10 +147,15 @@ export class VacancesComponent implements OnDestroy {
     this.snackBar.open('Photo ajoutée !', '', { duration: 2000 });
   }
 
-  async deletePhoto(photo: VacationPhoto): Promise<void> {
-    if (!this.selectedVacation) return;
-    await this.vacService.deletePhoto(this.selectedVacation.id, photo);
-    this.snackBar.open('Photo supprimée', '', { duration: 2000 });
+  confirmDeletePhoto(photo: VacationPhoto): void {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: { customMessage: 'Supprimer cette photo ?' }
+    }).afterClosed().subscribe(async (confirmed) => {
+      if (confirmed && this.selectedVacation) {
+        await this.vacService.deletePhoto(this.selectedVacation.id, photo);
+        this.snackBar.open('Photo supprimée', '', { duration: 2000 });
+      }
+    });
   }
 
   // Map
@@ -194,11 +205,33 @@ export class VacancesComponent implements OnDestroy {
     }
   }
 
-  async deleteVacation(): Promise<void> {
+  editVacation(): void {
     if (!this.selectedVacation) return;
-    await this.vacService.deleteVacation(this.selectedVacation.id);
-    this.snackBar.open('Vacances supprimées', '', { duration: 3000 });
-    this.backToList();
+    const dialogRef = this.dialog.open(AddVacationDialogComponent, {
+      width: '95vw',
+      maxWidth: '500px',
+      panelClass: 'rounded-dialog',
+      data: this.selectedVacation
+    });
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (result && this.selectedVacation) {
+        await this.vacService.updateVacation(this.selectedVacation.id, result);
+        this.selectedVacation = { ...this.selectedVacation, ...result };
+        this.snackBar.open('Voyage modifié !', '', { duration: 3000 });
+      }
+    });
+  }
+
+  confirmDeleteVacation(): void {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: { customMessage: 'Supprimer ce voyage et toutes ses données ?' }
+    }).afterClosed().subscribe(async (confirmed) => {
+      if (confirmed && this.selectedVacation) {
+        await this.vacService.deleteVacation(this.selectedVacation.id);
+        this.snackBar.open('Vacances supprimées', '', { duration: 3000 });
+        this.backToList();
+      }
+    });
   }
 
   ngOnDestroy(): void {
