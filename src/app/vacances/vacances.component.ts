@@ -8,6 +8,7 @@ import { Vacation, ChecklistItem, VacationPhoto } from '../models/vacation.model
 import { AddVacationDialogComponent } from './add-vacation-dialog.component';
 import { ConfirmDialogComponent } from '../dialogs/confirm-dialog/confirm-dialog.component';
 import { Map, Marker, Popup } from 'maplibre-gl';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-vacances',
@@ -175,7 +176,7 @@ export class VacancesComponent implements OnDestroy {
 
     this.map = new Map({
       container: this.mapContainer.nativeElement,
-      style: 'https://maps.geoapify.com/v1/styles/maptiler-3d/style.json?apiKey=793f93202015411eaa6fceaeadaad99c',
+      style: `https://maps.geoapify.com/v1/styles/maptiler-3d/style.json?apiKey=${environment.geoapifyApiKey}`,
       center,
       zoom: v.lat ? 10 : 5,
     });

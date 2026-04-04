@@ -43,6 +43,15 @@ yarn-error.log
 testem.log
 /typings
 
+# Environment secrets
+.env
+.env.local
+
+# Generated environment files
+src/environments/environment.ts
+src/environments/environment.prod.ts
+src/firebase-messaging-sw.js
+
 # Claude Code
 .claude/
 
