@@ -4,4 +4,5 @@
     <string name="title_activity_main">FamilyApp</string>
     <string name="package_name">com.familyapp.app</string>
     <string name="custom_url_scheme">com.familyapp.app</string>
+    <string name="server_client_id">728695329604-70417p57psoofhqlsio6qjv705a0ieqf.apps.googleusercontent.com</string>
 </resources>

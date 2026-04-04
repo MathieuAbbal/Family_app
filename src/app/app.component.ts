@@ -31,16 +31,16 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.updateService.init();
 
-    onAuthStateChanged(auth, user => {
+    onAuthStateChanged(auth, async (user) => {
       this.isAuth = !!user;
       if (user) {
-        this.locationService.startTracking();
+        await this.locationService.startTracking();
         this.chatService.startUnreadListener();
-        this.notificationService.init();
+        await this.notificationService.init();
       } else {
-        this.locationService.stopTracking();
+        await this.locationService.stopTracking();
         this.chatService.stopUnreadListener();
-        this.notificationService.removeToken();
+        await this.notificationService.removeToken();
       }
     });
   }

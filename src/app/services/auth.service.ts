@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { auth, db } from '../firebase';
-import { GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, OAuthCredential } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup, signInWithCredential, signOut, OAuthCredential } from 'firebase/auth';
 import { ref, get, update } from 'firebase/database';
 import { User } from '../models/user.model';
 import { Subject } from 'rxjs';
+import { PlatformService } from './platform.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,30 +12,87 @@ import { Subject } from 'rxjs';
 export class AuthService {
   /** Emits the Google OAuth access token after sign-in */
   googleToken$ = new Subject<string>();
+  private socialLoginInitialized = false;
 
-  /** Resolves when redirect result is processed (for Capacitor) */
-  redirectReady: Promise<void>;
-
-  /** Détecte Android WebView (Capacitor charge depuis une URL distante, donc window.Capacitor n'existe pas) */
-  private isAndroidWebView = /Android/.test(navigator.userAgent) && /wv/.test(navigator.userAgent);
-
-  constructor() {
-    this.redirectReady = this.handleRedirectResult();
+  constructor(private platform: PlatformService) {
+    if (this.platform.isNative()) {
+      this.initSocialLogin();
+    }
   }
 
-  private async handleRedirectResult(): Promise<void> {
+  private async initSocialLogin(): Promise<void> {
     try {
-      const result = await getRedirectResult(auth);
-      if (result) {
-        const credential = GoogleAuthProvider.credentialFromResult(result) as OAuthCredential | null;
-        if (credential?.accessToken) {
-          this.googleToken$.next(credential.accessToken);
-        }
-        await this.saveUserData(result.user);
-      }
-    } catch (e) {
-      console.error('Redirect result error:', e);
+      const { SocialLogin } = await import('@capgo/capacitor-social-login');
+      await SocialLogin.initialize({
+        google: {
+          webClientId: '728695329604-70417p57psoofhqlsio6qjv705a0ieqf.apps.googleusercontent.com',
+        },
+      });
+      this.socialLoginInitialized = true;
+    } catch (err) {
+      console.error('SocialLogin init error:', err);
     }
+  }
+
+  async signInWithGoogle(): Promise<void> {
+    if (this.platform.isNative()) {
+      await this.nativeGoogleSignIn();
+    } else {
+      await this.webGoogleSignIn();
+    }
+  }
+
+  /** Native path: uses Capacitor Social Login plugin */
+  private async nativeGoogleSignIn(): Promise<void> {
+    const { SocialLogin } = await import('@capgo/capacitor-social-login');
+
+    if (!this.socialLoginInitialized) {
+      await SocialLogin.initialize({
+        google: {
+          webClientId: '728695329604-70417p57psoofhqlsio6qjv705a0ieqf.apps.googleusercontent.com',
+        },
+      });
+      this.socialLoginInitialized = true;
+    }
+
+    const result = await SocialLogin.login({
+      provider: 'google',
+      options: {
+        scopes: [
+          'email',
+          'profile',
+          'https://www.googleapis.com/auth/calendar',
+          'https://www.googleapis.com/auth/drive',
+        ],
+      },
+    });
+
+    const idToken = (result as any).result?.idToken;
+    const accessToken = (result as any).result?.accessToken;
+
+    if (idToken) {
+      const credential = GoogleAuthProvider.credential(idToken, accessToken);
+      const firebaseResult = await signInWithCredential(auth, credential);
+      await this.saveUserData(firebaseResult.user);
+    }
+
+    if (accessToken) {
+      this.googleToken$.next(accessToken);
+    }
+  }
+
+  /** Web path: existing popup flow */
+  private async webGoogleSignIn(): Promise<void> {
+    const provider = new GoogleAuthProvider();
+    provider.addScope('https://www.googleapis.com/auth/calendar');
+    provider.addScope('https://www.googleapis.com/auth/drive');
+
+    const result = await signInWithPopup(auth, provider);
+    const credential = GoogleAuthProvider.credentialFromResult(result) as OAuthCredential | null;
+    if (credential?.accessToken) {
+      this.googleToken$.next(credential.accessToken);
+    }
+    await this.saveUserData(result.user);
   }
 
   private async saveUserData(user: import('firebase/auth').User): Promise<void> {
@@ -57,27 +115,14 @@ export class AuthService {
     await update(userRef, userData);
   }
 
-  async signInWithGoogle(): Promise<void> {
-    const provider = new GoogleAuthProvider();
-    provider.addScope('https://www.googleapis.com/auth/calendar');
-    provider.addScope('https://www.googleapis.com/auth/drive');
-
-    if (this.isAndroidWebView) {
-      // Redirect flow pour Android WebView (Capacitor)
-      await signInWithRedirect(auth, provider);
-    } else {
-      // Popup flow pour le web
-      const result = await signInWithPopup(auth, provider);
-      const credential = GoogleAuthProvider.credentialFromResult(result) as OAuthCredential | null;
-      if (credential?.accessToken) {
-        this.googleToken$.next(credential.accessToken);
-      }
-      await this.saveUserData(result.user);
+  async signOutUser(): Promise<void> {
+    if (this.platform.isNative()) {
+      try {
+        const { SocialLogin } = await import('@capgo/capacitor-social-login');
+        await SocialLogin.logout({ provider: 'google' });
+      } catch {}
     }
-  }
-
-  signOutUser() {
-    signOut(auth);
+    await signOut(auth);
   }
 
   allUsers: User[] = [];

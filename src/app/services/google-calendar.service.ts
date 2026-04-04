@@ -3,10 +3,13 @@ import { Subject } from 'rxjs';
 import { CalendarEvent, GoogleCalendarInfo } from '../models/calendar-event.model';
 import { GoogleAuthService } from './google-auth.service';
 import { AuthService } from './auth.service';
+import { PlatformService } from './platform.service';
 import { auth } from '../firebase';
 import { environment } from '../../environments/environment';
 
 declare const gapi: any;
+
+const CALENDAR_API = 'https://www.googleapis.com/calendar/v3';
 
 @Injectable({
   providedIn: 'root'
@@ -19,22 +22,59 @@ export class GoogleCalendarService {
 
   constructor(
     private googleAuth: GoogleAuthService,
-    private authService: AuthService
+    private authService: AuthService,
+    private platform: PlatformService
   ) {}
 
   emitEvents() {
     this.eventsSubject.next(this.events);
   }
 
-  /** Ensure the OAuth token is set on gapi.client before API calls */
+  /** Ensure the OAuth token is set on gapi.client (web only) */
   private ensureToken(): void {
+    if (!this.platform.isWeb()) return;
     const token = this.googleAuth.getAccessToken();
-    if (token) {
+    if (token && typeof gapi !== 'undefined') {
       gapi.client.setToken({ access_token: token });
     }
   }
 
-  /** Execute a gapi call, retry once with token refresh on 401 */
+  /** Make an authenticated fetch to Google Calendar REST API (native + web fallback) */
+  private async restFetch(path: string, options: RequestInit = {}): Promise<any> {
+    const token = this.googleAuth.getAccessToken();
+    if (!token) throw new Error('No access token');
+    const resp = await fetch(`${CALENDAR_API}${path}`, {
+      ...options,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+    if (resp.status === 401) {
+      const refreshed = await this.googleAuth.refreshToken();
+      if (refreshed) {
+        const newToken = this.googleAuth.getAccessToken();
+        const retry = await fetch(`${CALENDAR_API}${path}`, {
+          ...options,
+          headers: {
+            Authorization: `Bearer ${newToken}`,
+            'Content-Type': 'application/json',
+            ...options.headers,
+          },
+        });
+        if (!retry.ok) throw new Error(`Calendar API error: ${retry.status}`);
+        if (retry.status === 204) return {};
+        return retry.json();
+      }
+      throw new Error('Token refresh failed');
+    }
+    if (!resp.ok) throw new Error(`Calendar API error: ${resp.status}`);
+    if (resp.status === 204) return {};
+    return resp.json();
+  }
+
+  /** Execute a gapi call with retry on 401 (web only) */
   private async withRetry<T>(fn: () => Promise<T>): Promise<T> {
     try {
       return await fn();
@@ -55,13 +95,19 @@ export class GoogleCalendarService {
   async getCalendars(): Promise<GoogleCalendarInfo[]> {
     if (!this.googleAuth.isConnected()) return [];
     try {
-      await this.googleAuth.loadGapi();
-      this.ensureToken();
-      const response: any = await this.withRetry(() => gapi.client.calendar.calendarList.list());
-      console.log('Calendar list response:', response.result.items?.length, 'calendars');
-      // Filter out Google's built-in noise calendars (week numbers, holidays, contacts)
-      // Keep birthdays calendar for anniversaries
-      const filtered = (response.result.items || []).filter((cal: any) => {
+      let items: any[];
+
+      if (this.platform.isNative()) {
+        const data = await this.restFetch('/users/me/calendarList');
+        items = data.items || [];
+      } else {
+        await this.googleAuth.loadGapi();
+        this.ensureToken();
+        const response: any = await this.withRetry(() => gapi.client.calendar.calendarList.list());
+        items = response.result.items || [];
+      }
+
+      const filtered = items.filter((cal: any) => {
         const id: string = cal.id || '';
         return !id.includes('#weeknum') &&
                !id.includes('#contacts') &&
@@ -75,7 +121,6 @@ export class GoogleCalendarService {
         primary: !!cal.primary,
       }));
 
-      // Ensure the family calendar is always present
       const familyId = environment.googleCalendar.familyCalendarId;
       if (familyId && !this.calendars.find(c => c.id === familyId)) {
         this.calendars.push({
@@ -96,8 +141,10 @@ export class GoogleCalendarService {
   async getEvents(startDate: Date, endDate: Date): Promise<CalendarEvent[]> {
     if (!this.googleAuth.isConnected()) return [];
     try {
-      await this.googleAuth.loadGapi();
-      this.ensureToken();
+      if (!this.platform.isNative()) {
+        await this.googleAuth.loadGapi();
+        this.ensureToken();
+      }
 
       if (this.calendars.length === 0) {
         await this.getCalendars();
@@ -105,18 +152,33 @@ export class GoogleCalendarService {
 
       const currentUser = auth.currentUser;
 
-      // Fetch events from each calendar in parallel
       const promises = this.calendars.map(async (cal) => {
         try {
-          const response: any = await this.withRetry(() => gapi.client.calendar.events.list({
-            calendarId: cal.id,
-            timeMin: startDate.toISOString(),
-            timeMax: endDate.toISOString(),
-            showDeleted: false,
-            singleEvents: true,
-            orderBy: 'startTime',
-          }));
-          return (response.result.items || []).map((item: any) => ({
+          let items: any[];
+
+          if (this.platform.isNative()) {
+            const params = new URLSearchParams({
+              timeMin: startDate.toISOString(),
+              timeMax: endDate.toISOString(),
+              showDeleted: 'false',
+              singleEvents: 'true',
+              orderBy: 'startTime',
+            });
+            const data = await this.restFetch(`/calendars/${encodeURIComponent(cal.id)}/events?${params}`);
+            items = data.items || [];
+          } else {
+            const response: any = await this.withRetry(() => gapi.client.calendar.events.list({
+              calendarId: cal.id,
+              timeMin: startDate.toISOString(),
+              timeMax: endDate.toISOString(),
+              showDeleted: false,
+              singleEvents: true,
+              orderBy: 'startTime',
+            }));
+            items = response.result.items || [];
+          }
+
+          return items.map((item: any) => ({
             id: item.id,
             title: item.summary || '(Sans titre)',
             description: item.description || '',
@@ -141,7 +203,6 @@ export class GoogleCalendarService {
       const allEvents: CalendarEvent[] = [];
       results.forEach(events => allEvents.push(...events));
 
-      // Resolve creator emails to Firebase user profiles (name + avatar)
       const users = await this.authService.getAllUsers();
       for (const event of allEvents) {
         if (event.creatorEmail) {
@@ -153,7 +214,6 @@ export class GoogleCalendarService {
         }
       }
 
-      // Sort all events by start date
       allEvents.sort((a, b) => a.startDate.localeCompare(b.startDate));
 
       this.events = allEvents;
@@ -167,8 +227,6 @@ export class GoogleCalendarService {
   async createEvent(event: CalendarEvent): Promise<CalendarEvent | null> {
     if (!this.googleAuth.isConnected()) return null;
     try {
-      await this.googleAuth.loadGapi();
-      this.ensureToken();
       const calendarId = event.calendarId || environment.googleCalendar.familyCalendarId || 'primary';
       const resource: any = {
         summary: event.title,
@@ -182,19 +240,31 @@ export class GoogleCalendarService {
         resource.end = { dateTime: event.endDate };
       }
 
-      const response: any = await this.withRetry(() => gapi.client.calendar.events.insert({
-        calendarId,
-        resource,
-      }));
+      let result: any;
+
+      if (this.platform.isNative()) {
+        result = await this.restFetch(`/calendars/${encodeURIComponent(calendarId)}/events`, {
+          method: 'POST',
+          body: JSON.stringify(resource),
+        });
+      } else {
+        await this.googleAuth.loadGapi();
+        this.ensureToken();
+        const response: any = await this.withRetry(() => gapi.client.calendar.events.insert({
+          calendarId,
+          resource,
+        }));
+        result = response.result;
+      }
 
       const cal = this.calendars.find(c => c.id === calendarId);
       const created: CalendarEvent = {
-        id: response.result.id,
-        title: response.result.summary,
-        description: response.result.description || '',
-        startDate: response.result.start?.dateTime || response.result.start?.date || '',
-        endDate: response.result.end?.dateTime || response.result.end?.date || '',
-        allDay: !!response.result.start?.date,
+        id: result.id,
+        title: result.summary,
+        description: result.description || '',
+        startDate: result.start?.dateTime || result.start?.date || '',
+        endDate: result.end?.dateTime || result.end?.date || '',
+        allDay: !!result.start?.date,
         calendarId,
         calendarName: cal?.summary || calendarId,
         color: cal?.backgroundColor,
@@ -208,12 +278,18 @@ export class GoogleCalendarService {
   async deleteEvent(eventId: string, calendarId = 'primary'): Promise<void> {
     if (!this.googleAuth.isConnected()) return;
     try {
-      await this.googleAuth.loadGapi();
-      this.ensureToken();
-      await this.withRetry(() => gapi.client.calendar.events.delete({
-        calendarId,
-        eventId,
-      }));
+      if (this.platform.isNative()) {
+        await this.restFetch(`/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}`, {
+          method: 'DELETE',
+        });
+      } else {
+        await this.googleAuth.loadGapi();
+        this.ensureToken();
+        await this.withRetry(() => gapi.client.calendar.events.delete({
+          calendarId,
+          eventId,
+        }));
+      }
     } catch {
       // silently fail
     }

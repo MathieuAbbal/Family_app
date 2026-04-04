@@ -5,6 +5,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { ref, update } from 'firebase/database';
 import { Subject } from 'rxjs';
 import { AuthService } from './auth.service';
+import { PlatformService } from './platform.service';
 
 declare const gapi: any;
 declare const google: any;
@@ -21,27 +22,29 @@ export class GoogleAuthService {
   /** Emits when connection status changes */
   connectionChanged = new Subject<boolean>();
 
-  constructor(private authService: AuthService) {
-    // Listen for Google token from Firebase sign-in (fresh login)
+  constructor(private authService: AuthService, private platform: PlatformService) {
+    // Listen for Google token from Firebase sign-in (works for both native and web)
     this.authService.googleToken$.subscribe((token) => {
       this.setToken(token);
     });
 
-    // When Firebase restores a session, request a Calendar token silently
-    // Delay to let Firebase token (from googleToken$) be set first on fresh sign-in
-    onAuthStateChanged(auth, (user) => {
-      if (user && !this.accessToken) {
-        setTimeout(() => {
-          if (!this.accessToken) {
-            this.requestTokenSilently();
-          }
-        }, 1500);
-      }
-    });
+    // On web only: silently request GIS token on session restore
+    if (this.platform.isWeb()) {
+      onAuthStateChanged(auth, (user) => {
+        if (user && !this.accessToken) {
+          setTimeout(() => {
+            if (!this.accessToken) {
+              this.requestTokenSilently();
+            }
+          }, 1500);
+        }
+      });
+    }
   }
 
-  /** Request a Calendar token silently using GIS (no popup if already consented) */
+  /** Request a Calendar token silently using GIS (web only) */
   private async requestTokenSilently(): Promise<void> {
+    if (!this.platform.isWeb()) return;
     try {
       await this.loadGapi();
       await this.initTokenClient();
@@ -56,15 +59,18 @@ export class GoogleAuthService {
   /** Set the access token (from Firebase Google auth or GIS) */
   setToken(token: string): void {
     this.accessToken = token;
-    this.loadGapi().then(() => {
-      gapi.client.setToken({ access_token: token });
-    }).catch(() => {});
+    if (this.platform.isWeb()) {
+      this.loadGapi().then(() => {
+        gapi.client.setToken({ access_token: token });
+      }).catch(() => {});
+    }
     this.fetchGoogleEmail();
     this.saveConnectionStatus(true);
     this.connectionChanged.next(true);
   }
 
   loadGapi(): Promise<void> {
+    if (!this.platform.isWeb()) return Promise.resolve();
     if (this.gapiLoaded) return Promise.resolve();
     return new Promise((resolve, reject) => {
       const checkGapi = () => {
@@ -89,6 +95,7 @@ export class GoogleAuthService {
   }
 
   initTokenClient(): Promise<void> {
+    if (!this.platform.isWeb()) return Promise.resolve();
     return new Promise((resolve) => {
       const checkGoogle = () => {
         if (typeof google === 'undefined' || !google.accounts?.oauth2) {
@@ -126,6 +133,7 @@ export class GoogleAuthService {
   }
 
   signIn(): Promise<boolean> {
+    if (!this.platform.isWeb()) return Promise.resolve(false);
     return new Promise((resolve) => {
       if (!this.tokenClient) {
         resolve(false);
@@ -136,8 +144,9 @@ export class GoogleAuthService {
     });
   }
 
-  /** Silently refresh the access token (no popup if user already consented) */
+  /** Silently refresh the access token (web only, native uses plugin) */
   refreshToken(): Promise<boolean> {
+    if (!this.platform.isWeb()) return Promise.resolve(false);
     return new Promise(async (resolve) => {
       try {
         await this.loadGapi();
@@ -148,7 +157,6 @@ export class GoogleAuthService {
         }
         this.signInResolve = resolve;
         this.tokenClient.requestAccessToken({ prompt: '' });
-        // Timeout: if no callback after 5s, resolve false
         setTimeout(() => {
           if (this.signInResolve === resolve) {
             this.signInResolve = null;
@@ -163,8 +171,10 @@ export class GoogleAuthService {
 
   signOut(): void {
     if (this.accessToken) {
-      try { google.accounts.oauth2.revoke(this.accessToken); } catch {}
-      try { gapi.client.setToken(null); } catch {}
+      if (this.platform.isWeb()) {
+        try { google.accounts.oauth2.revoke(this.accessToken); } catch {}
+        try { gapi.client.setToken(null); } catch {}
+      }
       this.accessToken = null;
       this.googleEmail = null;
       this.saveConnectionStatus(false);

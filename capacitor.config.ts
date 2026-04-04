@@ -4,10 +4,16 @@ const config: CapacitorConfig = {
   appId: 'com.familyapp.app',
   appName: 'FamilyApp',
   webDir: 'dist/familyapp/browser',
-  server: {
-    url: 'https://mathieuabbal.github.io/Family_app/',
-    androidScheme: 'https'
-  }
+  plugins: {
+    SocialLogin: {
+      providers: {
+        google: true,
+      },
+    },
+    PushNotifications: {
+      presentationOptions: ['badge', 'sound', 'alert'],
+    },
+  },
 };
 
 export default config;
