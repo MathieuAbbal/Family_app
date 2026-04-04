@@ -4,6 +4,7 @@ import { Map, Marker, Popup } from 'maplibre-gl';
 import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
 import { LocationService, UserLocation } from '../services/location.service';
 import { auth } from '../firebase';
+import { environment } from '../../environments/environment';
 
 
 @Component({
@@ -65,7 +66,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   };
 
   ngAfterViewInit() {
-    const myAPIKey = '***GEOAPIFY_API_KEY***';
     const mapStyle = 'https://maps.geoapify.com/v1/styles/maptiler-3d/style.json';
 
     const initialState = {
@@ -76,7 +76,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     this.map = new Map({
       container: this.mapContainer.nativeElement,
-      style: `${mapStyle}?apiKey=${myAPIKey}`,
+      style: `${mapStyle}?apiKey=${environment.geoapifyApiKey}`,
       center: [initialState.lng, initialState.lat],
       zoom: initialState.zoom,
     });
