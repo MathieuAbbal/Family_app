@@ -5,8 +5,8 @@ import { Task } from '../../models/task.model';
 import { Router } from '@angular/router';
 import { TasksService } from '../../services/tasks.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AuthService } from 'src/app/services/auth.service';
-import { User } from 'src/app/models/user.model';
+import { AuthService } from '../../services/auth.service';
+import { User } from '../../models/user.model';
 
 @Component({
     selector: 'app-add-task',

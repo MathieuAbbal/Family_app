@@ -83,7 +83,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.userSubscription = this.editProfileService.getUserData().subscribe(user => {
       if (user) {
         this.userName = user.displayName || '';
-        this.userPhoto = user.photoURL || 'https://i.pinimg.com/originals/2f/15/f2/2f15f2e8c688b3120d3d26467b06330c.jpg';
+        this.userPhoto = user.photoURL || 'assets/default-avatar.svg';
       }
     });
   }

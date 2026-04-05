@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { RouterModule } from '@angular/router';
 import { EditProfileService } from '../edit-profile.service';
-import { User } from 'src/app/models/user.model';
+import { User } from '../../models/user.model';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -23,7 +23,7 @@ export class UserAvatarComponent implements OnInit, OnDestroy {
     this.userSubscription = this.editProfileService.getUserData().subscribe(
       (userData) => {
         this.user = userData;
-        this.fileUrl = this.user?.photoURL || 'https://i.pinimg.com/originals/2f/15/f2/2f15f2e8c688b3120d3d26467b06330c.jpg';
+        this.fileUrl = this.user?.photoURL || 'assets/default-avatar.svg';
       },
       (error) => {
         console.error(error);

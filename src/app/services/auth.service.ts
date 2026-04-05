@@ -44,7 +44,8 @@ export class AuthService {
 
     const existingPhoto = existingData['photoURL'] as string | undefined;
     const existingName = existingData['displayName'] as string | undefined;
-    const hasExistingPhoto = existingPhoto && existingPhoto.trim() !== '';
+    const defaultAvatar = 'assets/default-avatar.svg';
+    const hasExistingPhoto = existingPhoto && existingPhoto.trim() !== '' && existingPhoto !== defaultAvatar;
     const hasExistingName = existingName && existingName.trim() !== '';
 
     const userData: Record<string, string> = {

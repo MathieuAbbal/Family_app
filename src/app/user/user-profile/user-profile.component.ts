@@ -50,7 +50,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       photoURLControl: [''],
       dateBirthControl: [user?.dateBirth ? user.dateBirth.substring(0, 10) : ''],
     });
-    this.fileUrl = this.user?.photoURL || 'https://i.pinimg.com/originals/2f/15/f2/2f15f2e8c688b3120d3d26467b06330c.jpg';
+    this.fileUrl = this.user?.photoURL || 'assets/default-avatar.svg';
   }
 
   loadFile(file: File): void {

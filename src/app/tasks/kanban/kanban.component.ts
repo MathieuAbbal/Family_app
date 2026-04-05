@@ -2,12 +2,12 @@ import { Component, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { Router, RouterModule } from '@angular/router';
-import { TasksService } from 'src/app/services/tasks.service';
-import { AuthService } from 'src/app/services/auth.service';
-import { User } from 'src/app/models/user.model';
+import { TasksService } from '../../services/tasks.service';
+import { AuthService } from '../../services/auth.service';
+import { User } from '../../models/user.model';
 import { Task } from '../../models/task.model';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { KanbanService } from 'src/app/services/kanban.service';
+import { KanbanService } from '../../services/kanban.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
