@@ -168,14 +168,34 @@ android/                         # Application Android native (Capacitor)
 - Node.js 18+
 - npm 10+
 
+### Configuration des clés API
+
+Les clés API et secrets sont gérés via un fichier `.env` (non versionné). Un script génère automatiquement les fichiers d'environnement Angular au build.
+
+```bash
+# 1. Copier le template
+cp .env.example .env
+
+# 2. Remplir les valeurs dans .env avec vos propres clés :
+#    - FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, etc. (depuis la console Firebase)
+#    - VAPID_KEY (Firebase Console > Project Settings > Cloud Messaging)
+#    - GOOGLE_CLIENT_ID (Google Cloud Console > Identifiants OAuth)
+#    - GEOAPIFY_API_KEY (myprojects.geoapify.com)
+
+# 3. Générer les fichiers d'environnement
+node scripts/set-env.js
+```
+
+> **Note** : Les fichiers `src/environments/environment.ts`, `src/environments/environment.prod.ts` et `src/firebase-messaging-sw.js` sont générés et ignorés par git. Ne les éditez pas manuellement.
+
 ### Démarrage
 
 ```bash
 # Installer les dépendances
 npm install --legacy-peer-deps
 
-# Lancer le serveur de développement
-ng serve
+# Lancer le serveur de développement (génère automatiquement les fichiers d'env)
+npm start
 ```
 
 L'application est accessible sur `http://localhost:4200/`.
@@ -196,6 +216,7 @@ firebase deploy --only functions
 ### Déploiement GitHub Pages
 
 ```bash
+# Le fichier .env doit être configuré avant le déploiement
 npm run deploy
 ```
 
@@ -234,29 +255,19 @@ Pour faire tourner l'application, vous devez créer votre propre projet Firebase
 
 ### 3. Configurer l'application
 
-Créez ou modifiez le fichier `src/app/firebase.ts` avec votre configuration :
+Remplissez votre fichier `.env` avec les valeurs de votre projet Firebase :
 
-```typescript
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getDatabase } from 'firebase/database';
-import { getStorage } from 'firebase/storage';
-
-const firebaseConfig = {
-  apiKey: "VOTRE_API_KEY",
-  authDomain: "VOTRE_PROJET.firebaseapp.com",
-  databaseURL: "https://VOTRE_PROJET-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "VOTRE_PROJET",
-  storageBucket: "VOTRE_PROJET.appspot.com",
-  messagingSenderId: "VOTRE_SENDER_ID",
-  appId: "VOTRE_APP_ID"
-};
-
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getDatabase(app);
-export const storage = getStorage(app);
+```env
+FIREBASE_API_KEY=votre_api_key
+FIREBASE_AUTH_DOMAIN=votre-projet.firebaseapp.com
+FIREBASE_DATABASE_URL=https://votre-projet-default-rtdb.europe-west1.firebasedatabase.app
+FIREBASE_PROJECT_ID=votre-projet
+FIREBASE_STORAGE_BUCKET=votre-projet.appspot.com
+FIREBASE_MESSAGING_SENDER_ID=votre_sender_id
+FIREBASE_APP_ID=votre_app_id
 ```
+
+Puis lancez `node scripts/set-env.js` pour générer les fichiers d'environnement.
 
 ### 4. Configurer les Security Rules
 
@@ -312,23 +323,12 @@ Pour les fonctionnalités Calendrier et Documents, vous devez configurer :
 - **Google Calendar API** : activez l'API dans la Google Cloud Console
 - **Google Drive API** : activez l'API dans la Google Cloud Console
 
-Configurez les scopes OAuth dans `src/environments/environment.ts` :
+Ajoutez les valeurs suivantes dans votre `.env` :
 
-```typescript
-export const environment = {
-  production: false,
-  googleCalendar: {
-    apiKey: 'VOTRE_GOOGLE_API_KEY',
-    clientId: 'VOTRE_CLIENT_ID.apps.googleusercontent.com',
-    discoveryDocs: [
-      'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest',
-      'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'
-    ],
-    scopes: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/drive',
-    familyCalendarId: 'VOTRE_CALENDAR_ID@group.calendar.google.com',
-    familyDriveFolderId: 'VOTRE_DRIVE_FOLDER_ID'
-  }
-};
+```env
+GOOGLE_CLIENT_ID=votre_client_id.apps.googleusercontent.com
+FAMILY_CALENDAR_ID=votre_calendar_id@group.calendar.google.com
+FAMILY_DRIVE_FOLDER_ID=votre_drive_folder_id
 ```
 
 ## PWA
