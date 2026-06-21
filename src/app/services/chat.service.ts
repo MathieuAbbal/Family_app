@@ -4,6 +4,15 @@ import { ref, push, set, remove, onValue, off, query, limitToLast, get } from 'f
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { Message, Comment } from '../models/message.model';
 
+const MAX_UPLOAD_MB = 20;
+const MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024;
+
+export interface SendMessageResult {
+  sent: boolean;
+  failedImages: number;
+  totalImages: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -105,16 +114,32 @@ export class ChatService {
     return () => off(q);
   }
 
-  async sendMessage(text: string, imageFiles?: File[]): Promise<void> {
+  async sendMessage(text: string, imageFiles?: File[]): Promise<SendMessageResult> {
     const user = auth.currentUser;
-    if (!user) return;
-    if (!text.trim() && (!imageFiles || imageFiles.length === 0)) return;
+    if (!user) return { sent: false, failedImages: 0, totalImages: 0 };
+    if (!text.trim() && (!imageFiles || imageFiles.length === 0)) {
+      return { sent: false, failedImages: 0, totalImages: 0 };
+    }
 
-    let imageURLs: string[] | undefined;
+    let imageURLs: string[] = [];
+    let failedImages = 0;
+    const totalImages = imageFiles?.length ?? 0;
 
-    // Upload images if provided
     if (imageFiles && imageFiles.length > 0) {
-      imageURLs = await Promise.all(imageFiles.map(f => this.uploadImage(f)));
+      const results = await Promise.allSettled(imageFiles.map(f => this.uploadImage(f)));
+      for (const r of results) {
+        if (r.status === 'fulfilled') {
+          imageURLs.push(r.value);
+        } else {
+          failedImages++;
+          console.error('Échec upload image :', r.reason);
+        }
+      }
+    }
+
+    // Nothing to send: only text was empty and every image failed
+    if (!text.trim() && imageURLs.length === 0) {
+      return { sent: false, failedImages, totalImages };
     }
 
     const newRef = push(this.messagesRef);
@@ -125,11 +150,19 @@ export class ChatService {
       displayName: user.displayName || '',
       photoURL: user.photoURL || '',
       timestamp: Date.now(),
-      ...(imageURLs && imageURLs.length > 0 && { imageURLs }),
+      ...(imageURLs.length > 0 && { imageURLs }),
     });
+
+    return { sent: true, failedImages, totalImages };
   }
 
   private async uploadImage(file: File): Promise<string> {
+    if (file.type && !file.type.startsWith('image/')) {
+      throw new Error(`Fichier non image : ${file.name}`);
+    }
+    if (file.size > MAX_UPLOAD_BYTES) {
+      throw new Error(`Image trop lourde (>${MAX_UPLOAD_MB} Mo) : ${file.name}`);
+    }
     const compressed = await this.compressImage(file);
     const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 11)}.jpg`;
     const fileRef = storageRef(storage, `feed/${fileName}`);

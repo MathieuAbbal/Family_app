@@ -212,8 +212,23 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     const images = this.selectedImages.length > 0 ? [...this.selectedImages] : undefined;
     this.newMessage = '';
     this.removeAllImages();
-    await this.chatService.sendMessage(text, images);
-    this.snackBar.open('Publication envoyée !', '', { duration: 2000 });
+    try {
+      const result = await this.chatService.sendMessage(text, images);
+      if (!result.sent) {
+        const msg = result.totalImages > 0
+          ? `Échec : ${result.failedImages}/${result.totalImages} image(s) refusée(s).`
+          : 'Publication impossible.';
+        this.snackBar.open(msg, 'OK', { duration: 4000 });
+        return;
+      }
+      const msg = result.failedImages > 0
+        ? `Publié — ${result.failedImages}/${result.totalImages} image(s) échouée(s).`
+        : 'Publication envoyée !';
+      this.snackBar.open(msg, '', { duration: 2500 });
+    } catch (e) {
+      console.error('sendMessage error', e);
+      this.snackBar.open('Erreur lors de l\'envoi', 'OK', { duration: 4000 });
+    }
   }
 
   async toggleLike(msg: Message): Promise<void> {
